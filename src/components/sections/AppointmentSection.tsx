@@ -1,0 +1,290 @@
+import { useState } from 'react';
+import { Calendar, Clock, User, Phone, Mail, MessageSquare, CheckCircle, Stethoscope } from 'lucide-react';
+import { Clinic, ClinicDoctor, ClinicService } from '../../types';
+import { supabase } from '../../lib/supabase';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+
+interface AppointmentSectionProps {
+  clinic: Clinic | null;
+  doctors: ClinicDoctor[];
+  services: ClinicService[];
+}
+
+const timeSlots = [
+  '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
+  '11:00 AM', '11:30 AM', '12:00 PM', '02:00 PM',
+  '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM',
+  '04:30 PM', '05:00 PM',
+];
+
+export function AppointmentSection({ clinic, doctors, services }: AppointmentSectionProps) {
+  const { ref, isIntersecting } = useIntersectionObserver();
+  const [form, setForm] = useState({
+    patient_name: '',
+    patient_email: '',
+    patient_phone: '',
+    doctor_id: '',
+    service_id: '',
+    preferred_date: '',
+    preferred_time: '',
+    message: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+
+  const today = new Date().toISOString().split('T')[0];
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!clinic) return;
+    setLoading(true);
+    setError('');
+
+    const payload: Record<string, string | null> = {
+      clinic_id: clinic.id,
+      patient_name: form.patient_name,
+      patient_email: form.patient_email,
+      patient_phone: form.patient_phone,
+      preferred_date: form.preferred_date,
+      preferred_time: form.preferred_time,
+      message: form.message,
+      status: 'pending',
+      doctor_id: form.doctor_id || null,
+      service_id: form.service_id || null,
+    };
+
+    const { error: err } = await supabase.from('appointments').insert(payload);
+
+    if (err) {
+      setError('Failed to book appointment. Please try again or call us directly.');
+    } else {
+      setSubmitted(true);
+      setForm({ patient_name: '', patient_email: '', patient_phone: '', doctor_id: '', service_id: '', preferred_date: '', preferred_time: '', message: '' });
+    }
+    setLoading(false);
+  }
+
+  return (
+    <section id="appointment" className="section-padding bg-gradient-to-br from-primary-50 via-white to-teal-50">
+      <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
+        <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+            Book Appointment
+          </span>
+          <h2 className="section-title">
+            Schedule Your{' '}
+            <span className="gradient-text">Visit</span>
+          </h2>
+          <p className="section-subtitle">
+            Fill out the form below and our team will confirm your appointment within 24 hours.
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <div className={`card p-8 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '200ms' }}>
+            {submitted ? (
+              <div className="text-center py-12">
+                <div className="relative w-24 h-24 mx-auto mb-6">
+                  <div className="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-30" />
+                  <div className="relative w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-12 h-12 text-emerald-600" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-neutral-900 mb-3">Appointment Requested!</h3>
+                <p className="text-neutral-500 max-w-md mx-auto mb-8">
+                  Thank you! Your appointment request has been submitted. We'll contact you within 24 hours to confirm your booking.
+                </p>
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary-50 border border-primary-200 rounded-xl text-primary-700 text-sm font-medium mb-6">
+                  <Clock className="w-4 h-4" />
+                  Confirmation within 24 hours
+                </div>
+                <div className="mt-2">
+                  <button onClick={() => setSubmitted(false)} className="btn-primary">Book Another Appointment</button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Personal Info */}
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-neutral-900 flex items-center gap-2 text-lg">
+                      <User className="w-5 h-5 text-primary-600" />
+                      Personal Information
+                    </h3>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1.5">Full Name *</label>
+                      <div className="relative">
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                        <input
+                          type="text"
+                          required
+                          value={form.patient_name}
+                          onChange={(e) => setForm({ ...form, patient_name: e.target.value })}
+                          placeholder="Your full name"
+                          className="input-field pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1.5">Email Address *</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                        <input
+                          type="email"
+                          required
+                          value={form.patient_email}
+                          onChange={(e) => setForm({ ...form, patient_email: e.target.value })}
+                          placeholder="your@email.com"
+                          className="input-field pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1.5">Phone Number *</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                        <input
+                          type="tel"
+                          required
+                          value={form.patient_phone}
+                          onChange={(e) => setForm({ ...form, patient_phone: e.target.value })}
+                          placeholder="+1 (555) 000-0000"
+                          className="input-field pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1.5">Message / Symptoms</label>
+                      <div className="relative">
+                        <MessageSquare className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" />
+                        <textarea
+                          rows={4}
+                          value={form.message}
+                          onChange={(e) => setForm({ ...form, message: e.target.value })}
+                          placeholder="Briefly describe your symptoms or reason for visit..."
+                          className="input-field pl-10 resize-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Appointment Details */}
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-neutral-900 flex items-center gap-2 text-lg">
+                      <Calendar className="w-5 h-5 text-primary-600" />
+                      Appointment Details
+                    </h3>
+
+                    {doctors.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">Preferred Doctor</label>
+                        <div className="relative">
+                          <Stethoscope className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                          <select
+                            value={form.doctor_id}
+                            onChange={(e) => setForm({ ...form, doctor_id: e.target.value })}
+                            className="input-field pl-10 appearance-none"
+                          >
+                            <option value="">Any available doctor</option>
+                            {doctors.map((d) => (
+                              <option key={d.id} value={d.id}>{d.name} — {d.specialization}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {services.length > 0 && (
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 mb-1.5">Service / Department</label>
+                        <select
+                          value={form.service_id}
+                          onChange={(e) => setForm({ ...form, service_id: e.target.value })}
+                          className="input-field appearance-none"
+                        >
+                          <option value="">Select a service</option>
+                          {services.map((s) => (
+                            <option key={s.id} value={s.id}>{s.title}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1.5">Preferred Date *</label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                        <input
+                          type="date"
+                          required
+                          min={today}
+                          value={form.preferred_date}
+                          onChange={(e) => setForm({ ...form, preferred_date: e.target.value })}
+                          className="input-field pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">Preferred Time *</label>
+                      <div className="grid grid-cols-3 gap-2 max-h-44 overflow-y-auto pr-1">
+                        {timeSlots.map((slot) => (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => setForm({ ...form, preferred_time: slot })}
+                            className={`px-2 py-2 rounded-lg text-xs font-medium border transition-all ${
+                              form.preferred_time === slot
+                                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                                : 'bg-white text-neutral-600 border-neutral-200 hover:border-primary-400 hover:text-primary-700'
+                            }`}
+                          >
+                            {slot}
+                          </button>
+                        ))}
+                      </div>
+                      {!form.preferred_time && <p className="text-xs text-neutral-400 mt-1">Select a time slot</p>}
+                    </div>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !clinic || !form.preferred_time}
+                  className="btn-primary w-full justify-center mt-8 py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Submitting...
+                    </span>
+                  ) : (
+                    <>
+                      <Calendar className="w-5 h-5" />
+                      Request Appointment
+                    </>
+                  )}
+                </button>
+
+                <p className="text-center text-xs text-neutral-400 mt-3">
+                  By submitting, you agree to be contacted by our team to confirm your appointment.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
