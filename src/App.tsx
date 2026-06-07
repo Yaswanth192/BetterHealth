@@ -18,8 +18,8 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* Public */}
-          <Route path="/" element={<HomePage />} />
-          {/* <Route path="/" element={<Navigate to="/my-clinic" replace />} /> */}
+          {/* <Route path="/" element={<HomePage />} /> */}
+          <Route path="/" element={<Navigate to="/medicare-clinic" replace />} />
           <Route path="/:slug" element={<HomePage />} />
 
           {/* Admin Auth */}
@@ -46,7 +46,9 @@ export default function App() {
           <Route path="/inkocli" element={<DevPanelPage />} />
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          <Route path="/" element={<Navigate to="/medicare-clinic" replace />} />
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>
