@@ -51,16 +51,28 @@ export function AdminServicesPage() {
 
   async function handleSave() {
     setSaving(true);
-    const payload = { clinic_id: clinicId!, ...form };
-    const { error } = editing
-      ? await supabase.from('clinic_services').update(payload).eq('id', editing.id)
-      : await supabase.from('clinic_services').insert(payload);
-    if (error) {
-      addToast('error', 'Failed to save service');
-    } else {
+    try {
+      const imageUrl = imageFile
+        ? await uploadPublicFile(imageFile, {
+            bucket: 'SellHealthStorage',
+            path: `services/${clinicId}`,
+            fileName: form.title || 'service-image',
+          })
+        : form.image_url;
+
+      const payload = { clinic_id: clinicId!, ...form, image_url: imageUrl };
+      const { error } = editing
+        ? await supabase.from('clinic_services').update(payload).eq('id', editing.id)
+        : await supabase.from('clinic_services').insert(payload);
+
+      if (error) throw error;
+
       addToast('success', editing ? 'Service updated' : 'Service added');
       setModalOpen(false);
+      setImageFile(null);
       fetchServices();
+    } catch {
+      addToast('error', 'Failed to save service');
     }
     setSaving(false);
   }
@@ -153,8 +165,9 @@ export function AdminServicesPage() {
             <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-field resize-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Service Image URL</label>
-            <input type="url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="input-field" placeholder="https://..." />
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Service Image</label>
+            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} className="input-field" />
+              <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/services/{clinicId} and saves the public URL into image_url.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

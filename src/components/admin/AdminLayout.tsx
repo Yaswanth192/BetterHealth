@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Calendar, MessageSquare, Users, Settings,
   LogOut, Menu, X, Activity, ChevronRight, Bell
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 const navItems = [
   { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -19,11 +20,26 @@ export function AdminLayout() {
   const { signOut, user, adminRecord } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [clinic, setClinic] = useState<any | null>(null);
 
   async function handleSignOut() {
     await signOut();
     navigate('/admin');
   }
+
+  useEffect(() => {
+    async function fetchClinic() {
+      if (!adminRecord?.clinic_id) return setClinic(null);
+      const { data } = await supabase.from('clinics').select('*').eq('id', adminRecord!.clinic_id).maybeSingle();
+      setClinic(data ?? null);
+    }
+
+    fetchClinic();
+
+    const onClinicUpdated = () => { fetchClinic(); };
+    window.addEventListener('clinic-updated', onClinicUpdated as EventListener);
+    return () => window.removeEventListener('clinic-updated', onClinicUpdated as EventListener);
+  }, [adminRecord]);
 
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden">
@@ -43,11 +59,15 @@ export function AdminLayout() {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-neutral-100">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center flex-shrink-0">
-            <Activity className="w-5 h-5 text-white" />
-          </div>
+          {clinic?.logo_url ? (
+            <img src={clinic.logo_url} alt={clinic.name} className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
+          ) : (
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+          )}
           <div className="min-w-0">
-            <p className="font-bold text-neutral-900 truncate text-sm">Clinic Admin</p>
+            <p className="font-bold text-neutral-900 truncate text-sm">{clinic?.name || 'Clinic Admin'}</p>
             <p className="text-xs text-neutral-400 capitalize">{adminRecord?.role || 'staff'}</p>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto p-1 text-neutral-400">

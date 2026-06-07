@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Save, Building2, Phone, Mail, MapPin, Globe, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { Clinic, ClinicTiming } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
@@ -14,6 +15,8 @@ export function AdminSettingsPage() {
   const { toasts, addToast, removeToast } = useToast();
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [timings, setTimings] = useState<ClinicTiming[]>([]);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -41,17 +44,46 @@ export function AdminSettingsPage() {
     e.preventDefault();
     if (!clinic) return;
     setSaving(true);
-    const { error } = await supabase.from('clinics').update({
-      name: clinic.name, tagline: clinic.tagline, description: clinic.description,
-      logo_url: clinic.logo_url, phone: clinic.phone, email: clinic.email,
-      address: clinic.address, city: clinic.city, state: clinic.state,
-      zip: clinic.zip, website: clinic.website,
-      updated_at: new Date().toISOString(),
-    }).eq('id', clinicId!);
-    if (error) addToast('error', 'Failed to save clinic info');
-    else addToast('success', 'Clinic information saved');
+    try {
+      let logoUrl = clinic.logo_url;
+      if (logoFile) {
+        logoUrl = await uploadPublicFile(logoFile, {
+          bucket: 'SellHealthStorage',
+          path: `clinics/${clinicId}/logo`,
+          fileName: 'logo',
+        });
+      }
+
+      const { error } = await supabase.from('clinics').update({
+        name: clinic.name, tagline: clinic.tagline, description: clinic.description,
+        logo_url: logoUrl, phone: clinic.phone, email: clinic.email,
+        address: clinic.address, city: clinic.city, state: clinic.state,
+        zip: clinic.zip, website: clinic.website,
+        updated_at: new Date().toISOString(),
+      }).eq('id', clinicId!);
+
+      if (error) throw error;
+
+      setClinic({ ...clinic, logo_url: logoUrl });
+      setLogoFile(null);
+      // notify other parts of the app (admin layout, other tabs) that clinic changed
+      try { window.dispatchEvent(new CustomEvent('clinic-updated', { detail: { id: clinicId } })); } catch {}
+      addToast('success', 'Clinic information saved');
+    } catch {
+      addToast('error', 'Failed to save clinic info');
+    }
     setSaving(false);
   }
+
+  useEffect(() => {
+    if (!logoFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(logoFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logoFile]);
 
   async function handleSaveTimings() {
     setSaving(true);
@@ -112,8 +144,22 @@ export function AdminSettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Logo URL</label>
-            <input type="url" value={clinic.logo_url} onChange={(e) => setClinic({ ...clinic, logo_url: e.target.value })} className="input-field" placeholder="https://..." />
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Logo</label>
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-20 bg-neutral-100 rounded-md overflow-hidden flex items-center justify-center">
+                {previewUrl ? (
+                  <img src={previewUrl} alt="preview" className="w-full h-full object-contain" />
+                ) : clinic.logo_url ? (
+                  <img src={clinic.logo_url} alt="logo" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="text-neutral-400 text-xs">No logo</div>
+                )}
+              </div>
+              <div className="flex-1">
+                <input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} className="input-field" />
+                <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/clinics/{clinicId}/logo and saves the public URL into logo_url.</p>
+              </div>
+            </div>
           </div>
 
           <h3 className="font-semibold text-neutral-800 flex items-center gap-2 pt-2">

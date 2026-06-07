@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Building2, Users, Eye, EyeOff, Key } from 'lucide-react';
+import { Plus, Pencil, Trash2, Building2, Users, Key } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Clinic } from '../../types';
 import { Modal } from '../../components/ui/Modal';
@@ -8,6 +8,7 @@ import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { uploadPublicFile } from '../../lib/storage';
 
 interface ClinicForm {
   name: string;
@@ -17,6 +18,7 @@ interface ClinicForm {
   logo_url: string;
   phone: string;
   email: string;
+  website: string;
   address: string;
   city: string;
   state: string;
@@ -35,7 +37,7 @@ interface AdminForm {
 
 const EMPTY_CLINIC: ClinicForm = {
   name: '', slug: '', tagline: '', description: '', logo_url: '',
-  phone: '', email: '', address: '', city: '', state: '', zip: '',
+  phone: '', email: '', website: '', address: '', city: '', state: '', zip: '',
   primary_color: '#0ea5e9', secondary_color: '#0284c7', is_active: true,
 };
 
@@ -48,10 +50,10 @@ export function DevPanelPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'clinics' | 'admins'>('clinics');
   const [clinicModal, setClinicModal] = useState(false);
-  const [adminModal, setAdminModal] = useState(false);
   const [editing, setEditing] = useState<Clinic | null>(null);
   const [clinicForm, setClinicForm] = useState<ClinicForm>(EMPTY_CLINIC);
   const [adminForm, setAdminForm] = useState<AdminForm>(EMPTY_ADMIN);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   if (!authLoading && role !== 'developer') {
@@ -61,14 +63,14 @@ export function DevPanelPage() {
   
   return <DevPanelContent clinics={clinics} setClinics={setClinics} loading={loading} setLoading={setLoading}
     tab={tab} setTab={setTab} clinicModal={clinicModal} setClinicModal={setClinicModal}
-    adminModal={adminModal} setAdminModal={setAdminModal} editing={editing} setEditing={setEditing}
+    editing={editing} setEditing={setEditing}
     clinicForm={clinicForm} setClinicForm={setClinicForm} adminForm={adminForm} setAdminForm={setAdminForm}
-    saving={saving} setSaving={setSaving} toasts={toasts} addToast={addToast} removeToast={removeToast}
+    logoFile={logoFile} setLogoFile={setLogoFile} saving={saving} setSaving={setSaving} toasts={toasts} addToast={addToast} removeToast={removeToast}
   />;
 }
 
 function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab, clinicModal, setClinicModal,
-  adminModal, setAdminModal, editing, setEditing, clinicForm, setClinicForm, adminForm, setAdminForm,
+  editing, setEditing, clinicForm, setClinicForm, adminForm, setAdminForm, logoFile, setLogoFile,
   saving, setSaving, toasts, addToast, removeToast }: any) {
 
   useEffect(() => { fetchClinics(); }, []);
@@ -80,25 +82,69 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
     setLoading(false);
   }
 
-  function openCreate() { setEditing(null); setClinicForm(EMPTY_CLINIC); setClinicModal(true); }
+  function openCreate() { setEditing(null); setClinicForm(EMPTY_CLINIC); setLogoFile(null); setClinicModal(true); }
   function openEdit(c: Clinic) {
     setEditing(c);
     setClinicForm({
       name: c.name, slug: c.slug, tagline: c.tagline, description: c.description,
       logo_url: c.logo_url, phone: c.phone, email: c.email, address: c.address,
+      website: c.website,
       city: c.city, state: c.state, zip: c.zip,
       primary_color: c.primary_color, secondary_color: c.secondary_color, is_active: c.is_active,
     });
+    setLogoFile(null);
     setClinicModal(true);
   }
 
   async function handleSaveClinic() {
     setSaving(true);
-    const { error } = editing
-      ? await supabase.from('clinics').update({ ...clinicForm, updated_at: new Date().toISOString() }).eq('id', editing.id)
-      : await supabase.from('clinics').insert(clinicForm);
-    if (error) addToast('error', error.message);
-    else { addToast('success', editing ? 'Clinic updated' : 'Clinic created'); setClinicModal(false); fetchClinics(); }
+    try {
+      const logoName = clinicForm.slug || clinicForm.name || 'clinic-logo';
+
+      if (editing) {
+        let logoUrl = clinicForm.logo_url;
+        if (logoFile) {
+          logoUrl = await uploadPublicFile(logoFile, {
+            bucket: 'SellHealthStorage',
+            path: `clinics/${editing.id}/logo`,
+            fileName: logoName,
+          });
+        }
+
+        const { error } = await supabase.from('clinics').update({
+          ...clinicForm,
+          logo_url: logoUrl,
+          updated_at: new Date().toISOString(),
+        }).eq('id', editing.id);
+
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from('clinics').insert({
+          ...clinicForm,
+          logo_url: clinicForm.logo_url,
+          updated_at: new Date().toISOString(),
+        }).select('*').single();
+
+        if (error) throw error;
+
+        if (data?.id && logoFile) {
+          const finalLogoUrl = await uploadPublicFile(logoFile, {
+            bucket: 'SellHealthStorage',
+            path: `clinics/${data.id}/logo`,
+            fileName: logoName,
+          });
+          const { error: updateError } = await supabase.from('clinics').update({ logo_url: finalLogoUrl }).eq('id', data.id);
+          if (updateError) throw updateError;
+        }
+      }
+
+      addToast('success', editing ? 'Clinic updated' : 'Clinic created');
+      setClinicModal(false);
+      setLogoFile(null);
+      fetchClinics();
+    } catch (error: any) {
+      addToast('error', error?.message || 'Failed to save clinic');
+    }
     setSaving(false);
   }
 
@@ -130,7 +176,7 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
     });
 
     if (adminError) addToast('error', 'User created but failed to assign role: ' + adminError.message);
-    else { addToast('success', `Admin created: ${adminForm.email}`); setAdminModal(false); setAdminForm(EMPTY_ADMIN); }
+    else { addToast('success', `Admin created: ${adminForm.email}`); setAdminForm(EMPTY_ADMIN); }
     setSaving(false);
   }
 
@@ -285,8 +331,9 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
               <input type="text" value={clinicForm.tagline} onChange={(e) => setClinicForm({ ...clinicForm, tagline: e.target.value })} className="input-field" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Logo URL</label>
-              <input type="url" value={clinicForm.logo_url} onChange={(e) => setClinicForm({ ...clinicForm, logo_url: e.target.value })} className="input-field" placeholder="https://..." />
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Logo</label>
+              <input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} className="input-field" />
+              <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/clinics/{clinicForm.slug || 'clinic'}/logo and saves the public URL into logo_url.</p>
             </div>
           </div>
           <div>
@@ -302,6 +349,16 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
               <label className="block text-sm font-medium text-neutral-700 mb-1">Email</label>
               <input type="email" value={clinicForm.email} onChange={(e) => setClinicForm({ ...clinicForm, email: e.target.value })} className="input-field" />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Domain Name</label>
+            <input
+              type="text"
+              value={clinicForm.website}
+              onChange={(e) => setClinicForm({ ...clinicForm, website: e.target.value })}
+              className="input-field"
+              placeholder="example.com"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">Address</label>

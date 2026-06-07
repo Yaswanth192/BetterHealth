@@ -74,30 +74,41 @@ export function AdminDoctorsPage() {
 
   async function handleSave() {
     setSaving(true);
-    const payload = {
-      clinic_id: clinicId!,
-      name: form.name,
-      specialization: form.specialization,
-      bio: form.bio,
-      image_url: form.image_url,
-      qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
-      experience_years: form.experience_years,
-      available_days: form.available_days.split(',').map((d) => d.trim()).filter(Boolean),
-      available_times: form.available_times,
-      sort_order: form.sort_order,
-      is_active: form.is_active,
-    };
+    try {
+      const imageUrl = photoFile
+        ? await uploadPublicFile(photoFile, {
+            bucket: 'SellHealthStorage',
+            path: `doctors/${clinicId}`,
+            fileName: form.name || 'doctor-photo',
+          })
+        : form.image_url;
 
-    const { error } = editing
-      ? await supabase.from('clinic_doctors').update(payload).eq('id', editing.id)
-      : await supabase.from('clinic_doctors').insert(payload);
+      const payload = {
+        clinic_id: clinicId!,
+        name: form.name,
+        specialization: form.specialization,
+        bio: form.bio,
+        image_url: imageUrl,
+        qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
+        experience_years: form.experience_years,
+        available_days: form.available_days.split(',').map((d) => d.trim()).filter(Boolean),
+        available_times: form.available_times,
+        sort_order: form.sort_order,
+        is_active: form.is_active,
+      };
 
-    if (error) {
-      addToast('error', 'Failed to save doctor');
-    } else {
+      const { error } = editing
+        ? await supabase.from('clinic_doctors').update(payload).eq('id', editing.id)
+        : await supabase.from('clinic_doctors').insert(payload);
+
+      if (error) throw error;
+
       addToast('success', editing ? 'Doctor updated' : 'Doctor added');
       setModalOpen(false);
+      setPhotoFile(null);
       fetchDoctors();
+    } catch {
+      addToast('error', 'Failed to save doctor');
     }
     setSaving(false);
   }
@@ -185,8 +196,9 @@ export function AdminDoctorsPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Profile Photo URL</label>
-            <input type="url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="input-field" placeholder="https://..." />
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Doctor Photo</label>
+            <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} className="input-field" />
+            <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/doctors/{clinicId} and saves the public URL into image_url.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">Bio</label>
