@@ -7,19 +7,20 @@ interface NavbarProps {
   clinic: Clinic | null;
 }
 
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/#services' },
-  { label: 'Doctors', href: '/#doctors' },
-  { label: 'Testimonials', href: '/#testimonials' },
-  { label: 'FAQ', href: '/#faq' },
-  { label: 'Contact', href: '/#contact' },
-];
-
 export function Navbar({ clinic }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const publicBasePath = typeof window !== 'undefined' && window.location.hostname === 'localhost' && clinic?.slug ? `/${clinic.slug}` : '/';
+
+  const navLinks = [
+    { label: 'Home', href: publicBasePath },
+    { label: 'Services', href: `${publicBasePath}#services` },
+    { label: 'Doctors', href: `${publicBasePath}#doctors` },
+    { label: 'Testimonials', href: `${publicBasePath}#testimonials` },
+    { label: 'FAQ', href: `${publicBasePath}#faq` },
+    { label: 'Contact', href: `${publicBasePath}#contact` },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -50,7 +51,7 @@ export function Navbar({ clinic }: NavbarProps) {
     >
       <nav className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to={publicBasePath} className="flex items-center gap-2.5 group">
           {clinic?.logo_url ? (
             <img src={clinic.logo_url} alt={clinic.name} className="h-9 w-auto object-contain" />
           ) : (
@@ -103,8 +104,8 @@ export function Navbar({ clinic }: NavbarProps) {
             </a>
           )}
           <a
-            href="#appointment"
-            onClick={(e) => { e.preventDefault(); handleNavClick('/#appointment'); }}
+            href={`${publicBasePath}#appointment`}
+            onClick={(e) => { e.preventDefault(); handleNavClick(`${publicBasePath}#appointment`); }}
             className="btn-primary text-sm"
           >
             Book Appointment
@@ -141,8 +142,8 @@ export function Navbar({ clinic }: NavbarProps) {
             ))}
             <div className="mt-3 pt-3 border-t border-neutral-100">
               <a
-                href="#appointment"
-                onClick={(e) => { e.preventDefault(); handleNavClick('/#appointment'); }}
+                href={`${publicBasePath}#appointment`}
+                onClick={(e) => { e.preventDefault(); handleNavClick(`${publicBasePath}#appointment`); }}
                 className="btn-primary w-full justify-center"
               >
                 Book Appointment

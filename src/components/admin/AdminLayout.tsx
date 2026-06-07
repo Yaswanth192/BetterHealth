@@ -21,6 +21,7 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [clinic, setClinic] = useState<any | null>(null);
+  const publicSitePath = typeof window !== 'undefined' && window.location.hostname === 'localhost' && clinic?.slug ? `/${clinic.slug}` : '/';
 
   async function handleSignOut() {
     await signOut();
@@ -136,7 +137,7 @@ export function AdminLayout() {
           <button className="relative p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors">
             <Bell className="w-5 h-5" />
           </button>
-          <NavLink to="/" target="_blank" className="text-xs text-primary-600 hover:text-primary-700 font-medium">
+          <NavLink to={publicSitePath} target="_blank" className="text-xs text-primary-600 hover:text-primary-700 font-medium">
             View Site →
           </NavLink>
         </header>

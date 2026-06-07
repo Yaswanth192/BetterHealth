@@ -13,8 +13,6 @@ interface ClinicData {
   error: string | null;
 }
 
-const DEFAULT_SLUG = import.meta.env.VITE_CLINIC_SLUG || 'medicare-clinic';
-
 export function useClinicData(slug?: string): ClinicData {
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [services, setServices] = useState<ClinicService[]>([]);
@@ -25,20 +23,39 @@ export function useClinicData(slug?: string): ClinicData {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const clinicSlug = slug || DEFAULT_SLUG;
+  const hostname = typeof window !== 'undefined' ? window.location.hostname.replace(/^www\./, '') : '';
+  const isLocalhost = hostname === 'localhost';
 
   useEffect(() => {
     fetchAll();
-  }, [clinicSlug]);
+  }, [slug, hostname]);
 
   async function fetchAll() {
     setLoading(true);
     setError(null);
 
+    const lookupField = isLocalhost ? 'slug' : 'website';
+    const lookupValue = isLocalhost ? slug?.trim() ?? '' : hostname;
+
+    if (!lookupValue) {
+      setError('Clinic not found');
+      setLoading(false);
+      return;
+    }
+
+
+    console.log({
+      hostname,
+      isLocalhost,
+      slug,
+      lookupField,
+      lookupValue
+    });
+
     const { data: clinicData, error: clinicError } = await supabase
       .from('clinics')
       .select('*')
-      .eq('slug', clinicSlug)
+      .eq(lookupField, lookupValue)
       .eq('is_active', true)
       .maybeSingle();
 

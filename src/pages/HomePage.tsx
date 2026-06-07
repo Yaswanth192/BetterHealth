@@ -10,9 +10,11 @@ import { AppointmentSection } from '../components/sections/AppointmentSection';
 import { useClinicData } from '../hooks/useClinicData';
 import { PageLoader } from '../components/ui/LoadingSpinner';
 import { Activity } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
 export function HomePage() {
-  const { clinic, services, doctors, timings, testimonials, faqs, loading, error } = useClinicData();
+  const { slug } = useParams<{ slug?: string }>();
+  const { clinic, services, doctors, timings, testimonials, faqs, loading, error } = useClinicData(slug);
 
   if (loading) return <PageLoader />;
 

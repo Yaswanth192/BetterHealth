@@ -19,6 +19,8 @@ export default function App() {
         <Routes>
           {/* Public */}
           <Route path="/" element={<HomePage />} />
+          {/* <Route path="/" element={<Navigate to="/my-clinic" replace />} /> */}
+          <Route path="/:slug" element={<HomePage />} />
 
           {/* Admin Auth */}
           <Route path="/admin" element={<AdminLoginPage />} />
