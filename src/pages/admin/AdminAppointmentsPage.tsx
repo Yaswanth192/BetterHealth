@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, Eye, CheckCircle, XCircle, Check, ChevronDown, Calendar, Trash2 } from 'lucide-react';
+import { Search, Filter, Eye, CheckCircle, XCircle, Check, Calendar, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Appointment, AppointmentStatus } from '../../types';

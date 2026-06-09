@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, MessageSquare, CheckCircle, Clock, TrendingUp, Users, Activity } from 'lucide-react';
+import { Calendar, MessageSquare, CheckCircle, Clock, TrendingUp, Activity } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Appointment, ContactMessage } from '../../types';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Save, Building2, Phone, Mail, MapPin, Globe, Clock } from 'lucide-react';
+import { Save, Building2, Phone, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';

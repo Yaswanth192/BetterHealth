@@ -75,6 +75,12 @@ export function useClinicData(slug?: string): ClinicData {
       supabase.from('faqs').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
     ]);
 
+    if (servicesRes.error) console.error('Failed to fetch services:', servicesRes.error.message);
+    if (doctorsRes.error) console.error('Failed to fetch doctors:', doctorsRes.error.message);
+    if (timingsRes.error) console.error('Failed to fetch timings:', timingsRes.error.message);
+    if (testimonialsRes.error) console.error('Failed to fetch testimonials:', testimonialsRes.error.message);
+    if (faqsRes.error) console.error('Failed to fetch FAQs:', faqsRes.error.message);
+
     setServices(servicesRes.data ?? []);
     setDoctors(doctorsRes.data ?? []);
     setTimings(timingsRes.data ?? []);

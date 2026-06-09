@@ -1,9 +1,11 @@
 import { Stethoscope, Heart, Brain, Bone, Eye, Baby, Microscope, Pill } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ClinicService } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface ServicesSectionProps {
   services: ClinicService[];
+  appointmentPath: string;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -35,7 +37,7 @@ const gradients = [
   'from-emerald-500 to-emerald-700',
 ];
 
-export function ServicesSection({ services }: ServicesSectionProps) {
+export function ServicesSection({ services, appointmentPath }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
 
   return (
@@ -66,6 +68,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                 gradient={gradients[i % gradients.length]}
                 index={i}
                 isIntersecting={isIntersecting}
+                appointmentPath={appointmentPath}
               />
             ))}
           </div>
@@ -83,6 +86,7 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                   gradient={gradients[i % gradients.length]}
                   index={i}
                   isIntersecting={isIntersecting}
+                  appointmentPath={appointmentPath}
                 />
               );
             })}
@@ -101,9 +105,10 @@ interface ServiceCardProps {
   gradient: string;
   index: number;
   isIntersecting: boolean;
+  appointmentPath: string;
 }
 
-function ServiceCard({ title, description, icon: Icon, image, gradient, index, isIntersecting }: ServiceCardProps) {
+function ServiceCard({ title, description, icon: Icon, image, gradient, index, isIntersecting, appointmentPath }: ServiceCardProps) {
   return (
     <div
       className={`card overflow-hidden group transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -127,13 +132,13 @@ function ServiceCard({ title, description, icon: Icon, image, gradient, index, i
           {title}
         </h3>
         <p className="text-neutral-500 text-sm leading-relaxed line-clamp-2">{description}</p>
-        <button
-          onClick={() => document.getElementById('appointment')?.scrollIntoView({ behavior: 'smooth' })}
+        <Link
+          to={appointmentPath}
           className="mt-4 text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group/btn"
         >
           Book Now
           <span className="transition-transform group-hover/btn:translate-x-1">→</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

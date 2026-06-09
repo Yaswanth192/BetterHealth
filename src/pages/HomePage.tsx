@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { HeroSection } from '../components/sections/HeroSection';
@@ -10,10 +11,10 @@ import { AppointmentSection } from '../components/sections/AppointmentSection';
 import { useClinicData } from '../hooks/useClinicData';
 import { PageLoader } from '../components/ui/LoadingSpinner';
 import { Activity } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 export function HomePage() {
-  const { slug } = useParams<{ slug?: string }>();
+  const { slug, page } = useParams<{ slug?: string; page?: string }>();
   const { clinic, services, doctors, timings, testimonials, faqs, loading, error } = useClinicData(slug);
 
   if (loading) return <PageLoader />;
@@ -32,17 +33,33 @@ export function HomePage() {
     );
   }
 
+  const clinicBasePath = `/${clinic.slug || slug || 'medicare-clinic'}`;
+  const appointmentPath = `${clinicBasePath}/appointment`;
+
+  const pages: Record<string, ReactNode> = {
+    services: <ServicesSection services={services} appointmentPath={appointmentPath} />,
+    doctors: <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />,
+    appointment: <AppointmentSection clinic={clinic} doctors={doctors} services={services} />,
+    testimonials: <TestimonialsSection testimonials={testimonials} />,
+    faq: <FAQSection faqs={faqs} />,
+    contact: <ContactSection clinic={clinic} timings={timings} />,
+  };
+
+  if (page && !pages[page]) {
+    return <Navigate to={clinicBasePath} replace />;
+  }
+
+  const content = page ? (
+    <div className="pt-20">{pages[page]}</div>
+  ) : (
+    <HeroSection clinic={clinic} servicesPath={`${clinicBasePath}/services`} appointmentPath={appointmentPath} />
+  );
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar clinic={clinic} />
       <main className="flex-1">
-        <HeroSection clinic={clinic} />
-        <ServicesSection services={services} />
-        <DoctorsSection doctors={doctors} />
-        <AppointmentSection clinic={clinic} doctors={doctors} services={services} />
-        <TestimonialsSection testimonials={testimonials} />
-        <FAQSection faqs={faqs} />
-        <ContactSection clinic={clinic} timings={timings} />
+        {content}
       </main>
       <Footer clinic={clinic} />
     </div>

@@ -1,8 +1,11 @@
 import { ArrowRight, ShieldCheck, Award, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Clinic } from '../../types';
 
 interface HeroProps {
   clinic: Clinic | null;
+  servicesPath: string;
+  appointmentPath: string;
 }
 
 const stats = [
@@ -18,15 +21,7 @@ const badges = [
   { icon: Clock, text: '24/7 Support' },
 ];
 
-export function HeroSection({ clinic }: HeroProps) {
-  function scrollToAppointment() {
-    document.getElementById('appointment')?.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function scrollToServices() {
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-  }
-
+export function HeroSection({ clinic, servicesPath, appointmentPath }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background */}
@@ -65,8 +60,12 @@ export function HeroSection({ clinic }: HeroProps) {
 
           {/* Badge row */}
           <div className="flex flex-wrap gap-3 mb-10 animate-slide-up animate-delay-200">
-            {badges.map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm">
+            {badges.map(({ icon: Icon, text }, index) => (
+              <div
+                key={text}
+                className="hero-bubble-badge flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm"
+                style={{ animationDelay: `${index * 900}ms` }}
+              >
                 <Icon className="w-3.5 h-3.5 text-teal-300" />
                 {text}
               </div>
@@ -75,13 +74,13 @@ export function HeroSection({ clinic }: HeroProps) {
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-4 animate-slide-up animate-delay-300">
-            <button onClick={scrollToAppointment} className="btn-primary text-base px-8 py-4 shadow-glow">
+            <Link to={appointmentPath} className="btn-primary text-base px-8 py-4 shadow-glow">
               Book Appointment
               <ArrowRight className="w-5 h-5" />
-            </button>
-            <button onClick={scrollToServices} className="btn-outline text-base px-8 py-4">
+            </Link>
+            <Link to={servicesPath} className="btn-outline text-base px-8 py-4">
               Our Services
-            </button>
+            </Link>
           </div>
         </div>
 

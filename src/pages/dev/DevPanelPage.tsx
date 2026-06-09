@@ -212,7 +212,10 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
       <main className="max-w-6xl mx-auto px-6 py-8">
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-neutral-800 rounded-xl p-1 w-fit">
-          {[{ key: 'clinics', label: 'Clinics', icon: Building2 }, { key: 'admins', label: 'Create Admin', icon: Users }].map(({ key, label, icon: Icon }) => (
+          {[
+            { key: 'clinics', label: 'Clinics', icon: Building2 }, 
+            { key: 'admins', label: 'Create Admin', icon: Users }
+          ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -310,6 +313,8 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
             </div>
           </div>
         )}
+
+
       </main>
 
       {/* Clinic Modal */}
@@ -393,3 +398,4 @@ function DevPanelContent({ clinics, setClinics, loading, setLoading, tab, setTab
     </div>
   );
 }
+

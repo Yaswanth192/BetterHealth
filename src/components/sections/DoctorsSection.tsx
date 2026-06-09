@@ -1,9 +1,11 @@
 import { Star, Award, Clock, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ClinicDoctor } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface DoctorsSectionProps {
   doctors: ClinicDoctor[];
+  appointmentPath: string;
 }
 
 const fallbackDoctors = [
@@ -13,7 +15,8 @@ const fallbackDoctors = [
     image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600',
     experience_years: 15,
     qualifications: ['MD, Cardiology', 'FACC', 'Harvard Medical School'],
-    available_times: 'Mon-Fri 9AM-5PM',
+    open_time: '09:00',
+    close_time: '17:00',
     available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
     bio: 'Dr. Johnson is a board-certified cardiologist with over 15 years of experience in treating complex cardiovascular diseases.',
   },
@@ -23,7 +26,8 @@ const fallbackDoctors = [
     image: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=600',
     experience_years: 12,
     qualifications: ['MD, Neurology', 'PhD', 'Johns Hopkins University'],
-    available_times: 'Mon-Thu 10AM-6PM',
+    open_time: '10:00',
+    close_time: '18:00',
     available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
     bio: 'Specializing in neurological disorders, Dr. Chen brings cutting-edge research and clinical expertise to every patient.',
   },
@@ -33,7 +37,8 @@ const fallbackDoctors = [
     image: 'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
     experience_years: 10,
     qualifications: ['MD, Pediatrics', 'FAAP', 'Stanford University'],
-    available_times: 'Tue-Sat 8AM-4PM',
+    open_time: '08:00',
+    close_time: '16:00',
     available_days: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     bio: 'Dr. Patel is passionate about children\'s health and development, providing gentle and comprehensive pediatric care.',
   },
@@ -43,13 +48,14 @@ const fallbackDoctors = [
     image: 'https://images.pexels.com/photos/4173239/pexels-photo-4173239.jpeg?auto=compress&cs=tinysrgb&w=600',
     experience_years: 18,
     qualifications: ['MD', 'FAAOS', 'Mayo Clinic Fellowship'],
-    available_times: 'Mon, Wed, Fri 9AM-3PM',
+    open_time: '09:00',
+    close_time: '15:00',
     available_days: ['Monday', 'Wednesday', 'Friday'],
     bio: 'With two decades of surgical experience, Dr. Wilson specializes in minimally invasive joint replacement surgeries.',
   },
 ];
 
-export function DoctorsSection({ doctors }: DoctorsSectionProps) {
+export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors;
 
@@ -76,6 +82,7 @@ export function DoctorsSection({ doctors }: DoctorsSectionProps) {
               doctor={doctor as ClinicDoctor}
               index={i}
               isIntersecting={isIntersecting}
+              appointmentPath={appointmentPath}
             />
           ))}
         </div>
@@ -84,7 +91,7 @@ export function DoctorsSection({ doctors }: DoctorsSectionProps) {
   );
 }
 
-function DoctorCard({ doctor, index, isIntersecting }: { doctor: ClinicDoctor; index: number; isIntersecting: boolean }) {
+function DoctorCard({ doctor, index, isIntersecting, appointmentPath }: { doctor: ClinicDoctor; index: number; isIntersecting: boolean; appointmentPath: string }) {
   return (
     <div
       className={`card group overflow-hidden transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -125,20 +132,20 @@ function DoctorCard({ doctor, index, isIntersecting }: { doctor: ClinicDoctor; i
           </div>
         )}
 
-        {doctor.available_times && (
+        {doctor.open_time && doctor.close_time && (
           <div className="flex items-center gap-2 text-xs text-neutral-400 mb-4">
             <Clock className="w-3.5 h-3.5 text-teal-500 flex-shrink-0" />
-            {doctor.available_times}
+            {doctor.open_time} - {doctor.close_time}
           </div>
         )}
 
-        <button
-          onClick={() => document.getElementById('appointment')?.scrollIntoView({ behavior: 'smooth' })}
+        <Link
+          to={appointmentPath}
           className="w-full py-2.5 bg-primary-50 hover:bg-primary-600 text-primary-700 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
         >
           <Users className="w-4 h-4" />
           Book Appointment
-        </button>
+        </Link>
       </div>
     </div>
   );

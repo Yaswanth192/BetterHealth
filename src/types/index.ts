@@ -44,7 +44,8 @@ export interface ClinicDoctor {
   qualifications: string[];
   experience_years: number;
   available_days: string[];
-  available_times: string;
+  open_time: string;
+  close_time: string;
   sort_order: number;
   is_active: boolean;
   created_at: string;

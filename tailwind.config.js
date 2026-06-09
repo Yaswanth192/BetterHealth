@@ -84,7 +84,7 @@ export default {
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.08)',
         'card': '0 4px 24px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 12px 40px rgba(0, 0, 0, 0.12)',
+        'card-hover': '0 18px 52px rgba(0, 0, 0, 0.18)',
         'glow': '0 0 30px rgba(14, 165, 233, 0.2)',
       },
     },

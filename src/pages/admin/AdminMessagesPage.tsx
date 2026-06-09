@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Eye, Trash2, Mail, Phone, MessageSquare } from 'lucide-react';
+import { Search, Trash2, Mail, Phone, MessageSquare } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { ContactMessage } from '../../types';

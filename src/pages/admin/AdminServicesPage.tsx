@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, Activity } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
@@ -29,6 +30,7 @@ export function AdminServicesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<ClinicService | null>(null);
   const [form, setForm] = useState<ServiceForm>(EMPTY_FORM);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -42,25 +44,27 @@ export function AdminServicesPage() {
     setLoading(false);
   }
 
-  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setModalOpen(true); }
+  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalOpen(true); }
   function openEdit(s: ClinicService) {
     setEditing(s);
     setForm({ title: s.title, description: s.description, icon: s.icon, image_url: s.image_url, sort_order: s.sort_order, is_active: s.is_active });
+    setImageFile(null);
     setModalOpen(true);
   }
 
   async function handleSave() {
     setSaving(true);
     try {
+      const serviceId = editing?.id ?? crypto.randomUUID();
       const imageUrl = imageFile
         ? await uploadPublicFile(imageFile, {
             bucket: 'SellHealthStorage',
-            path: `services/${clinicId}`,
-            fileName: form.title || 'service-image',
+            path: `services/${serviceId}`,
+            fileName: 'image',
           })
         : form.image_url;
 
-      const payload = { clinic_id: clinicId!, ...form, image_url: imageUrl };
+      const payload = { ...(!editing ? { id: serviceId } : {}), clinic_id: clinicId!, ...form, image_url: imageUrl };
       const { error } = editing
         ? await supabase.from('clinic_services').update(payload).eq('id', editing.id)
         : await supabase.from('clinic_services').insert(payload);
@@ -167,7 +171,7 @@ export function AdminServicesPage() {
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Service Image</label>
             <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} className="input-field" />
-              <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/services/{clinicId} and saves the public URL into image_url.</p>
+              <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/services/[serviceId]/image and saves the public URL into image_url.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

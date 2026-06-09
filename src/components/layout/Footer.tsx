@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { Activity, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Clinic } from '../../types';
 
 interface FooterProps {
@@ -8,10 +8,7 @@ interface FooterProps {
 
 export function Footer({ clinic }: FooterProps) {
   const year = new Date().getFullYear();
-
-  function scrollTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  }
+  const publicBasePath = clinic?.slug ? `/${clinic.slug}` : '/';
 
   return (
     <footer className="bg-neutral-900 text-white">
@@ -47,12 +44,12 @@ export function Footer({ clinic }: FooterProps) {
             <ul className="space-y-2.5">
               {['services', 'doctors', 'testimonials', 'faq', 'contact', 'appointment'].map((id) => (
                 <li key={id}>
-                  <button
-                    onClick={() => scrollTo(id)}
+                  <Link
+                    to={`${publicBasePath}/${id}`}
                     className="text-neutral-300 hover:text-white capitalize transition-colors text-sm"
                   >
                     {id === 'faq' ? 'FAQ' : id.charAt(0).toUpperCase() + id.slice(1)}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
