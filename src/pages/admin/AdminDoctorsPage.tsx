@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -33,6 +33,158 @@ const EMPTY_FORM: DoctorForm = {
   sort_order: 0, is_active: true,
 };
 
+interface DoctorFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  editing: ClinicDoctor | null;
+  services: ClinicService[];
+  onSave: (form: DoctorForm, photoFile: File | null, editing: ClinicDoctor | null) => Promise<void>;
+}
+
+const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing, services, onSave }: DoctorFormModalProps) {
+  const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const setField = useCallback(<K extends keyof DoctorForm>(key: K, value: DoctorForm[K]) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (editing) {
+        setForm({
+          name: editing.name,
+          specialization: editing.specialization,
+          bio: editing.bio,
+          image_url: editing.image_url,
+          qualifications: editing.qualifications?.join(', ') ?? '',
+          experience_years: editing.experience_years ? String(editing.experience_years) : '',
+          available_days: editing.available_days?.join(', ') ?? '',
+          open_time: editing.open_time || '09:00',
+          close_time: editing.close_time || '17:00',
+          sort_order: editing.sort_order,
+          is_active: editing.is_active,
+        });
+      } else {
+        setForm(EMPTY_FORM);
+      }
+      setPhotoFile(null);
+    }
+  }, [isOpen, editing]);
+
+  function toggleAvailableDay(day: string) {
+    const days = form.available_days.split(',').map((d) => d.trim()).filter(Boolean);
+    const nextDays = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
+    setField('available_days', nextDays.join(', '));
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await onSave(form, photoFile, editing);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={editing ? 'Edit Doctor' : 'Add Doctor'} size="lg">
+      <div className="p-6 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Name *</label>
+            <input type="text" required value={form.name} onChange={(e) => setField('name', e.target.value)} className="input-field" placeholder="Dr. Jane Smith" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Specialization *</label>
+            {services.length > 0 ? (
+              <select value={form.specialization} onChange={(e) => setField('specialization', e.target.value)} className="input-field appearance-none">
+                <option value="">Select a service</option>
+                {form.specialization && !services.some((service) => service.title === form.specialization) && (
+                  <option value={form.specialization}>{form.specialization}</option>
+                )}
+                {services.map((service) => (
+                  <option key={service.id} value={service.title}>{service.title}</option>
+                ))}
+              </select>
+            ) : (
+              <Link to="/admin/services" className="btn-primary w-full justify-center">
+                <Plus className="w-4 h-4" /> Add Services First
+              </Link>
+            )}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Doctor Photo</label>
+          <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} className="input-field" />
+          <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/doctors/[doctorId]/photo and saves the public URL into image_url.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Bio</label>
+          <textarea rows={3} value={form.bio} onChange={(e) => setField('bio', e.target.value)} className="input-field resize-none" placeholder="Brief professional biography..." />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Qualifications (comma-separated)</label>
+            <input type="text" value={form.qualifications} onChange={(e) => setField('qualifications', e.target.value)} className="input-field" placeholder="MD, FACC, PhD" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Years of Experience</label>
+            <input type="number" min="0" value={form.experience_years} onChange={(e) => setField('experience_years', e.target.value)} className="input-field" placeholder="19" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Available Days</label>
+            <details className="relative">
+              <summary className="input-field cursor-pointer list-none">
+                {form.available_days || 'Select available days'}
+              </summary>
+              <div className="absolute z-20 mt-2 w-full rounded-lg border border-neutral-200 bg-white p-3 shadow-lg">
+                <div className="space-y-2">
+                  {(() => {
+                    const selectedDays = form.available_days.split(',').map((d) => d.trim()).filter(Boolean);
+                    return WEEK_DAYS.map((day) => (
+                      <label key={day} className="flex items-center gap-2 text-sm text-neutral-700">
+                        <input
+                          type="checkbox"
+                          checked={selectedDays.includes(day)}
+                          onChange={() => toggleAvailableDay(day)}
+                          className="w-4 h-4 accent-primary-600"
+                        />
+                        {day}
+                      </label>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </details>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Open Time</label>
+            <input type="time" value={form.open_time} onChange={(e) => setField('open_time', e.target.value)} className="input-field" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Close Time</label>
+            <input type="time" value={form.close_time} onChange={(e) => setField('close_time', e.target.value)} className="input-field" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <input type="checkbox" id="doctor-active" checked={form.is_active} onChange={(e) => setField('is_active', e.target.checked)} className="w-4 h-4 accent-primary-600" />
+          <label htmlFor="doctor-active" className="text-sm font-medium text-neutral-700">Active (visible on website)</label>
+        </div>
+        <div className="flex gap-3 pt-2">
+          <button onClick={handleSave} disabled={saving || !form.name || !form.specialization || services.length === 0} className="btn-primary flex-1 justify-center disabled:opacity-50">
+            {saving ? 'Saving...' : editing ? 'Update Doctor' : 'Add Doctor'}
+          </button>
+          <button onClick={onClose} className="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </Modal>
+  );
+});
+
 export function AdminDoctorsPage() {
   const { clinicId } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
@@ -41,22 +193,10 @@ export function AdminDoctorsPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<ClinicDoctor | null>(null);
-  const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (clinicId) fetchDoctors();
   }, [clinicId]);
-
-  function toggleAvailableDay(day: string) {
-    const days = form.available_days.split(',').map((d) => d.trim()).filter(Boolean);
-    const nextDays = days.includes(day)
-      ? days.filter((d) => d !== day)
-      : [...days, day];
-
-    setForm({ ...form, available_days: nextDays.join(', ') });
-  }
 
   async function fetchDoctors() {
     setLoading(true);
@@ -79,72 +219,49 @@ export function AdminDoctorsPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm(EMPTY_FORM);
-    setPhotoFile(null);
     setModalOpen(true);
   }
 
   function openEdit(doctor: ClinicDoctor) {
     setEditing(doctor);
-    setForm({
-      name: doctor.name,
-      specialization: doctor.specialization,
-      bio: doctor.bio,
-      image_url: doctor.image_url,
-      qualifications: doctor.qualifications?.join(', ') ?? '',
-      experience_years: doctor.experience_years ? String(doctor.experience_years) : '',
-      available_days: doctor.available_days?.join(', ') ?? '',
-      open_time: doctor.open_time || '09:00',
-      close_time: doctor.close_time || '17:00',
-      sort_order: doctor.sort_order,
-      is_active: doctor.is_active,
-    });
-    setPhotoFile(null);
     setModalOpen(true);
   }
 
-  async function handleSave() {
-    setSaving(true);
-    try {
-      const doctorId = editing?.id ?? crypto.randomUUID();
-      const imageUrl = photoFile
-        ? await uploadPublicFile(photoFile, {
-            bucket: 'SellHealthStorage',
-            path: `doctors/${doctorId}`,
-            fileName: 'photo',
-          })
-        : form.image_url;
+  async function handleSave(form: DoctorForm, photoFile: File | null, editingDoctor: ClinicDoctor | null) {
+    const doctorId = editingDoctor?.id ?? crypto.randomUUID();
+    const imageUrl = photoFile
+      ? await uploadPublicFile(photoFile, {
+          bucket: 'SellHealthStorage',
+          path: `doctors/${doctorId}`,
+          fileName: 'photo',
+        })
+      : form.image_url;
 
-      const payload = {
-        ...(!editing ? { id: doctorId } : {}),
-        clinic_id: clinicId!,
-        name: form.name,
-        specialization: form.specialization,
-        bio: form.bio,
-        image_url: imageUrl,
-        qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
-        experience_years: parseInt(form.experience_years, 10) || 0,
-        available_days: form.available_days.split(',').map((d) => d.trim()).filter(Boolean),
-        open_time: form.open_time,
-        close_time: form.close_time,
-        sort_order: form.sort_order,
-        is_active: form.is_active,
-      };
+    const payload = {
+      ...(!editingDoctor ? { id: doctorId } : {}),
+      clinic_id: clinicId!,
+      name: form.name,
+      specialization: form.specialization,
+      bio: form.bio,
+      image_url: imageUrl,
+      qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
+      experience_years: parseInt(form.experience_years, 10) || 0,
+      available_days: form.available_days.split(',').map((d) => d.trim()).filter(Boolean),
+      open_time: form.open_time,
+      close_time: form.close_time,
+      sort_order: form.sort_order,
+      is_active: form.is_active,
+    };
 
-      const { error } = editing
-        ? await supabase.from('clinic_doctors').update(payload).eq('id', editing.id)
-        : await supabase.from('clinic_doctors').insert(payload);
+    const { error } = editingDoctor
+      ? await supabase.from('clinic_doctors').update(payload).eq('id', editingDoctor.id)
+      : await supabase.from('clinic_doctors').insert(payload);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      addToast('success', editing ? 'Doctor updated' : 'Doctor added');
-      setModalOpen(false);
-      setPhotoFile(null);
-      fetchDoctors();
-    } catch (error: any) {
-      addToast('error', error?.message || 'Failed to save doctor');
-    }
-    setSaving(false);
+    addToast('success', editingDoctor ? 'Doctor updated' : 'Doctor added');
+    setModalOpen(false);
+    fetchDoctors();
   }
 
   async function handleDelete(id: string) {
@@ -234,99 +351,13 @@ export function AdminDoctorsPage() {
         </div>
       </div>
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Doctor' : 'Add Doctor'} size="lg">
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Name *</label>
-              <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-field" placeholder="Dr. Jane Smith" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Specialization *</label>
-              {services.length > 0 ? (
-                <select value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} className="input-field appearance-none">
-                  <option value="">Select a service</option>
-                  {form.specialization && !services.some((service) => service.title === form.specialization) && (
-                    <option value={form.specialization}>{form.specialization}</option>
-                  )}
-                  {services.map((service) => (
-                    <option key={service.id} value={service.title}>{service.title}</option>
-                  ))}
-                </select>
-              ) : (
-                <Link to="/admin/services" className="btn-primary w-full justify-center">
-                  <Plus className="w-4 h-4" /> Add Services First
-                </Link>
-              )}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Upload Doctor Photo</label>
-            <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} className="input-field" />
-            <p className="mt-1 text-xs text-neutral-500">Uploads to SellHealthStorage/doctors/[doctorId]/photo and saves the public URL into image_url.</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Bio</label>
-            <textarea rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="input-field resize-none" placeholder="Brief professional biography..." />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Qualifications (comma-separated)</label>
-              <input type="text" value={form.qualifications} onChange={(e) => setForm({ ...form, qualifications: e.target.value })} className="input-field" placeholder="MD, FACC, PhD" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Years of Experience</label>
-              <input type="number" min="0" value={form.experience_years} onChange={(e) => setForm({ ...form, experience_years: e.target.value })} className="input-field" placeholder="19" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Available Days</label>
-              <details className="relative">
-                <summary className="input-field cursor-pointer list-none">
-                  {form.available_days || 'Select available days'}
-                </summary>
-                <div className="absolute z-20 mt-2 w-full rounded-lg border border-neutral-200 bg-white p-3 shadow-lg">
-                  <div className="space-y-2">
-                    {WEEK_DAYS.map((day) => {
-                      const selectedDays = form.available_days.split(',').map((d) => d.trim()).filter(Boolean);
-                      return (
-                        <label key={day} className="flex items-center gap-2 text-sm text-neutral-700">
-                          <input
-                            type="checkbox"
-                            checked={selectedDays.includes(day)}
-                            onChange={() => toggleAvailableDay(day)}
-                            className="w-4 h-4 accent-primary-600"
-                          />
-                          {day}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </details>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Open Time</label>
-              <input type="time" value={form.open_time} onChange={(e) => setForm({ ...form, open_time: e.target.value })} className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Close Time</label>
-              <input type="time" value={form.close_time} onChange={(e) => setForm({ ...form, close_time: e.target.value })} className="input-field" />
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <input type="checkbox" id="doctor-active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 accent-primary-600" />
-            <label htmlFor="doctor-active" className="text-sm font-medium text-neutral-700">Active (visible on website)</label>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button onClick={handleSave} disabled={saving || !form.name || !form.specialization || services.length === 0} className="btn-primary flex-1 justify-center disabled:opacity-50">
-              {saving ? 'Saving...' : editing ? 'Update Doctor' : 'Add Doctor'}
-            </button>
-            <button onClick={() => setModalOpen(false)} className="btn-secondary">Cancel</button>
-          </div>
-        </div>
-      </Modal>
+      <DoctorFormModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        editing={editing}
+        services={services}
+        onSave={handleSave}
+      />
     </>
   );
 }

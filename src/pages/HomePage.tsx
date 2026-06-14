@@ -2,12 +2,20 @@ import type { ReactNode } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { HeroSection } from '../components/sections/HeroSection';
+import { ServicesMarquee } from '../components/sections/ServicesMarquee';
+import { AboutUsSection } from '../components/sections/AboutUsSection';
 import { ServicesSection } from '../components/sections/ServicesSection';
 import { DoctorsSection } from '../components/sections/DoctorsSection';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
-import { FAQSection } from '../components/sections/FAQSection';
+import { InsuranceSection } from '../components/sections/InsuranceSection';
+import { BlogSection } from '../components/sections/BlogSection';
+import { EmergencyBanner } from '../components/sections/EmergencyBanner';
 import { ContactSection } from '../components/sections/ContactSection';
+import { CTASection } from '../components/sections/CTASection';
+import { FAQSection } from '../components/sections/FAQSection';
 import { AppointmentSection } from '../components/sections/AppointmentSection';
+import { BlogPage } from './BlogPage';
+import { ReviewsPage } from './ReviewsPage';
 import { useClinicData } from '../hooks/useClinicData';
 import { PageLoader } from '../components/ui/LoadingSpinner';
 import { Activity } from 'lucide-react';
@@ -43,6 +51,8 @@ export function HomePage() {
     testimonials: <TestimonialsSection testimonials={testimonials} />,
     faq: <FAQSection faqs={faqs} />,
     contact: <ContactSection clinic={clinic} timings={timings} />,
+    blog: <BlogPage />,
+    reviews: <ReviewsPage />,
   };
 
   if (page && !pages[page]) {
@@ -50,9 +60,28 @@ export function HomePage() {
   }
 
   const content = page ? (
-    <div className="pt-20">{pages[page]}</div>
+    <div className="pt-24">{pages[page]}</div>
   ) : (
-    <HeroSection clinic={clinic} servicesPath={`${clinicBasePath}/services`} appointmentPath={appointmentPath} />
+    <>
+      <HeroSection
+        clinic={clinic}
+        servicesPath={`${clinicBasePath}/services`}
+        appointmentPath={appointmentPath}
+        doctors={doctors}
+        services={services}
+      />
+      <ServicesMarquee services={services} />
+      <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} />
+      <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />
+      <TestimonialsSection testimonials={testimonials} />
+      <InsuranceSection />
+      <BlogSection />
+      <EmergencyBanner clinic={clinic} />
+      <ContactSection clinic={clinic} timings={timings} />
+      <FAQSection faqs={faqs} />
+      <CTASection clinic={clinic} appointmentPath={appointmentPath} />
+    </>
   );
 
   return (

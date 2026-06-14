@@ -1,4 +1,5 @@
-import { Star, Award, Clock, Users } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ClinicDoctor } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
@@ -10,143 +11,227 @@ interface DoctorsSectionProps {
 
 const fallbackDoctors = [
   {
-    name: 'Dr. Sarah Johnson',
-    specialization: 'Chief Cardiologist',
+    name: 'Dr. Arun Mehta',
+    specialization: 'Internal Medicine',
     image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 15,
-    qualifications: ['MD, Cardiology', 'FACC', 'Harvard Medical School'],
+    experience_years: 20,
+    qualifications: ['MBBS', 'MD (Internal Medicine)'],
+    languages: ['English', 'Hindi', 'Marathi'],
     open_time: '09:00',
-    close_time: '17:00',
-    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    bio: 'Dr. Johnson is a board-certified cardiologist with over 15 years of experience in treating complex cardiovascular diseases.',
+    close_time: '14:00',
+    available_days: ['Monday', 'Wednesday', 'Friday'],
+    bio: 'Medical Director with expertise in chronic disease management and preventive care. Published researcher in diabetes treatment protocols.',
   },
   {
-    name: 'Dr. Michael Chen',
-    specialization: 'Neurologist',
-    image: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=600',
+    name: 'Dr. Priya Sharma',
+    specialization: 'Orthodontics',
+    image: 'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
     experience_years: 12,
-    qualifications: ['MD, Neurology', 'PhD', 'Johns Hopkins University'],
+    qualifications: ['BDS', 'MDS (Orthodontics)'],
+    languages: ['English', 'Hindi', 'Gujarati'],
     open_time: '10:00',
     close_time: '18:00',
-    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-    bio: 'Specializing in neurological disorders, Dr. Chen brings cutting-edge research and clinical expertise to every patient.',
+    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    bio: 'Head of Dental Department specializing in invisible braces and complex orthodontic cases. Over 3,000 smile transformations.',
   },
   {
-    name: 'Dr. Emily Patel',
-    specialization: 'Pediatrician',
-    image: 'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 10,
-    qualifications: ['MD, Pediatrics', 'FAAP', 'Stanford University'],
-    open_time: '08:00',
-    close_time: '16:00',
-    available_days: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    bio: 'Dr. Patel is passionate about children\'s health and development, providing gentle and comprehensive pediatric care.',
-  },
-  {
-    name: 'Dr. James Wilson',
-    specialization: 'Orthopedic Surgeon',
+    name: 'Dr. Karthik Iyer',
+    specialization: 'Dermatology',
     image: 'https://images.pexels.com/photos/4173239/pexels-photo-4173239.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 18,
-    qualifications: ['MD', 'FAAOS', 'Mayo Clinic Fellowship'],
+    experience_years: 8,
+    qualifications: ['MBBS', 'MD (Dermatology)'],
+    languages: ['English', 'Hindi', 'Tamil'],
+    open_time: '10:00',
+    close_time: '17:00',
+    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    bio: 'Expert in cosmetic dermatology, laser treatments, and skin allergy management. Trained at AIIMS.',
+  },
+  {
+    name: 'Dr. Neha Gupta',
+    specialization: 'Ophthalmology',
+    image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600',
+    experience_years: 15,
+    qualifications: ['MBBS', 'MS (Ophthalmology)', 'AIIMS Fellow'],
+    languages: ['English', 'Hindi'],
     open_time: '09:00',
-    close_time: '15:00',
-    available_days: ['Monday', 'Wednesday', 'Friday'],
-    bio: 'With two decades of surgical experience, Dr. Wilson specializes in minimally invasive joint replacement surgeries.',
+    close_time: '16:00',
+    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    bio: 'Leading ophthalmologist with expertise in LASIK, cataract surgery, and glaucoma management.',
   },
 ];
 
 export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
-  const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors;
+  const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors as unknown as ClinicDoctor[];
+  const [activeFilter, setActiveFilter] = useState('All');
+
+  const specializations = [...new Set(displayDoctors.map(d => {
+    const parts = d.specialization.split(' ');
+    return parts[parts.length - 1];
+  }))];
+  const filters = ['All', ...specializations];
+
+  const filtered = activeFilter === 'All'
+    ? displayDoctors
+    : displayDoctors.filter(d => d.specialization.toLowerCase().includes(activeFilter.toLowerCase()));
+
+  const director = displayDoctors[0];
 
   return (
     <section id="doctors" className="section-padding bg-white">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
-        <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-4">
-            Our Doctors
+        {/* Header */}
+        <div className={`mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+            Our Team
           </span>
-          <h2 className="section-title">
-            Meet Our{' '}
-            <span className="gradient-text">Expert Team</span>
-          </h2>
-          <p className="section-subtitle">
-            Our team of highly qualified specialists is committed to providing the highest quality medical care.
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+              Meet Our Doctors
+            </h2>
+            <Link to={`${appointmentPath}`} className="text-primary-600 hover:text-primary-700 font-semibold text-sm flex items-center gap-1">
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <p className="text-neutral-500 mt-3 max-w-xl">
+            Experienced specialists dedicated to your well-being
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayDoctors.map((doctor, i) => (
-            <DoctorCard
-              key={'id' in doctor ? doctor.id : i}
-              doctor={doctor as ClinicDoctor}
-              index={i}
-              isIntersecting={isIntersecting}
-              appointmentPath={appointmentPath}
-            />
+        {/* Filter pills */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                activeFilter === f
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white text-neutral-600 border border-neutral-200 hover:border-primary-400'
+              }`}
+            >
+              {f}
+            </button>
           ))}
+        </div>
+
+        {/* Director spotlight */}
+        {activeFilter === 'All' && director && (
+          <div className={`card overflow-hidden mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+              <div className="h-80 md:h-auto">
+                <img
+                  src={director.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
+                  alt={director.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-8 flex flex-col justify-center">
+                <span className="inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold mb-3 w-fit">
+                  Meet Our Director
+                </span>
+                <h3 className="text-2xl font-bold text-neutral-900 mb-1">{director.name}</h3>
+                <p className="text-primary-600 font-medium mb-4">{director.specialization}</p>
+                <p className="text-neutral-600 text-sm leading-relaxed mb-4">
+                  {director.bio || `${director.name} founded our clinic with a vision to bring world-class healthcare to every family. With over ${director.experience_years} years of experience, he has treated thousands of patients.`}
+                </p>
+                {director.qualifications && director.qualifications.length > 0 && (
+                  <p className="text-sm text-neutral-500 mb-4">{director.qualifications.join(', ')}</p>
+                )}
+                <blockquote className="border-l-3 border-primary-400 pl-4 italic text-neutral-600 text-sm">
+                  "Every patient deserves to be treated like family. We don't just treat symptoms — we build lasting health."
+                </blockquote>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Doctor cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((doctor, i) => (
+            <div
+              key={doctor.id || i}
+              className={`card overflow-hidden transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src={doctor.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
+                  alt={doctor.name}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-neutral-900 text-lg">{doctor.name}</h3>
+                <span className="inline-block px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full text-xs font-medium mt-1">
+                  {doctor.specialization}
+                </span>
+                {doctor.qualifications && doctor.qualifications.length > 0 && (
+                  <p className="text-xs text-neutral-500 mt-2">{doctor.qualifications.join(', ')}</p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
+                  <div>
+                    <span className="text-neutral-400 font-medium">Experience</span>
+                    <p className="text-neutral-700 font-semibold">{doctor.experience_years} Years</p>
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 font-medium">Languages</span>
+                    <p className="text-neutral-700 font-semibold">
+                      {'languages' in doctor ? String((doctor as Record<string, unknown>).languages ?? 'English, Hindi') : 'English, Hindi'}
+                    </p>
+                  </div>
+                </div>
+
+                {doctor.open_time && doctor.close_time && (
+                  <div className="mt-3 text-xs">
+                    <span className="text-neutral-400 font-medium">Schedule</span>
+                    <p className="text-neutral-700 font-semibold">
+                      {doctor.available_days?.slice(0, 2).join('/') || 'Mon-Fri'} {doctor.open_time} - {doctor.close_time}
+                    </p>
+                  </div>
+                )}
+
+                <p className="text-xs text-neutral-500 mt-3 line-clamp-2">{doctor.bio}</p>
+
+                <Link
+                  to={appointmentPath}
+                  className="mt-4 w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  Book with {doctor.name.split(' ').pop()}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Collective Achievements */}
+        <div className={`mt-16 bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 rounded-2xl p-10 text-white transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h3 className="text-2xl font-bold text-center mb-8">Our Collective Achievements</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            {[
+              { value: '45+', label: 'Research Papers' },
+              { value: '8,000+', label: 'Successful Surgeries' },
+              { value: '12', label: 'Awards Won' },
+              { value: '55+ Years', label: 'Combined Experience' },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <div className="text-3xl font-bold mb-1">{stat.value}</div>
+                <div className="text-white/60 text-xs uppercase tracking-wider">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Book Consultation CTA */}
+        <div className="text-center mt-12">
+          <h3 className="text-2xl font-bold text-neutral-900 mb-2">Book a Consultation</h3>
+          <p className="text-neutral-500 mb-6">Choose your preferred doctor and book an appointment at your convenience.</p>
+          <Link to={appointmentPath} className="btn-primary bg-amber-600 hover:bg-amber-700">
+            Book Appointment
+          </Link>
         </div>
       </div>
     </section>
-  );
-}
-
-function DoctorCard({ doctor, index, isIntersecting, appointmentPath }: { doctor: ClinicDoctor; index: number; isIntersecting: boolean; appointmentPath: string }) {
-  return (
-    <div
-      className={`card group overflow-hidden transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-      style={{ transitionDelay: `${index * 100}ms` }}
-    >
-      <div className="relative overflow-hidden h-64">
-        <img
-          src={doctor.image_url || `https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600`}
-          alt={doctor.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-neutral-900/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="text-white font-bold text-lg leading-tight">{doctor.name}</h3>
-          <p className="text-primary-300 text-sm font-medium">{doctor.specialization}</p>
-        </div>
-      </div>
-
-      <div className="p-4">
-        <div className="flex items-center gap-4 mb-4 text-xs text-neutral-500">
-          <span className="flex items-center gap-1">
-            <Award className="w-3.5 h-3.5 text-primary-500" />
-            {doctor.experience_years}yr exp
-          </span>
-          <span className="flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 text-amber-400 fill-current" />
-            5.0
-          </span>
-        </div>
-
-        {doctor.qualifications && doctor.qualifications.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {doctor.qualifications.slice(0, 2).map((q, i) => (
-              <span key={i} className="px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
-                {q}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {doctor.open_time && doctor.close_time && (
-          <div className="flex items-center gap-2 text-xs text-neutral-400 mb-4">
-            <Clock className="w-3.5 h-3.5 text-teal-500 flex-shrink-0" />
-            {doctor.open_time} - {doctor.close_time}
-          </div>
-        )}
-
-        <Link
-          to={appointmentPath}
-          className="w-full py-2.5 bg-primary-50 hover:bg-primary-600 text-primary-700 hover:text-white rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
-        >
-          <Users className="w-4 h-4" />
-          Book Appointment
-        </Link>
-      </div>
-    </div>
   );
 }

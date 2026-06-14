@@ -1,4 +1,5 @@
-import { Stethoscope, Heart, Brain, Bone, Eye, Baby, Microscope, Pill } from 'lucide-react';
+import { useState } from 'react';
+import { Stethoscope, Heart, Brain, Bone, Eye, Baby, Microscope, Pill, Check, ArrowRight, MessageCircle, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ClinicService } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
@@ -19,127 +20,237 @@ const iconMap: Record<string, React.ElementType> = {
   pill: Pill,
 };
 
-const fallbackImages = [
-  'https://images.pexels.com/photos/7659564/pexels-photo-7659564.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/6823568/pexels-photo-6823568.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/8376201/pexels-photo-8376201.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg?auto=compress&cs=tinysrgb&w=800',
+const fallbackServices = [
+  { title: 'General Medicine', description: 'Comprehensive primary care for all ages — fever, infections, chronic disease management, and preventive health.', features: ['Fever & Infections', 'Diabetes Management', 'Hypertension Care', 'Preventive Health'] },
+  { title: 'Dental Care', description: 'Complete dental solutions from routine cleanings to advanced cosmetic dentistry and orthodontics.', features: ['Teeth Cleaning & Polishing', 'Root Canal Treatment', 'Dental Implants', 'Orthodontics'] },
+  { title: 'Dermatology', description: 'Expert skin, hair, and nail treatments including acne, eczema, laser therapy, and cosmetic procedures.', features: ['Acne & Scar Treatment', 'Laser Hair Removal', 'Chemical Peels', 'Skin Allergies'] },
+  { title: 'Ophthalmology', description: 'Advanced eye care with LASIK, cataract surgery, glaucoma management, and routine vision checks.', features: ['LASIK Surgery', 'Cataract Surgery', 'Glaucoma Treatment', 'Vision Testing'] },
+  { title: 'Orthopedics', description: 'Joint, bone, and spine care — from sports injuries to joint replacements and physiotherapy.', features: ['Joint Replacement', 'Sports Injury', 'Fracture Treatment', 'Physiotherapy'] },
+  { title: 'Pediatrics', description: 'Gentle, specialized care for infants, children, and adolescents including vaccinations and development monitoring.', features: ['Vaccinations', 'Growth Monitoring', 'Child Nutrition', 'Development Assessment'] },
 ];
 
-const gradients = [
-  'from-primary-500 to-primary-700',
-  'from-teal-500 to-teal-700',
-  'from-sky-500 to-sky-700',
-  'from-cyan-500 to-cyan-700',
-  'from-blue-500 to-blue-700',
-  'from-emerald-500 to-emerald-700',
+const consultationFees = [
+  { specialty: 'General Medicine', consultation: 500, followUp: 300 },
+  { specialty: 'Dental', consultation: 600, followUp: 400 },
+  { specialty: 'Dermatology', consultation: 800, followUp: 500 },
+  { specialty: 'Ophthalmology', consultation: 600, followUp: 400 },
+  { specialty: 'Orthopedics', consultation: 700, followUp: 400 },
+  { specialty: 'Pediatrics', consultation: 500, followUp: 300 },
+];
+
+const processSteps = [
+  { num: 1, title: 'Book Online or Call', description: 'Schedule at your convenience via phone, WhatsApp, or our online portal.' },
+  { num: 2, title: 'Visit the Clinic', description: 'Arrive 10 minutes early for registration. No long waits guaranteed.' },
+  { num: 3, title: 'Diagnosis & Treatment', description: 'Expert consultation, diagnostics, and personalized treatment plan.' },
+  { num: 4, title: 'Follow-Up Care', description: 'Ongoing monitoring, medication management, and recovery support.' },
+];
+
+const healthPackages = [
+  {
+    name: 'Basic Health Check-up',
+    price: '1,999',
+    features: ['Complete Blood Count (CBC)', 'Blood Sugar (Fasting & PP)', 'Lipid Profile', 'Thyroid Profile', 'Urine Routine', 'BP & BMI Check'],
+    popular: false,
+  },
+  {
+    name: 'Comprehensive Health Check-up',
+    price: '4,999',
+    features: ['All Basic Tests +', 'Liver Function Test', 'Kidney Function Test', 'Vitamin D & B12', 'ECG', 'Chest X-Ray', 'Doctor Consultation'],
+    popular: true,
+  },
+  {
+    name: 'Executive Health Check-up',
+    price: '9,999',
+    features: ['All Comprehensive Tests +', 'Cardiac Stress Test (TMT)', 'Abdominal Ultrasound', 'PSA / Pap Smear', 'Dental Check-up', 'Eye Check-up', 'Dietitian Consultation'],
+    popular: false,
+  },
 ];
 
 export function ServicesSection({ services, appointmentPath }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
+  const [activeFilter, setActiveFilter] = useState('All');
+  const displayServices = services.length > 0
+    ? services.map(s => ({ ...s, features: [] as string[] }))
+    : fallbackServices as unknown as (ClinicService & { features: string[] })[];
+
+  const filters = ['All', ...new Set(displayServices.map(s => {
+    const words = s.title.split(' ');
+    return words[words.length - 1];
+  }))];
+
+  const filtered = activeFilter === 'All'
+    ? displayServices
+    : displayServices.filter(s => s.title.toLowerCase().includes(activeFilter.toLowerCase()));
 
   return (
     <section id="services" className="section-padding bg-neutral-50">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
+        {/* Header */}
         <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
             Our Services
           </span>
-          <h2 className="section-title">
-            Comprehensive{' '}
-            <span className="gradient-text">Medical Care</span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+            Our Services & Specialties
           </h2>
-          <p className="section-subtitle">
-            We offer a wide range of medical services with state-of-the-art facilities and expert professionals.
+          <p className="text-neutral-500 mt-4 max-w-2xl mx-auto">
+            Comprehensive healthcare under one roof
           </p>
         </div>
 
-        {services.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {['General Medicine', 'Cardiology', 'Neurology', 'Orthopedics', 'Ophthalmology', 'Pediatrics'].map((name, i) => (
-              <ServiceCard
-                key={i}
-                title={name}
-                description="Expert medical care delivered with compassion and the latest medical technology."
-                icon={iconMap[Object.keys(iconMap)[i % Object.keys(iconMap).length]]}
-                image={fallbackImages[i % fallbackImages.length]}
-                gradient={gradients[i % gradients.length]}
-                index={i}
-                isIntersecting={isIntersecting}
-                appointmentPath={appointmentPath}
-              />
+        {/* Filter pills */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                activeFilter === f
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white text-neutral-600 border border-neutral-200 hover:border-primary-400'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Service cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {filtered.map((service, i) => {
+            const Icon = iconMap[service.icon] || Stethoscope;
+            const features = 'features' in service ? service.features : [];
+            return (
+              <div
+                key={service.id || i}
+                className={`card p-6 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                style={{ transitionDelay: `${i * 80}ms` }}
+              >
+                <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
+                  <Icon className="w-6 h-6 text-primary-600" />
+                </div>
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-lg font-bold text-neutral-900">{service.title}</h3>
+                  <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-1 rounded-full whitespace-nowrap">From ₹500</span>
+                </div>
+                <p className="text-neutral-500 text-sm leading-relaxed mb-4">{service.description}</p>
+                {features.length > 0 && (
+                  <ul className="space-y-1.5 mb-4">
+                    {features.slice(0, 4).map((f, j) => (
+                      <li key={j} className="flex items-center gap-2 text-sm text-neutral-600">
+                        <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Link to={appointmentPath} className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group/btn">
+                  Learn More <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Consultation Fees Table */}
+        <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '200ms' }}>
+          <h3 className="text-2xl font-bold text-neutral-900 text-center mb-8">Consultation Fees</h3>
+          <div className="max-w-3xl mx-auto overflow-hidden rounded-xl border border-neutral-200">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-primary-600 text-white">
+                  <th className="text-left px-6 py-3 font-semibold">Specialty</th>
+                  <th className="text-left px-6 py-3 font-semibold">Consultation</th>
+                  <th className="text-left px-6 py-3 font-semibold">Follow-up</th>
+                </tr>
+              </thead>
+              <tbody>
+                {consultationFees.map((fee, i) => (
+                  <tr key={fee.specialty} className={i % 2 === 0 ? 'bg-white' : 'bg-neutral-50'}>
+                    <td className="px-6 py-3 text-sm font-medium text-neutral-700">{fee.specialty}</td>
+                    <td className="px-6 py-3 text-sm font-semibold text-primary-600">₹{fee.consultation}</td>
+                    <td className="px-6 py-3 text-sm text-neutral-500">₹{fee.followUp}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* How It Works */}
+        <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '300ms' }}>
+          <div className="text-center mb-10">
+            <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">Process</span>
+            <h3 className="text-2xl font-bold text-neutral-900">How It Works</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {processSteps.map((step, i) => (
+              <div key={step.num} className="text-center relative">
+                {i < processSteps.length - 1 && (
+                  <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] border-t-2 border-dashed border-primary-300" />
+                )}
+                <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-4 relative z-10">
+                  {step.num}
+                </div>
+                <h4 className="font-bold text-neutral-900 mb-2">{step.title}</h4>
+                <p className="text-sm text-neutral-500">{step.description}</p>
+              </div>
             ))}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, i) => {
-              const Icon = iconMap[service.icon] || Stethoscope;
-              return (
-                <ServiceCard
-                  key={service.id}
-                  title={service.title}
-                  description={service.description}
-                  icon={Icon}
-                  image={service.image_url || fallbackImages[i % fallbackImages.length]}
-                  gradient={gradients[i % gradients.length]}
-                  index={i}
-                  isIntersecting={isIntersecting}
-                  appointmentPath={appointmentPath}
-                />
-              );
-            })}
+        </div>
+
+        {/* Health Packages */}
+        <div className={`transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '400ms' }}>
+          <div className="text-center mb-10">
+            <span className="inline-block px-4 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold mb-4">Health Packages</span>
+            <h3 className="text-2xl font-bold text-neutral-900">Preventive Health Check-ups</h3>
           </div>
-        )}
-      </div>
-    </section>
-  );
-}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {healthPackages.map((pkg) => (
+              <div key={pkg.name} className={`card p-6 relative ${pkg.popular ? 'ring-2 ring-primary-500 shadow-lg' : ''}`}>
+                {pkg.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary-600 text-white text-xs font-semibold rounded-full">
+                    Most Popular
+                  </span>
+                )}
+                <h4 className="font-bold text-neutral-900 text-lg">{pkg.name}</h4>
+                <div className="text-3xl font-bold text-primary-600 my-3">₹{pkg.price}</div>
+                <ul className="space-y-2 mb-6">
+                  {pkg.features.map((f, j) => (
+                    <li key={j} className="flex items-center gap-2 text-sm text-neutral-600">
+                      <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to={appointmentPath}
+                  className={`w-full py-3 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center ${
+                    pkg.popular
+                      ? 'bg-primary-600 hover:bg-primary-700 text-white'
+                      : 'bg-white border-2 border-primary-200 text-primary-700 hover:bg-primary-50'
+                  }`}
+                >
+                  Book This Package
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
 
-interface ServiceCardProps {
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  image: string;
-  gradient: string;
-  index: number;
-  isIntersecting: boolean;
-  appointmentPath: string;
-}
-
-function ServiceCard({ title, description, icon: Icon, image, gradient, index, isIntersecting, appointmentPath }: ServiceCardProps) {
-  return (
-    <div
-      className={`card overflow-hidden group transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-      style={{ transitionDelay: `${index * 80}ms` }}
-    >
-      <div className="relative h-48 overflow-hidden">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className={`absolute inset-0 bg-gradient-to-t ${gradient} opacity-60`} />
-        <div className="absolute bottom-4 left-4">
-          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-            <Icon className="w-5 h-5 text-white" />
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <p className="text-neutral-600 mb-4">Not sure which specialty? Call us for guidance.</p>
+          <div className="flex justify-center gap-3">
+            <a href="tel:+919876500999" className="btn-primary bg-primary-600 hover:bg-primary-700">
+              <Phone className="w-4 h-4" /> Call Us
+            </a>
+            <a href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
+              <MessageCircle className="w-4 h-4" /> WhatsApp
+            </a>
           </div>
         </div>
       </div>
-      <div className="p-6">
-        <h3 className="text-lg font-bold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">
-          {title}
-        </h3>
-        <p className="text-neutral-500 text-sm leading-relaxed line-clamp-2">{description}</p>
-        <Link
-          to={appointmentPath}
-          className="mt-4 text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group/btn"
-        >
-          Book Now
-          <span className="transition-transform group-hover/btn:translate-x-1">→</span>
-        </Link>
-      </div>
-    </div>
+    </section>
   );
 }

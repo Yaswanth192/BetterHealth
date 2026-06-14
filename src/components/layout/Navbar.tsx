@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Activity } from 'lucide-react';
+import { Menu, X, Phone, Activity, MessageCircle } from 'lucide-react';
 import { Clinic } from '../../types';
 
 interface NavbarProps {
@@ -19,9 +19,9 @@ export function Navbar({ clinic }: NavbarProps) {
     { label: 'Home', href: publicBasePath },
     { label: 'Services', href: `${publicBasePath}/services` },
     { label: 'Doctors', href: `${publicBasePath}/doctors` },
-    { label: 'Testimonials', href: `${publicBasePath}/testimonials` },
-    { label: 'FAQ', href: `${publicBasePath}/faq` },
     { label: 'Contact', href: `${publicBasePath}/contact` },
+    { label: 'Reviews', href: `${publicBasePath}/reviews` },
+    { label: 'Blog', href: `${publicBasePath}/blog` },
   ];
 
   useEffect(() => {
@@ -39,76 +39,105 @@ export function Navbar({ clinic }: NavbarProps) {
   }
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        solidHeader ? 'bg-white/95 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-5'
-      }`}
-    >
-      <nav className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link to={publicBasePath} className="flex items-center gap-2.5 group">
-          {clinic?.logo_url ? (
-            <img src={clinic.logo_url} alt={clinic.name} className="h-9 w-auto object-contain" />
-          ) : (
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-          )}
-          <div>
-            <span className={`text-lg font-bold leading-none transition-colors ${solidHeader ? 'text-neutral-900' : 'text-white'}`}>
-              {clinic?.name || 'MediCare'}
-            </span>
-            {clinic?.tagline && (
-              <p className={`text-xs leading-none mt-0.5 transition-colors ${solidHeader ? 'text-neutral-400' : 'text-white/70'}`}>
-                {clinic.tagline}
-              </p>
+    <header className="fixed top-0 left-0 right-0 z-40">
+      {/* Top bar */}
+      <div className={`transition-all duration-300 ${solidHeader ? 'bg-neutral-900 text-white' : 'bg-neutral-900/80 text-white/90'}`}>
+        <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 text-xs">
+          <div className="flex items-center gap-4">
+            {clinic?.phone && (
+              <a href={`tel:${clinic.phone}`} className="flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+                <Phone className="w-3 h-3" />
+                {clinic.phone}
+              </a>
+            )}
+            {clinic?.email && (
+              <a href={`mailto:${clinic.email}`} className="hidden sm:flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+                <span className="w-3 h-3 flex items-center justify-center">✉</span>
+                {clinic.email}
+              </a>
             )}
           </div>
-        </Link>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-red-400">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              Emergency 24/7
+            </span>
+            <a href="#" className="flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+              <MessageCircle className="w-3 h-3" />
+              WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
 
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => (
+      {/* Main nav */}
+      <nav
+        className={`transition-all duration-300 ${
+          solidHeader ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-white/90 backdrop-blur-sm'
+        }`}
+      >
+        <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
+          {/* Logo */}
+          <Link to={publicBasePath} className="flex items-center gap-2.5 group">
+            {clinic?.logo_url ? (
+              <img src={clinic.logo_url} alt={clinic.name} className="h-9 w-auto object-contain" />
+            ) : (
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform">
+                <Activity className="w-5 h-5 text-white" />
+              </div>
+            )}
+            <div>
+              <span className="text-lg font-bold text-neutral-900 leading-none">
+                {clinic?.name || 'MediCare'}
+              </span>
+              {clinic?.tagline && (
+                <p className="text-xs text-neutral-400 leading-none mt-0.5">
+                  {clinic.tagline}
+                </p>
+              )}
+            </div>
+          </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.href || location.pathname === `${link.href}/`;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={handleNavClick}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'text-primary-700 bg-primary-50'
+                      : 'text-neutral-600 hover:text-primary-700 hover:bg-primary-50'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+          </div>
+
+          {/* CTA */}
+          <div className="hidden lg:flex items-center gap-3">
             <a
-              key={link.href}
-              href={link.href}
+              href={`${publicBasePath}/appointment`}
               onClick={handleNavClick}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/10 ${
-                solidHeader ? 'text-neutral-600 hover:text-primary-700 hover:bg-primary-50' : 'text-white/90 hover:text-white'
-              }`}
+              className="btn-primary text-sm bg-amber-600 hover:bg-amber-700"
             >
-              {link.label}
+              Book Appointment
             </a>
-          ))}
-        </div>
+          </div>
 
-        {/* CTA */}
-        <div className="hidden lg:flex items-center gap-3">
-          {clinic?.phone && (
-            <a
-              href={`tel:${clinic.phone}`}
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${solidHeader ? 'text-primary-600' : 'text-white/80 hover:text-white'}`}
-            >
-              <Phone className="w-4 h-4" />
-              {clinic.phone}
-            </a>
-          )}
-          <a
-            href={`${publicBasePath}/appointment`}
-            onClick={handleNavClick}
-            className="btn-primary text-sm"
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden p-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors"
           >
-            Book Appointment
-          </a>
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
-
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`lg:hidden p-2 rounded-lg transition-colors ${solidHeader ? 'text-neutral-700 hover:bg-neutral-100' : 'text-white hover:bg-white/10'}`}
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
       </nav>
 
       {/* Mobile Menu */}
@@ -129,7 +158,7 @@ export function Navbar({ clinic }: NavbarProps) {
               <a
                 href={`${publicBasePath}/appointment`}
                 onClick={handleNavClick}
-                className="btn-primary w-full justify-center"
+                className="btn-primary w-full justify-center bg-amber-600 hover:bg-amber-700"
               >
                 Book Appointment
               </a>

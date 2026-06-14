@@ -5,6 +5,7 @@ import {
   LogOut, Menu, X, Activity, ChevronRight, Bell
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 import { supabase } from '../../lib/supabase';
 
 const navItems = [
@@ -18,10 +19,13 @@ const navItems = [
 
 export function AdminLayout() {
   const { signOut, user, adminRecord } = useAuth();
+  const { counts } = useNotifications();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [clinic, setClinic] = useState<any | null>(null);
   const publicSitePath = typeof window !== 'undefined' && window.location.hostname === 'localhost' && clinic?.slug ? `/${clinic.slug}` : '/';
+  const totalNotifications = counts.pendingAppointments + counts.unreadMessages;
 
   async function handleSignOut() {
     await signOut();
@@ -134,9 +138,68 @@ export function AdminLayout() {
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1" />
-          <button className="relative p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors">
-            <Bell className="w-5 h-5" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              className="relative p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors"
+            >
+              <Bell className="w-5 h-5" />
+              {totalNotifications > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {totalNotifications > 9 ? '9+' : totalNotifications}
+                </span>
+              )}
+            </button>
+            {notificationsOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
+                <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-neutral-100 z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-neutral-100">
+                    <p className="font-semibold text-neutral-900 text-sm">Notifications</p>
+                  </div>
+                  {totalNotifications === 0 ? (
+                    <div className="px-4 py-6 text-center">
+                      <Bell className="w-8 h-8 text-neutral-200 mx-auto mb-2" />
+                      <p className="text-sm text-neutral-400">No new notifications</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-neutral-50">
+                      {counts.pendingAppointments > 0 && (
+                        <NavLink
+                          to="/admin/appointments"
+                          onClick={() => setNotificationsOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                            <Calendar className="w-4 h-4 text-amber-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-neutral-900">Pending Appointments</p>
+                            <p className="text-xs text-neutral-500">{counts.pendingAppointments} awaiting review</p>
+                          </div>
+                        </NavLink>
+                      )}
+                      {counts.unreadMessages > 0 && (
+                        <NavLink
+                          to="/admin/messages"
+                          onClick={() => setNotificationsOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                            <MessageSquare className="w-4 h-4 text-teal-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-neutral-900">Unread Messages</p>
+                            <p className="text-xs text-neutral-500">{counts.unreadMessages} new messages</p>
+                          </div>
+                        </NavLink>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
           <NavLink to={publicSitePath} target="_blank" className="text-xs text-primary-600 hover:text-primary-700 font-medium">
             View Site →
           </NavLink>

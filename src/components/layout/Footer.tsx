@@ -1,4 +1,4 @@
-import { Activity, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Activity, Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Clinic } from '../../types';
 
@@ -15,40 +15,37 @@ export function Footer({ clinic }: FooterProps) {
       <div className="container-max section-padding pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
-          <div className="lg:col-span-2">
+          <div>
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center">
                 <Activity className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">{clinic?.name || 'MediCare Clinic'}</span>
+              <span className="text-xl font-bold">{clinic?.name || 'Clinic'}</span>
             </div>
-            <p className="text-neutral-400 leading-relaxed mb-6 max-w-sm">
-              {clinic?.description || 'Providing exceptional healthcare with compassion and expertise. Your health and well-being are our top priorities.'}
+            <p className="text-neutral-400 text-sm leading-relaxed mb-4">
+              {clinic?.description || 'Serving families since 2015. Providing compassionate, evidence-based care.'}
             </p>
-            <div className="flex items-center gap-3">
-              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-primary-600 flex items-center justify-center transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
+            <a href="#" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </a>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-4">Quick Links</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-500 mb-4">Quick Links</h4>
             <ul className="space-y-2.5">
-              {['services', 'doctors', 'testimonials', 'faq', 'contact', 'appointment'].map((id) => (
-                <li key={id}>
-                  <Link
-                    to={`${publicBasePath}/${id}`}
-                    className="text-neutral-300 hover:text-white capitalize transition-colors text-sm"
-                  >
-                    {id === 'faq' ? 'FAQ' : id.charAt(0).toUpperCase() + id.slice(1)}
+              {[
+                { label: 'Home', href: publicBasePath },
+                { label: 'Services', href: `${publicBasePath}/services` },
+                { label: 'Doctors', href: `${publicBasePath}/doctors` },
+                { label: 'Contact', href: `${publicBasePath}/contact` },
+                { label: 'Reviews', href: `${publicBasePath}/reviews` },
+                { label: 'Blog', href: `${publicBasePath}/blog` },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link to={link.href} className="text-neutral-300 hover:text-white transition-colors text-sm">
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -57,7 +54,7 @@ export function Footer({ clinic }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-4">Contact</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-500 mb-4">Contact</h4>
             <ul className="space-y-3">
               {clinic?.phone && (
                 <li>
@@ -67,6 +64,15 @@ export function Footer({ clinic }: FooterProps) {
                   </a>
                 </li>
               )}
+              <li>
+                <span className="flex items-start gap-3 text-red-400 text-sm font-medium">
+                  <span className="w-4 h-4 mt-0.5 flex items-center justify-center">⚠</span>
+                  Emergency 24/7
+                </span>
+                <span className="flex items-start gap-3 text-neutral-300 text-sm ml-7">
+                  {clinic?.phone || '+91 98765 00999'}
+                </span>
+              </li>
               {clinic?.email && (
                 <li>
                   <a href={`mailto:${clinic.email}`} className="flex items-start gap-3 text-neutral-300 hover:text-white text-sm transition-colors">
@@ -83,11 +89,20 @@ export function Footer({ clinic }: FooterProps) {
               )}
             </ul>
           </div>
+
+          {/* Hours */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-500 mb-4">Hours</h4>
+            <div className="flex items-center gap-2 text-neutral-300 text-sm">
+              <Clock className="w-4 h-4 text-primary-400" />
+              9 AM – 10 PM
+            </div>
+          </div>
         </div>
 
         <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-neutral-500 text-sm">
-            &copy; {year} {clinic?.name || 'MediCare Clinic'}. All rights reserved.
+            &copy; {year} {clinic?.name || 'Clinic'}. All rights reserved.
           </p>
           <p className="text-neutral-600 text-xs">
             Designed for better healthcare delivery
