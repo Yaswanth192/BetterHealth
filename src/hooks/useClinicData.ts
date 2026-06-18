@@ -10,13 +10,17 @@ function hexToRgb(hex: string): string {
   return `${r} ${g} ${b}`;
 }
 
-export function applyClinicColors(primary: string, secondary?: string) {
+export function applyClinicColors(primary: string, secondary?: string, bookButton?: string) {
   const root = document.documentElement;
   if (primary && /^#[0-9a-fA-F]{6}$/.test(primary)) {
     root.style.setProperty('--color-primary-rgb', hexToRgb(primary));
   }
   if (secondary && /^#[0-9a-fA-F]{6}$/.test(secondary)) {
     root.style.setProperty('--color-secondary-rgb', hexToRgb(secondary));
+  }
+  if (bookButton && /^#[0-9a-fA-F]{6}$/.test(bookButton)) {
+    root.style.setProperty('--color-book-btn', bookButton);
+    root.style.setProperty('--color-book-btn-rgb', hexToRgb(bookButton));
   }
 }
 
@@ -86,7 +90,7 @@ export function useClinicData(slug?: string): ClinicData {
     setClinic(clinicData);
 
     if (clinicData.primary_color) {
-      applyClinicColors(clinicData.primary_color, clinicData.secondary_color);
+      applyClinicColors(clinicData.primary_color, clinicData.secondary_color, clinicData.book_button_color);
     }
 
     const [servicesRes, doctorsRes, timingsRes, testimonialsRes, faqsRes] = await Promise.all([

@@ -38,9 +38,9 @@ export function AdminSettingsPage() {
 
   useEffect(() => {
     if (clinic?.primary_color) {
-      applyClinicColors(clinic.primary_color, clinic.secondary_color);
+      applyClinicColors(clinic.primary_color, clinic.secondary_color, clinic.book_button_color);
     }
-  }, [clinic?.primary_color, clinic?.secondary_color]);
+  }, [clinic?.primary_color, clinic?.secondary_color, clinic?.book_button_color]);
 
   async function fetchData() {
     setLoading(true);
@@ -82,6 +82,7 @@ export function AdminSettingsPage() {
         facebook_url: clinic.facebook_url, instagram_url: clinic.instagram_url,
         youtube_url: clinic.youtube_url, twitter_url: clinic.twitter_url,
         primary_color: clinic.primary_color, secondary_color: clinic.secondary_color,
+        book_button_color: clinic.book_button_color,
         updated_at: new Date().toISOString(),
       }).eq('id', clinicId!).select();
 
@@ -139,7 +140,7 @@ export function AdminSettingsPage() {
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <div className="space-y-6 max-w-3xl">
+      <div className="space-y-6 max-w-5xl">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Clinic Settings</h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1">Manage your clinic's public information</p>
@@ -279,7 +280,7 @@ export function AdminSettingsPage() {
                   type="button"
                   onClick={() => {
                     setClinic({ ...clinic, primary_color: preset.primary, secondary_color: preset.secondary });
-                    applyClinicColors(preset.primary, preset.secondary);
+                    applyClinicColors(preset.primary, preset.secondary, clinic.book_button_color);
                   }}
                   className={`group flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 transition-all ${
                     clinic.primary_color === preset.primary
@@ -306,7 +307,7 @@ export function AdminSettingsPage() {
                   value={clinic.primary_color ?? '#0ea5e9'}
                   onChange={(e) => {
                     setClinic({ ...clinic, primary_color: e.target.value });
-                    applyClinicColors(e.target.value, clinic.secondary_color);
+                    applyClinicColors(e.target.value, clinic.secondary_color, clinic.book_button_color);
                   }}
                   className="w-12 h-10 rounded-lg border border-neutral-200 dark:border-neutral-700 cursor-pointer"
                 />
@@ -315,7 +316,7 @@ export function AdminSettingsPage() {
                   value={clinic.primary_color ?? '#0ea5e9'}
                   onChange={(e) => {
                     setClinic({ ...clinic, primary_color: e.target.value });
-                    if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) applyClinicColors(e.target.value, clinic.secondary_color);
+                    if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) applyClinicColors(e.target.value, clinic.secondary_color, clinic.book_button_color);
                   }}
                   className="input-field flex-1"
                   placeholder="#0ea5e9"
@@ -330,7 +331,7 @@ export function AdminSettingsPage() {
                   value={clinic.secondary_color ?? '#0284c7'}
                   onChange={(e) => {
                     setClinic({ ...clinic, secondary_color: e.target.value });
-                    applyClinicColors(clinic.primary_color, e.target.value);
+                    applyClinicColors(clinic.primary_color, e.target.value, clinic.book_button_color);
                   }}
                   className="w-12 h-10 rounded-lg border border-neutral-200 dark:border-neutral-700 cursor-pointer"
                 />
@@ -339,7 +340,7 @@ export function AdminSettingsPage() {
                   value={clinic.secondary_color ?? '#0284c7'}
                   onChange={(e) => {
                     setClinic({ ...clinic, secondary_color: e.target.value });
-                    if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) applyClinicColors(clinic.primary_color, e.target.value);
+                    if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) applyClinicColors(clinic.primary_color, e.target.value, clinic.book_button_color);
                   }}
                   className="input-field flex-1"
                   placeholder="#0284c7"
@@ -348,6 +349,38 @@ export function AdminSettingsPage() {
             </div>
           </div>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Changes preview live on the website. Click Save to persist.</p>
+
+          <h3 className="font-semibold text-neutral-800 dark:text-neutral-100 flex items-center gap-2 pt-2">
+            Book Appointment Button
+          </h3>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Button Color</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={clinic.book_button_color ?? '#f97316'}
+                onChange={(e) => setClinic({ ...clinic, book_button_color: e.target.value })}
+                className="w-12 h-10 rounded-lg border border-neutral-200 dark:border-neutral-700 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={clinic.book_button_color ?? '#f97316'}
+                onChange={(e) => setClinic({ ...clinic, book_button_color: e.target.value })}
+                className="input-field flex-1"
+                placeholder="#f97316"
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">Preview:</span>
+                <span
+                  className="px-4 py-2 rounded-xl text-white font-semibold text-sm"
+                  style={{ backgroundColor: clinic.book_button_color ?? '#f97316' }}
+                >
+                  Book Appointment
+                </span>
+              </div>
+            </div>
+          </div>
 
           <button type="submit" disabled={saving} className="btn-primary disabled:opacity-50">
             <Save className="w-4 h-4" />

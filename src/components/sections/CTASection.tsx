@@ -20,7 +20,7 @@ export function CTASection({ appointmentPath }: CTASectionProps) {
         <div className="flex flex-wrap justify-center gap-4">
           <Link
             to={appointmentPath}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors text-base"
+            className="btn-book px-8 py-4 text-base"
           >
             <Calendar className="w-5 h-5" />
             Book Appointment

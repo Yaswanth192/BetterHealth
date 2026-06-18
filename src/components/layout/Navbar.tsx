@@ -133,7 +133,7 @@ export function Navbar({ clinic }: NavbarProps) {
             <a
               href={`${publicBasePath}/appointment`}
               onClick={handleNavClick}
-              className="btn-primary text-sm bg-amber-600 hover:bg-amber-700"
+              className="btn-book text-sm"
             >
               Book Appointment
             </a>
@@ -167,7 +167,7 @@ export function Navbar({ clinic }: NavbarProps) {
               <a
                 href={`${publicBasePath}/appointment`}
                 onClick={handleNavClick}
-                className="btn-primary w-full justify-center bg-amber-600 hover:bg-amber-700"
+                className="btn-book w-full justify-center"
               >
                 Book Appointment
               </a>

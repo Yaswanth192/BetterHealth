@@ -196,7 +196,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
 
                 <Link
                   to={appointmentPath}
-                  className="mt-4 w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="btn-book mt-4 w-full py-2.5 text-sm justify-center"
                 >
                   Book with {doctor.name.split(' ').pop()}
                 </Link>
@@ -227,7 +227,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
         <div className="text-center mt-12">
           <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Book a Consultation</h3>
           <p className="text-neutral-500 dark:text-neutral-400 mb-6">Choose your preferred doctor and book an appointment at your convenience.</p>
-          <Link to={appointmentPath} className="btn-primary bg-amber-600 hover:bg-amber-700">
+          <Link to={appointmentPath} className="btn-book">
             Book Appointment
           </Link>
         </div>

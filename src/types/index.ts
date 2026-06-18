@@ -25,6 +25,7 @@ export interface Clinic {
   instagram_url: string;
   youtube_url: string;
   twitter_url: string;
+  book_button_color: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;

@@ -84,7 +84,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
 
             {/* CTAs */}
             <div className="flex flex-wrap gap-4 animate-slide-up animate-delay-300">
-              <Link to={appointmentPath} className="btn-primary text-base px-8 py-4 bg-amber-600 hover:bg-amber-700 shadow-glow">
+              <Link to={appointmentPath} className="btn-book text-base px-8 py-4 shadow-glow">
                 <Calendar className="w-5 h-5" />
                 Book Appointment
               </Link>
@@ -137,7 +137,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
                   <button
                     type="submit"
                     disabled={quickLoading}
-                    className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                    className="btn-book w-full py-3 disabled:opacity-50"
                   >
                     {quickLoading ? 'Booking...' : 'Book Now'}
                   </button>
