@@ -34,13 +34,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-xs animate-[fadeIn_0.2s_ease-out_forwards]" />
-      <div className={`relative w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl animate-[scaleIn_0.2s_ease-out_forwards] overflow-hidden`}>
+      <div className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl animate-[scaleIn_0.2s_ease-out_forwards] overflow-hidden`}>
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-            <h3 className="text-lg font-semibold text-neutral-900">{title}</h3>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-700">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{title}</h3>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-neutral-100 rounded-lg transition-colors text-neutral-400 hover:text-neutral-700"
+              className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
             >
               <X className="w-5 h-5" />
             </button>

@@ -7,7 +7,7 @@ interface EmergencyBannerProps {
 
 export function EmergencyBanner({ clinic }: EmergencyBannerProps) {
   return (
-    <section className="bg-neutral-900 text-white py-6">
+    <section className="bg-neutral-900 text-white dark:bg-neutral-950 py-6">
       <div className="container-max flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
         <div className="flex items-center gap-4">
           <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse flex-shrink-0" />

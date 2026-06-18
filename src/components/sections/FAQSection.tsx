@@ -24,10 +24,10 @@ export function FAQSection({ faqs }: FAQSectionProps) {
   const displayFaqs = faqs.length > 0 ? faqs : fallbackFaqs as unknown as FAQ[];
 
   return (
-    <section id="faq" className="section-padding bg-neutral-50">
+    <section id="faq" className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             FAQ
           </span>
           <h2 className="section-title">
@@ -46,20 +46,20 @@ export function FAQSection({ faqs }: FAQSectionProps) {
           {displayFaqs.map((faq, i) => (
             <div
               key={faq.id || i}
-              className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden"
+              className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm border border-neutral-100 dark:border-neutral-700 overflow-hidden"
             >
               <button
-                className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
               >
-                <span className="font-semibold text-neutral-800 pr-4">{faq.question}</span>
+                <span className="font-semibold text-neutral-800 dark:text-neutral-100 pr-4">{faq.question}</span>
                 <ChevronDown
                   className={`w-5 h-5 text-neutral-400 flex-shrink-0 transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''}`}
                 />
               </button>
               {openIndex === i && (
                 <div className="px-6 pb-5 animate-slide-down">
-                  <p className="text-neutral-600 leading-relaxed">{faq.answer}</p>
+                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>

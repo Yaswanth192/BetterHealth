@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Calendar, MessageSquare, Users, Settings,
-  LogOut, Menu, X, Activity, ChevronRight, Bell
+  LogOut, Menu, X, Activity, ChevronRight, Bell, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { supabase } from '../../lib/supabase';
 
@@ -20,6 +21,7 @@ const navItems = [
 export function AdminLayout() {
   const { signOut, user, adminRecord } = useAuth();
   const { counts } = useNotifications();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -47,7 +49,7 @@ export function AdminLayout() {
   }, [adminRecord]);
 
   return (
-    <div className="flex h-screen bg-neutral-50 overflow-hidden">
+    <div className="flex h-screen bg-neutral-50 dark:bg-neutral-900 overflow-hidden">
       {/* Sidebar overlay for mobile */}
       {sidebarOpen && (
         <div
@@ -58,12 +60,12 @@ export function AdminLayout() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white border-r border-neutral-100 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white dark:bg-neutral-900 border-r border-neutral-100 dark:border-neutral-800 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-neutral-100">
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-neutral-100 dark:border-neutral-800">
           {clinic?.logo_url ? (
             <img src={clinic.logo_url} alt={clinic.name} className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
           ) : (
@@ -72,10 +74,10 @@ export function AdminLayout() {
             </div>
           )}
           <div className="min-w-0">
-            <p className="font-bold text-neutral-900 truncate text-sm">{clinic?.name || 'Clinic Admin'}</p>
-            <p className="text-xs text-neutral-400 capitalize">{adminRecord?.role || 'staff'}</p>
+            <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-sm">{clinic?.name || 'Clinic Admin'}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500 capitalize">{adminRecord?.role || 'staff'}</p>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto p-1 text-neutral-400">
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto p-1 text-neutral-400 dark:text-neutral-500">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -90,16 +92,16 @@ export function AdminLayout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
                   isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                    : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-primary-600' : 'text-neutral-400 group-hover:text-neutral-600'}`} />
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300'}`} />
                   {label}
-                  {isActive && <ChevronRight className="w-4 h-4 ml-auto text-primary-400" />}
+                  {isActive && <ChevronRight className="w-4 h-4 ml-auto text-primary-400 dark:text-primary-300" />}
                 </>
               )}
             </NavLink>
@@ -107,19 +109,19 @@ export function AdminLayout() {
         </nav>
 
         {/* User */}
-        <div className="px-3 py-4 border-t border-neutral-100">
-          <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-neutral-50 rounded-xl">
-            <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-sm flex-shrink-0">
+        <div className="px-3 py-4 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm flex-shrink-0">
               {user?.email?.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-neutral-700 truncate">{user?.email}</p>
-              <p className="text-xs text-neutral-400 capitalize">{adminRecord?.role}</p>
+              <p className="text-xs font-medium text-neutral-700 dark:text-neutral-200 truncate">{user?.email}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 capitalize">{adminRecord?.role}</p>
             </div>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-400 transition-colors"
           >
             <LogOut className="w-5 h-5" />
             Sign Out
@@ -130,18 +132,25 @@ export function AdminLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
-        <header className="bg-white border-b border-neutral-100 px-4 sm:px-6 py-4 flex items-center gap-4 flex-shrink-0">
+        <header className="bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 px-4 sm:px-6 py-4 flex items-center gap-4 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 rounded-xl hover:bg-neutral-100 text-neutral-600 transition-colors"
+            className="lg:hidden p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1" />
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
           <div className="relative">
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="relative p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors"
+              className="relative p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors"
             >
               <Bell className="w-5 h-5" />
               {totalNotifications > 0 && (
@@ -153,29 +162,29 @@ export function AdminLayout() {
             {notificationsOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
-                <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-lg border border-neutral-100 z-50 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-neutral-100">
-                    <p className="font-semibold text-neutral-900 text-sm">Notifications</p>
+                <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-neutral-900 rounded-xl shadow-lg border border-neutral-100 dark:border-neutral-700 z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
+                    <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">Notifications</p>
                   </div>
                   {totalNotifications === 0 ? (
                     <div className="px-4 py-6 text-center">
-                      <Bell className="w-8 h-8 text-neutral-200 mx-auto mb-2" />
-                      <p className="text-sm text-neutral-400">No new notifications</p>
+                      <Bell className="w-8 h-8 text-neutral-200 dark:text-neutral-600 mx-auto mb-2" />
+                      <p className="text-sm text-neutral-400 dark:text-neutral-500">No new notifications</p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-neutral-50">
+                    <div className="divide-y divide-neutral-50 dark:divide-neutral-800">
                       {counts.pendingAppointments > 0 && (
                         <NavLink
                           to="/admin/appointments"
                           onClick={() => setNotificationsOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                         >
-                          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="w-4 h-4 text-amber-600" />
+                          <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                            <Calendar className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-neutral-900">Pending Appointments</p>
-                            <p className="text-xs text-neutral-500">{counts.pendingAppointments} awaiting review</p>
+                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Pending Appointments</p>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400">{counts.pendingAppointments} awaiting review</p>
                           </div>
                         </NavLink>
                       )}
@@ -183,14 +192,14 @@ export function AdminLayout() {
                         <NavLink
                           to="/admin/messages"
                           onClick={() => setNotificationsOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                         >
-                          <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                            <MessageSquare className="w-4 h-4 text-teal-600" />
+                          <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">
+                            <MessageSquare className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-neutral-900">Unread Messages</p>
-                            <p className="text-xs text-neutral-500">{counts.unreadMessages} new messages</p>
+                            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Unread Messages</p>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400">{counts.unreadMessages} new messages</p>
                           </div>
                         </NavLink>
                       )}
@@ -200,13 +209,13 @@ export function AdminLayout() {
               </>
             )}
           </div>
-          <NavLink to={publicSitePath} target="_blank" className="text-xs text-primary-600 hover:text-primary-700 font-medium">
+          <NavLink to={publicSitePath} target="_blank" className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
             View Site →
           </NavLink>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 dark:bg-neutral-900">
           <Outlet />
         </main>
       </div>

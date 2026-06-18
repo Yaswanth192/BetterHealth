@@ -2,6 +2,24 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Clinic, ClinicService, ClinicDoctor, ClinicTiming, Testimonial, FAQ } from '../types';
 
+function hexToRgb(hex: string): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `${r} ${g} ${b}`;
+}
+
+export function applyClinicColors(primary: string, secondary?: string) {
+  const root = document.documentElement;
+  if (primary && /^#[0-9a-fA-F]{6}$/.test(primary)) {
+    root.style.setProperty('--color-primary-rgb', hexToRgb(primary));
+  }
+  if (secondary && /^#[0-9a-fA-F]{6}$/.test(secondary)) {
+    root.style.setProperty('--color-secondary-rgb', hexToRgb(secondary));
+  }
+}
+
 interface ClinicData {
   clinic: Clinic | null;
   services: ClinicService[];
@@ -66,6 +84,10 @@ export function useClinicData(slug?: string): ClinicData {
     }
 
     setClinic(clinicData);
+
+    if (clinicData.primary_color) {
+      applyClinicColors(clinicData.primary_color, clinicData.secondary_color);
+    }
 
     const [servicesRes, doctorsRes, timingsRes, testimonialsRes, faqsRes] = await Promise.all([
       supabase.from('clinic_services').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),

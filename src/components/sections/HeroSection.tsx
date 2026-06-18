@@ -99,20 +99,20 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
 
           {/* Right - Quick Appointment Form */}
           <div className="animate-slide-up animate-delay-400">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md ml-auto">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md ml-auto dark:bg-neutral-900 dark:shadow-neutral-950/50">
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-5 h-5 text-primary-600" />
-                <h3 className="font-bold text-neutral-900">Quick Appointment</h3>
+                <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <h3 className="font-bold text-neutral-900 dark:text-neutral-100">Quick Appointment</h3>
               </div>
 
               {quickSubmitted ? (
                 <div className="text-center py-6">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Calendar className="w-6 h-6 text-emerald-600" />
+                  <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-emerald-900/30">
+                    <Calendar className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <p className="font-semibold text-neutral-900">Request Submitted!</p>
-                  <p className="text-sm text-neutral-500 mt-1">We'll call you shortly to confirm.</p>
-                  <button onClick={() => setQuickSubmitted(false)} className="mt-4 text-sm text-primary-600 font-medium hover:underline">
+                  <p className="font-semibold text-neutral-900 dark:text-neutral-100">Request Submitted!</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">We'll call you shortly to confirm.</p>
+                  <button onClick={() => setQuickSubmitted(false)} className="mt-4 text-sm text-primary-600 font-medium hover:underline dark:text-primary-400">
                     Book Another
                   </button>
                 </div>
@@ -144,7 +144,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
                 </form>
               )}
 
-              <div className="mt-4 pt-4 border-t border-neutral-100">
+              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <img
                   src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600"
                   alt="Clinic"

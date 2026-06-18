@@ -29,12 +29,12 @@ export function ServicesMarquee({ services }: ServicesMarqueeProps) {
   const doubled = [...items, ...items];
 
   return (
-    <div className="bg-white border-y border-neutral-100 py-4 overflow-hidden">
+    <div className="bg-white dark:bg-neutral-900 border-y border-neutral-100 dark:border-neutral-800 py-4 overflow-hidden">
       <div className="flex animate-[marquee_30s_linear_infinite] whitespace-nowrap">
         {doubled.map((title, i) => {
           const Icon = iconMap[title.toLowerCase().replace(/\s+/g, '')] || Stethoscope;
           return (
-            <div key={i} className="flex items-center gap-2 px-6 mx-2 rounded-full border border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-700 flex-shrink-0">
+            <div key={i} className="flex items-center gap-2 px-6 mx-2 rounded-full border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm font-medium text-neutral-700 dark:text-neutral-200 flex-shrink-0">
               <Icon className="w-4 h-4 text-primary-500" />
               {title}
               <span className="text-primary-400">+</span>

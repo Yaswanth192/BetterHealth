@@ -53,7 +53,7 @@ const reviews = [
 
 export function ReviewsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center py-20">
         <div className="container-max px-4">
@@ -72,7 +72,7 @@ export function ReviewsPage() {
 
       {/* Reviews */}
       <div className="container-max px-4 py-12">
-        <p className="text-center text-neutral-500 mb-8">
+        <p className="text-center text-neutral-500 dark:text-neutral-400 mb-8">
           No reviews yet? Be the first to share your experience!
         </p>
 
@@ -84,16 +84,16 @@ export function ReviewsPage() {
                   <Star key={j} className="w-4 h-4 text-amber-400 fill-current" />
                 ))}
               </div>
-              <p className="text-neutral-600 text-sm leading-relaxed mb-4 italic">"{review.message}"</p>
-              <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
-                <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-sm">
+              <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4 italic">"{review.message}"</p>
+              <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
+                <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm">
                   {review.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-neutral-900 text-sm">{review.name}</p>
+                  <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">{review.name}</p>
                   <p className="text-xs text-neutral-400">{review.service}</p>
                 </div>
-                <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+                <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                   <BadgeCheck className="w-3.5 h-3.5" /> Verified
                 </span>
               </div>
@@ -103,8 +103,8 @@ export function ReviewsPage() {
 
         {/* Share Experience */}
         <div className="text-center">
-          <h3 className="text-2xl font-bold text-neutral-900 mb-2">Share Your Experience</h3>
-          <p className="text-neutral-500 mb-6">Your feedback helps others make better decisions.</p>
+          <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Share Your Experience</h3>
+          <p className="text-neutral-500 dark:text-neutral-400 mb-6">Your feedback helps others make better decisions.</p>
           <a
             href="#"
             className="inline-flex items-center gap-2 px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors"

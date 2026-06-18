@@ -102,7 +102,7 @@ export function BlogPage() {
   const filtered = activeCategory === 'All' ? allPosts : allPosts.filter(p => p.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center py-20">
         <div className="container-max px-4">
@@ -122,7 +122,7 @@ export function BlogPage() {
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 activeCategory === cat
                   ? 'bg-primary-600 text-white'
-                  : 'bg-white text-neutral-600 border border-neutral-200 hover:border-primary-400'
+                  : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-primary-400'
               }`}
             >
               {cat}
@@ -142,8 +142,8 @@ export function BlogPage() {
                 </span>
               </div>
               <div className="p-5">
-                <h3 className="font-bold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">{post.title}</h3>
-                <p className="text-sm text-neutral-500 line-clamp-2 mb-4">{post.excerpt}</p>
+                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{post.title}</h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-4">{post.excerpt}</p>
                 <div className="flex items-center justify-between text-xs text-neutral-400">
                   <span className="flex items-center gap-1"><User className="w-3 h-3" /> {post.author}</span>
                   <span>{post.date}</span>

@@ -78,22 +78,22 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
   const director = displayDoctors[0];
 
   return (
-    <section id="doctors" className="section-padding bg-white">
+    <section id="doctors" className="section-padding bg-white dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         {/* Header */}
         <div className={`mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Our Team
           </span>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
               Meet Our Doctors
             </h2>
-            <Link to={`${appointmentPath}`} className="text-primary-600 hover:text-primary-700 font-semibold text-sm flex items-center gap-1">
+            <Link to={`${appointmentPath}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold text-sm flex items-center gap-1">
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <p className="text-neutral-500 mt-3 max-w-xl">
+          <p className="text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
             Experienced specialists dedicated to your well-being
           </p>
         </div>
@@ -107,7 +107,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 activeFilter === f
                   ? 'bg-primary-600 text-white'
-                  : 'bg-white text-neutral-600 border border-neutral-200 hover:border-primary-400'
+                  : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-primary-400'
               }`}
             >
               {f}
@@ -127,18 +127,18 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
                 />
               </div>
               <div className="p-8 flex flex-col justify-center">
-                <span className="inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold mb-3 w-fit">
+                <span className="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold mb-3 w-fit">
                   Meet Our Director
                 </span>
-                <h3 className="text-2xl font-bold text-neutral-900 mb-1">{director.name}</h3>
-                <p className="text-primary-600 font-medium mb-4">{director.specialization}</p>
-                <p className="text-neutral-600 text-sm leading-relaxed mb-4">
+                <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">{director.name}</h3>
+                <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">{director.specialization}</p>
+                <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4">
                   {director.bio || `${director.name} founded our clinic with a vision to bring world-class healthcare to every family. With over ${director.experience_years} years of experience, he has treated thousands of patients.`}
                 </p>
                 {director.qualifications && director.qualifications.length > 0 && (
-                  <p className="text-sm text-neutral-500 mb-4">{director.qualifications.join(', ')}</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">{director.qualifications.join(', ')}</p>
                 )}
-                <blockquote className="border-l-3 border-primary-400 pl-4 italic text-neutral-600 text-sm">
+                <blockquote className="border-l-3 border-primary-400 pl-4 italic text-neutral-600 dark:text-neutral-300 text-sm">
                   "Every patient deserves to be treated like family. We don't just treat symptoms — we build lasting health."
                 </blockquote>
               </div>
@@ -162,37 +162,37 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
                 />
               </div>
               <div className="p-5">
-                <h3 className="font-bold text-neutral-900 text-lg">{doctor.name}</h3>
-                <span className="inline-block px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full text-xs font-medium mt-1">
+                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">{doctor.name}</h3>
+                <span className="inline-block px-2 py-0.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded-full text-xs font-medium mt-1">
                   {doctor.specialization}
                 </span>
                 {doctor.qualifications && doctor.qualifications.length > 0 && (
-                  <p className="text-xs text-neutral-500 mt-2">{doctor.qualifications.join(', ')}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">{doctor.qualifications.join(', ')}</p>
                 )}
 
                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
                   <div>
-                    <span className="text-neutral-400 font-medium">Experience</span>
-                    <p className="text-neutral-700 font-semibold">{doctor.experience_years} Years</p>
+                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Experience</span>
+                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">{doctor.experience_years} Years</p>
                   </div>
                   <div>
-                    <span className="text-neutral-400 font-medium">Languages</span>
-                    <p className="text-neutral-700 font-semibold">
-                      {'languages' in doctor ? String((doctor as Record<string, unknown>).languages ?? 'English, Hindi') : 'English, Hindi'}
+                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Languages</span>
+                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
+                      {doctor.languages?.length ? doctor.languages.join(', ') : 'English, Hindi'}
                     </p>
                   </div>
                 </div>
 
                 {doctor.open_time && doctor.close_time && (
                   <div className="mt-3 text-xs">
-                    <span className="text-neutral-400 font-medium">Schedule</span>
-                    <p className="text-neutral-700 font-semibold">
+                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Schedule</span>
+                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
                       {doctor.available_days?.slice(0, 2).join('/') || 'Mon-Fri'} {doctor.open_time} - {doctor.close_time}
                     </p>
                   </div>
                 )}
 
-                <p className="text-xs text-neutral-500 mt-3 line-clamp-2">{doctor.bio}</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-3 line-clamp-2">{doctor.bio}</p>
 
                 <Link
                   to={appointmentPath}
@@ -225,8 +225,8 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
 
         {/* Book Consultation CTA */}
         <div className="text-center mt-12">
-          <h3 className="text-2xl font-bold text-neutral-900 mb-2">Book a Consultation</h3>
-          <p className="text-neutral-500 mb-6">Choose your preferred doctor and book an appointment at your convenience.</p>
+          <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Book a Consultation</h3>
+          <p className="text-neutral-500 dark:text-neutral-400 mb-6">Choose your preferred doctor and book an appointment at your convenience.</p>
           <Link to={appointmentPath} className="btn-primary bg-amber-600 hover:bg-amber-700">
             Book Appointment
           </Link>

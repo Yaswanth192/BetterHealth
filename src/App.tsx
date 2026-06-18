@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { HomePage } from './pages/HomePage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -19,8 +20,9 @@ const DevPanelPage = lazy(() => import('./pages/dev/DevPanelPage').then(m => ({ 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <Routes>
           {/* Public */}
           {/* <Route path="/" element={<HomePage />} /> */}
           <Route path="/" element={<Navigate to="/medicare-clinic" replace />} />
@@ -57,7 +59,8 @@ export default function App() {
           <Route path="/" element={<Navigate to="/medicare-clinic" replace />} />
 
         </Routes>
-      </AuthProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

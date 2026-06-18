@@ -11,7 +11,7 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
 
   return (
-    <section className="section-padding bg-neutral-50">
+    <section className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {/* Image */}
@@ -30,29 +30,29 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
 
           {/* Content */}
           <div>
-            <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+            <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
               About Us
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">
               Trusted Healthcare Since 2015
             </h2>
-            <p className="text-neutral-600 leading-relaxed mb-8">
+            <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed mb-8">
               {clinic?.description || 'Our clinic was founded with a simple mission — to make quality healthcare accessible and affordable for every family. Our team of specialists across multiple departments delivers compassionate, evidence-based care using state-of-the-art equipment.'}
             </p>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="text-center p-4 bg-white rounded-xl border border-neutral-100">
-                <div className="text-2xl font-bold text-primary-600">15+</div>
-                <div className="text-xs text-neutral-500 mt-1">Years of Service</div>
+              <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">15+</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Years of Service</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-xl border border-neutral-100">
-                <div className="text-2xl font-bold text-primary-600">12</div>
-                <div className="text-xs text-neutral-500 mt-1">Expert Doctors</div>
+              <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">12</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Expert Doctors</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-xl border border-neutral-100">
-                <div className="text-2xl font-bold text-primary-600">4.8</div>
-                <div className="text-xs text-neutral-500 mt-1">Google Rating</div>
+              <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">4.8</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Google Rating</div>
               </div>
             </div>
 

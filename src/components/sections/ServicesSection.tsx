@@ -21,21 +21,12 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 const fallbackServices = [
-  { title: 'General Medicine', description: 'Comprehensive primary care for all ages — fever, infections, chronic disease management, and preventive health.', features: ['Fever & Infections', 'Diabetes Management', 'Hypertension Care', 'Preventive Health'] },
-  { title: 'Dental Care', description: 'Complete dental solutions from routine cleanings to advanced cosmetic dentistry and orthodontics.', features: ['Teeth Cleaning & Polishing', 'Root Canal Treatment', 'Dental Implants', 'Orthodontics'] },
-  { title: 'Dermatology', description: 'Expert skin, hair, and nail treatments including acne, eczema, laser therapy, and cosmetic procedures.', features: ['Acne & Scar Treatment', 'Laser Hair Removal', 'Chemical Peels', 'Skin Allergies'] },
-  { title: 'Ophthalmology', description: 'Advanced eye care with LASIK, cataract surgery, glaucoma management, and routine vision checks.', features: ['LASIK Surgery', 'Cataract Surgery', 'Glaucoma Treatment', 'Vision Testing'] },
-  { title: 'Orthopedics', description: 'Joint, bone, and spine care — from sports injuries to joint replacements and physiotherapy.', features: ['Joint Replacement', 'Sports Injury', 'Fracture Treatment', 'Physiotherapy'] },
-  { title: 'Pediatrics', description: 'Gentle, specialized care for infants, children, and adolescents including vaccinations and development monitoring.', features: ['Vaccinations', 'Growth Monitoring', 'Child Nutrition', 'Development Assessment'] },
-];
-
-const consultationFees = [
-  { specialty: 'General Medicine', consultation: 500, followUp: 300 },
-  { specialty: 'Dental', consultation: 600, followUp: 400 },
-  { specialty: 'Dermatology', consultation: 800, followUp: 500 },
-  { specialty: 'Ophthalmology', consultation: 600, followUp: 400 },
-  { specialty: 'Orthopedics', consultation: 700, followUp: 400 },
-  { specialty: 'Pediatrics', consultation: 500, followUp: 300 },
+  { title: 'General Medicine', description: 'Comprehensive primary care for all ages — fever, infections, chronic disease management, and preventive health.', features: ['Fever & Infections', 'Diabetes Management', 'Hypertension Care', 'Preventive Health'], consultation_fee: 500, follow_up_fee: 300 },
+  { title: 'Dental Care', description: 'Complete dental solutions from routine cleanings to advanced cosmetic dentistry and orthodontics.', features: ['Teeth Cleaning & Polishing', 'Root Canal Treatment', 'Dental Implants', 'Orthodontics'], consultation_fee: 600, follow_up_fee: 400 },
+  { title: 'Dermatology', description: 'Expert skin, hair, and nail treatments including acne, eczema, laser therapy, and cosmetic procedures.', features: ['Acne & Scar Treatment', 'Laser Hair Removal', 'Chemical Peels', 'Skin Allergies'], consultation_fee: 800, follow_up_fee: 500 },
+  { title: 'Ophthalmology', description: 'Advanced eye care with LASIK, cataract surgery, glaucoma management, and routine vision checks.', features: ['LASIK Surgery', 'Cataract Surgery', 'Glaucoma Treatment', 'Vision Testing'], consultation_fee: 600, follow_up_fee: 400 },
+  { title: 'Orthopedics', description: 'Joint, bone, and spine care — from sports injuries to joint replacements and physiotherapy.', features: ['Joint Replacement', 'Sports Injury', 'Fracture Treatment', 'Physiotherapy'], consultation_fee: 700, follow_up_fee: 400 },
+  { title: 'Pediatrics', description: 'Gentle, specialized care for infants, children, and adolescents including vaccinations and development monitoring.', features: ['Vaccinations', 'Growth Monitoring', 'Child Nutrition', 'Development Assessment'], consultation_fee: 500, follow_up_fee: 300 },
 ];
 
 const processSteps = [
@@ -70,8 +61,12 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
   const { ref, isIntersecting } = useIntersectionObserver();
   const [activeFilter, setActiveFilter] = useState('All');
   const displayServices = services.length > 0
-    ? services.map(s => ({ ...s, features: [] as string[] }))
+    ? services.map(s => ({ ...s, features: s.features ?? [] as string[] }))
     : fallbackServices as unknown as (ClinicService & { features: string[] })[];
+
+  const feeServices = services.length > 0
+    ? services.filter(s => s.consultation_fee > 0)
+    : fallbackServices;
 
   const filters = ['All', ...new Set(displayServices.map(s => {
     const words = s.title.split(' ');
@@ -83,17 +78,17 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
     : displayServices.filter(s => s.title.toLowerCase().includes(activeFilter.toLowerCase()));
 
   return (
-    <section id="services" className="section-padding bg-neutral-50">
+    <section id="services" className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         {/* Header */}
         <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Our Services
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
             Our Services & Specialties
           </h2>
-          <p className="text-neutral-500 mt-4 max-w-2xl mx-auto">
+          <p className="text-neutral-500 dark:text-neutral-400 mt-4 max-w-2xl mx-auto">
             Comprehensive healthcare under one roof
           </p>
         </div>
@@ -107,7 +102,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 activeFilter === f
                   ? 'bg-primary-600 text-white'
-                  : 'bg-white text-neutral-600 border border-neutral-200 hover:border-primary-400'
+                  : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:border-primary-400'
               }`}
             >
               {f}
@@ -126,25 +121,27 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                 className={`card p-6 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-primary-600" />
+                <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-xl flex items-center justify-center mb-4">
+                  <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-bold text-neutral-900">{service.title}</h3>
-                  <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-1 rounded-full whitespace-nowrap">From ₹500</span>
+                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{service.title}</h3>
+                  {service.consultation_fee > 0 && (
+                    <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-1 rounded-full whitespace-nowrap">From ₹{service.consultation_fee}</span>
+                  )}
                 </div>
-                <p className="text-neutral-500 text-sm leading-relaxed mb-4">{service.description}</p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed mb-4">{service.description}</p>
                 {features.length > 0 && (
                   <ul className="space-y-1.5 mb-4">
                     {features.slice(0, 4).map((f, j) => (
-                      <li key={j} className="flex items-center gap-2 text-sm text-neutral-600">
+                      <li key={j} className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
                         <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
                         {f}
                       </li>
                     ))}
                   </ul>
                 )}
-                <Link to={appointmentPath} className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group/btn">
+                <Link to={appointmentPath} className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group/btn">
                   Learn More <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -154,8 +151,8 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
 
         {/* Consultation Fees Table */}
         <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '200ms' }}>
-          <h3 className="text-2xl font-bold text-neutral-900 text-center mb-8">Consultation Fees</h3>
-          <div className="max-w-3xl mx-auto overflow-hidden rounded-xl border border-neutral-200">
+          <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 text-center mb-8">Consultation Fees</h3>
+          <div className="max-w-3xl mx-auto overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
             <table className="w-full">
               <thead>
                 <tr className="bg-primary-600 text-white">
@@ -165,13 +162,20 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                 </tr>
               </thead>
               <tbody>
-                {consultationFees.map((fee, i) => (
-                  <tr key={fee.specialty} className={i % 2 === 0 ? 'bg-white' : 'bg-neutral-50'}>
-                    <td className="px-6 py-3 text-sm font-medium text-neutral-700">{fee.specialty}</td>
-                    <td className="px-6 py-3 text-sm font-semibold text-primary-600">₹{fee.consultation}</td>
-                    <td className="px-6 py-3 text-sm text-neutral-500">₹{fee.followUp}</td>
+                {feeServices.map((fee, i) => (
+                  <tr key={`${fee.title}-${i}`} className={i % 2 === 0 ? 'bg-white dark:bg-neutral-800' : 'bg-neutral-50 dark:bg-neutral-900'}>
+                    <td className="px-6 py-3 text-sm font-medium text-neutral-700 dark:text-neutral-200">{fee.title}</td>
+                    <td className="px-6 py-3 text-sm font-semibold text-primary-600 dark:text-primary-400">₹{fee.consultation_fee}</td>
+                    <td className="px-6 py-3 text-sm text-neutral-500 dark:text-neutral-400">₹{fee.follow_up_fee}</td>
                   </tr>
                 ))}
+                {feeServices.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
+                      No services with consultation fees added yet
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -180,8 +184,8 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
         {/* How It Works */}
         <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '300ms' }}>
           <div className="text-center mb-10">
-            <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">Process</span>
-            <h3 className="text-2xl font-bold text-neutral-900">How It Works</h3>
+            <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">Process</span>
+            <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">How It Works</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {processSteps.map((step, i) => (
@@ -192,8 +196,8 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                 <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-4 relative z-10">
                   {step.num}
                 </div>
-                <h4 className="font-bold text-neutral-900 mb-2">{step.title}</h4>
-                <p className="text-sm text-neutral-500">{step.description}</p>
+                <h4 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2">{step.title}</h4>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">{step.description}</p>
               </div>
             ))}
           </div>
@@ -202,8 +206,8 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
         {/* Health Packages */}
         <div className={`transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '400ms' }}>
           <div className="text-center mb-10">
-            <span className="inline-block px-4 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold mb-4">Health Packages</span>
-            <h3 className="text-2xl font-bold text-neutral-900">Preventive Health Check-ups</h3>
+            <span className="inline-block px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-semibold mb-4">Health Packages</span>
+            <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Preventive Health Check-ups</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {healthPackages.map((pkg) => (
@@ -213,11 +217,11 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                     Most Popular
                   </span>
                 )}
-                <h4 className="font-bold text-neutral-900 text-lg">{pkg.name}</h4>
-                <div className="text-3xl font-bold text-primary-600 my-3">₹{pkg.price}</div>
+                <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">{pkg.name}</h4>
+                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400 my-3">₹{pkg.price}</div>
                 <ul className="space-y-2 mb-6">
                   {pkg.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm text-neutral-600">
+                    <li key={j} className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
                       <Check className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
                       {f}
                     </li>
@@ -228,7 +232,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                   className={`w-full py-3 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center ${
                     pkg.popular
                       ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                      : 'bg-white border-2 border-primary-200 text-primary-700 hover:bg-primary-50'
+                      : 'bg-white dark:bg-neutral-800 border-2 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20'
                   }`}
                 >
                   Book This Package
@@ -240,7 +244,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <p className="text-neutral-600 mb-4">Not sure which specialty? Call us for guidance.</p>
+          <p className="text-neutral-600 dark:text-neutral-300 mb-4">Not sure which specialty? Call us for guidance.</p>
           <div className="flex justify-center gap-3">
             <a href="tel:+919876500999" className="btn-primary bg-primary-600 hover:bg-primary-700">
               <Phone className="w-4 h-4" /> Call Us

@@ -83,8 +83,8 @@ export function AdminAppointmentsPage() {
       <ToastContainer toasts={toasts} removeToast={removeToast} />
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Appointments</h1>
-          <p className="text-neutral-500 text-sm mt-1">{appointments.length} total appointments</p>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Appointments</h1>
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1">{appointments.length} total appointments</p>
         </div>
 
         {/* Filters */}
@@ -120,44 +120,44 @@ export function AdminAppointmentsPage() {
         <div className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-neutral-50 border-b border-neutral-100">
+              <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-100 dark:border-neutral-700">
                 <tr>
-                  <th className="text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider px-6 py-3">Patient</th>
-                  <th className="text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider px-6 py-3 hidden md:table-cell">Doctor / Service</th>
-                  <th className="text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider px-6 py-3 hidden sm:table-cell">Date & Time</th>
-                  <th className="text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider px-6 py-3">Status</th>
-                  <th className="text-right text-xs font-semibold text-neutral-500 uppercase tracking-wider px-6 py-3">Actions</th>
+                  <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Patient</th>
+                  <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3 hidden md:table-cell">Doctor / Service</th>
+                  <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3 hidden sm:table-cell">Date & Time</th>
+                  <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Status</th>
+                  <th className="text-right text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-50">
+              <tbody className="divide-y divide-neutral-50 dark:divide-neutral-700">
                 {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-12">
-                      <Calendar className="w-12 h-12 text-neutral-200 mx-auto mb-3" />
-                      <p className="text-neutral-400">No appointments found</p>
+                      <Calendar className="w-12 h-12 text-neutral-200 dark:text-neutral-600 mx-auto mb-3" />
+                      <p className="text-neutral-400 dark:text-neutral-500">No appointments found</p>
                     </td>
                   </tr>
                 ) : (
                   filtered.map((appt) => (
-                    <tr key={appt.id} className="hover:bg-neutral-50 transition-colors">
+                    <tr key={appt.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-sm flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm flex-shrink-0">
                             {appt.patient_name.charAt(0)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-neutral-900 text-sm">{appt.patient_name}</p>
-                            <p className="text-xs text-neutral-400 truncate">{appt.patient_email}</p>
+                            <p className="font-medium text-neutral-900 dark:text-neutral-100 text-sm">{appt.patient_name}</p>
+                            <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{appt.patient_email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 hidden md:table-cell">
-                        <p className="text-sm text-neutral-700">{(appt.clinic_doctors as any)?.name || '—'}</p>
-                        <p className="text-xs text-neutral-400">{(appt.clinic_services as any)?.title || '—'}</p>
+                        <p className="text-sm text-neutral-700 dark:text-neutral-200">{(appt.clinic_doctors as any)?.name || '—'}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500">{(appt.clinic_services as any)?.title || '—'}</p>
                       </td>
                       <td className="px-6 py-4 hidden sm:table-cell">
-                        <p className="text-sm text-neutral-700">{appt.preferred_date}</p>
-                        <p className="text-xs text-neutral-400">{appt.preferred_time}</p>
+                        <p className="text-sm text-neutral-700 dark:text-neutral-200">{appt.preferred_date}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500">{appt.preferred_time}</p>
                       </td>
                       <td className="px-6 py-4">
                         <AppointmentStatusBadge status={appt.status} />
@@ -168,14 +168,14 @@ export function AdminAppointmentsPage() {
                             <>
                               <button
                                 onClick={() => updateStatus(appt.id, 'confirmed')}
-                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+                                className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 transition-colors"
                                 title="Confirm"
                               >
                                 <CheckCircle className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => updateStatus(appt.id, 'rejected')}
-                                className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+                                className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
                                 title="Reject"
                               >
                                 <XCircle className="w-4 h-4" />
@@ -185,7 +185,7 @@ export function AdminAppointmentsPage() {
                           {appt.status === 'confirmed' && (
                             <button
                               onClick={() => updateStatus(appt.id, 'completed')}
-                              className="p-1.5 rounded-lg bg-primary-50 hover:bg-primary-100 text-primary-600 transition-colors"
+                              className="p-1.5 rounded-lg bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-colors"
                               title="Mark Complete"
                             >
                               <Check className="w-4 h-4" />
@@ -193,14 +193,14 @@ export function AdminAppointmentsPage() {
                           )}
                           <button
                             onClick={() => { setSelected(appt); setNotes(appt.notes || ''); }}
-                            className="p-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors"
+                            className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300 transition-colors"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteAppointment(appt.id)}
-                            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors"
+                            className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 dark:text-red-400 hover:text-red-600 transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -222,36 +222,36 @@ export function AdminAppointmentsPage() {
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Patient</p>
-                <p className="font-semibold text-neutral-900">{selected.patient_name}</p>
-                <p className="text-neutral-500">{selected.patient_email}</p>
-                <p className="text-neutral-500">{selected.patient_phone}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Patient</p>
+                <p className="font-semibold text-neutral-900 dark:text-neutral-100">{selected.patient_name}</p>
+                <p className="text-neutral-500 dark:text-neutral-400">{selected.patient_email}</p>
+                <p className="text-neutral-500 dark:text-neutral-400">{selected.patient_phone}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Appointment</p>
-                <p className="font-semibold text-neutral-900">{selected.preferred_date}</p>
-                <p className="text-neutral-500">{selected.preferred_time}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Appointment</p>
+                <p className="font-semibold text-neutral-900 dark:text-neutral-100">{selected.preferred_date}</p>
+                <p className="text-neutral-500 dark:text-neutral-400">{selected.preferred_time}</p>
                 <div className="mt-1"><AppointmentStatusBadge status={selected.status} /></div>
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Doctor</p>
-                <p className="text-neutral-700">{(selected.clinic_doctors as any)?.name || 'Not specified'}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Doctor</p>
+                <p className="text-neutral-700 dark:text-neutral-200">{(selected.clinic_doctors as any)?.name || 'Not specified'}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1">Service</p>
-                <p className="text-neutral-700">{(selected.clinic_services as any)?.title || 'Not specified'}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Service</p>
+                <p className="text-neutral-700 dark:text-neutral-200">{(selected.clinic_services as any)?.title || 'Not specified'}</p>
               </div>
             </div>
 
             {selected.message && (
               <div>
-                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Patient Message</p>
-                <p className="text-neutral-700 bg-neutral-50 rounded-xl p-4 text-sm">{selected.message}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">Patient Message</p>
+                <p className="text-neutral-700 dark:text-neutral-200 bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4 text-sm">{selected.message}</p>
               </div>
             )}
 
             <div>
-              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Admin Notes</p>
+              <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">Admin Notes</p>
               <textarea
                 rows={3}
                 value={notes}
@@ -262,7 +262,7 @@ export function AdminAppointmentsPage() {
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Update Status</p>
+              <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">Update Status</p>
               <div className="flex flex-wrap gap-2">
                 {STATUS_OPTIONS.map((status) => (
                   <button
@@ -272,7 +272,7 @@ export function AdminAppointmentsPage() {
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40 capitalize ${
                       selected.status === status
                         ? 'bg-primary-600 text-white'
-                        : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                        : 'bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200'
                     }`}
                   >
                     {status}

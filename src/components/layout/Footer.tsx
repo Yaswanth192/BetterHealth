@@ -11,7 +11,7 @@ export function Footer({ clinic }: FooterProps) {
   const publicBasePath = clinic?.slug ? `/${clinic.slug}` : '/';
 
   return (
-    <footer className="bg-neutral-900 text-white">
+    <footer className="bg-neutral-900 text-white dark:bg-neutral-950">
       <div className="container-max section-padding pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}

@@ -38,13 +38,13 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
   const displayTestimonials = testimonials.length > 0 ? testimonials : fallbackTestimonials as unknown as Testimonial[];
 
   return (
-    <section id="testimonials" className="section-padding bg-neutral-50">
+    <section id="testimonials" className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Testimonials
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
             What Our Patients Say
           </h2>
         </div>
@@ -62,12 +62,12 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 ))}
               </div>
 
-              <p className="text-neutral-600 text-sm leading-relaxed mb-6 italic">
+              <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-6 italic">
                 "{testimonial.message}"
               </p>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
-                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-sm flex-shrink-0">
+              <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
+                <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm flex-shrink-0">
                   {testimonial.patient_avatar_url ? (
                     <img src={testimonial.patient_avatar_url} alt={testimonial.patient_name} className="w-full h-full rounded-full object-cover" />
                   ) : (
@@ -75,9 +75,9 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-neutral-900 text-sm">{testimonial.patient_name}</p>
+                  <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">{testimonial.patient_name}</p>
                   {testimonial.designation && (
-                    <p className="text-xs text-neutral-400">{testimonial.designation}</p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">{testimonial.designation}</p>
                   )}
                 </div>
                 <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">

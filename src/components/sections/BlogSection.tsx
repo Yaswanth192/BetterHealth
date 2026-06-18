@@ -49,13 +49,13 @@ export function BlogSection() {
   const { ref, isIntersecting } = useIntersectionObserver();
 
   return (
-    <section className="section-padding bg-neutral-50">
+    <section className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         <div className={`text-center mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <span className="inline-block px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Health Tips
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
             Stay Informed, Stay Healthy
           </h2>
         </div>
@@ -78,18 +78,18 @@ export function BlogSection() {
                 </span>
               </div>
               <div className="p-5">
-                <div className="flex items-center gap-3 text-xs text-neutral-400 mb-3">
+                <div className="flex items-center gap-3 text-xs text-neutral-400 dark:text-neutral-500 mb-3">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {post.readTime}
                   </span>
                 </div>
-                <h3 className="font-bold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">
+                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-primary-600 transition-colors">
                   {post.title}
                 </h3>
-                <p className="text-sm text-neutral-500 line-clamp-2 mb-4">{post.excerpt}</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-4">{post.excerpt}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-neutral-400">By {post.author} · {post.date}</span>
+                  <span className="text-xs text-neutral-400 dark:text-neutral-500">By {post.author} · {post.date}</span>
                   <ArrowRight className="w-4 h-4 text-primary-500 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>

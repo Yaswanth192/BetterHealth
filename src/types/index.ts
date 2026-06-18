@@ -17,6 +17,14 @@ export interface Clinic {
   website: string;
   primary_color: string;
   secondary_color: string;
+  emergency_phone: string;
+  whatsapp_number: string;
+  founded_year: number;
+  google_maps_url: string;
+  facebook_url: string;
+  instagram_url: string;
+  youtube_url: string;
+  twitter_url: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -29,6 +37,9 @@ export interface ClinicService {
   description: string;
   icon: string;
   image_url: string;
+  features: string[];
+  consultation_fee: number;
+  follow_up_fee: number;
   sort_order: number;
   is_active: boolean;
   created_at: string;
@@ -43,6 +54,10 @@ export interface ClinicDoctor {
   image_url: string;
   qualifications: string[];
   experience_years: number;
+  languages: string[];
+  is_director: boolean;
+  director_bio: string;
+  director_quote: string;
   available_days: string[];
   open_time: string;
   close_time: string;
@@ -120,5 +135,53 @@ export interface ClinicAdmin {
   clinic_id: string | null;
   user_id: string;
   role: AdminRole;
+  created_at: string;
+}
+
+export interface BlogPost {
+  id: string;
+  clinic_id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  image_url: string;
+  read_time: string;
+  author: string;
+  publish_date: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface InsuranceProvider {
+  id: string;
+  clinic_id: string;
+  name: string;
+  logo_url: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Certification {
+  id: string;
+  clinic_id: string;
+  name: string;
+  icon: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface HealthPackage {
+  id: string;
+  clinic_id: string;
+  name: string;
+  price: number;
+  features: string[];
+  is_popular: boolean;
+  sort_order: number;
+  is_active: boolean;
   created_at: string;
 }

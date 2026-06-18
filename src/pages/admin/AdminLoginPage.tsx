@@ -31,7 +31,7 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 flex items-center justify-center p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -43,17 +43,17 @@ export function AdminLoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2.5 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 dark:bg-neutral-700/50 backdrop-blur-sm border border-white/20 dark:border-neutral-600 flex items-center justify-center">
               <Activity className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-white">MediCare Admin</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-white/60">Sign in to access your clinic dashboard</p>
+          <p className="text-white/60 dark:text-neutral-400">Sign in to access your clinic dashboard</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl">
+        <div className="bg-white/10 dark:bg-neutral-800/50 backdrop-blur-md border border-white/20 dark:border-neutral-700 rounded-3xl p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-white/80 mb-1.5">Email Address</label>
@@ -116,7 +116,7 @@ export function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-white/30 text-xs mt-6">
+        <p className="text-center text-white/30 dark:text-neutral-500 text-xs mt-6">
           Admin access only. Unauthorized access is prohibited.
         </p>
       </div>

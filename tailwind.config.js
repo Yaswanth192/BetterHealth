@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
@@ -9,29 +10,17 @@ export default {
       },
       colors: {
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
-        },
-        teal: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+          50: 'rgba(var(--color-primary-rgb, 14 165 233), 0.05)',
+          100: 'rgba(var(--color-primary-rgb, 14 165 233), 0.1)',
+          200: 'rgba(var(--color-primary-rgb, 14 165 233), 0.2)',
+          300: 'rgba(var(--color-primary-rgb, 14 165 233), 0.3)',
+          400: 'rgba(var(--color-primary-rgb, 14 165 233), 0.5)',
+          500: 'rgb(var(--color-primary-rgb, 14 165 233))',
+          600: 'rgb(var(--color-primary-rgb, 14 165 233))',
+          700: 'rgba(var(--color-primary-rgb, 14 165 233), 0.85)',
+          800: 'rgba(var(--color-primary-rgb, 14 165 233), 0.9)',
+          900: 'rgba(var(--color-primary-rgb, 14 165 233), 0.95)',
+          950: 'rgba(var(--color-primary-rgb, 14 165 233), 1)',
         },
         neutral: {
           50: '#fafafa',
