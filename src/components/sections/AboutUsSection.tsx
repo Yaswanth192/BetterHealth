@@ -33,7 +33,7 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
             <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
               About Us
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100 mb-6">
               Trusted Healthcare Since 2015
             </h2>
             <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed mb-8">
@@ -58,7 +58,7 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
 
             <Link
               to={doctorsPath}
-              className="btn-primary bg-primary-600 hover:bg-primary-700"
+              className="btn-primary"
             >
               Meet Our Doctors →
             </Link>

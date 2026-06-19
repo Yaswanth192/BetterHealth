@@ -9,9 +9,9 @@ interface CTASectionProps {
 
 export function CTASection({ appointmentPath }: CTASectionProps) {
   return (
-    <section className="section-padding bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center">
+    <section className="section-padding bg-[#080f24] bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center">
       <div className="container-max">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+        <h2 className="text-3xl sm:text-4xl font-bold font-heading mb-4">
           Ready to Take the First Step?
         </h2>
         <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto">

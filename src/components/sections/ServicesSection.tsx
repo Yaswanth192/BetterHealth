@@ -85,7 +85,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
           <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Our Services
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
             Our Services & Specialties
           </h2>
           <p className="text-neutral-500 dark:text-neutral-400 mt-4 max-w-2xl mx-auto">
@@ -125,7 +125,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
                   <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{service.title}</h3>
+                  <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{service.title}</h3>
                   {service.consultation_fee > 0 && (
                     <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-1 rounded-full whitespace-nowrap">From ₹{service.consultation_fee}</span>
                   )}

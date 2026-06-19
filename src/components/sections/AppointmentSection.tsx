@@ -91,7 +91,7 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
                     <CheckCircle className="w-12 h-12 text-emerald-600" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">Appointment Requested!</h3>
+                <h3 className="text-2xl font-bold font-heading text-neutral-900 dark:text-neutral-100 mb-3">Appointment Requested!</h3>
                 <p className="text-neutral-500 max-w-md mx-auto mb-8">
                   Thank you! Your appointment request has been submitted. We'll contact you within 24 hours to confirm your booking.
                 </p>
@@ -108,7 +108,7 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Personal Info */}
                   <div className="space-y-5">
-                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-lg">
+                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-xl">
                       <User className="w-5 h-5 text-primary-600" />
                       Personal Information
                     </h3>
@@ -175,7 +175,7 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
 
                   {/* Appointment Details */}
                   <div className="space-y-5">
-                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-lg">
+                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-xl">
                       <Calendar className="w-5 h-5 text-primary-600" />
                       Appointment Details
                     </h3>

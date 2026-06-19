@@ -52,7 +52,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl transition-all duration-150 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
     &:hover { filter: brightness(1.1); }
   }
   .dark .btn-primary {
@@ -73,7 +73,7 @@
   }
 
   .btn-book {
-    @apply inline-flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-xl transition-all duration-150 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
     background-color: var(--color-book-btn, #f97316);
   }
   .btn-book:hover {
@@ -89,14 +89,14 @@
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300;
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover hover:-translate-y-2 hover:scale-[1.01] transition-all duration-200;
   }
   .dark .card {
     @apply bg-neutral-800 border border-neutral-700/50;
   }
   .dark .card:hover {
-    border-color: transparent;
-    box-shadow: 0 8px 30px rgba(var(--color-primary-rgb, 14 165 233), 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(var(--color-primary-rgb, 14 165, 233), 0.2), 0 0 40px rgba(255, 255, 255, 0.12), 0 0 80px rgba(255, 255, 255, 0.06);
   }
 
   .badge {
@@ -140,14 +140,14 @@
   }
 
   .section-title {
-    @apply text-3xl sm:text-4xl font-bold text-neutral-900;
+    @apply text-3xl sm:text-4xl font-bold font-heading text-neutral-900;
   }
   .dark .section-title {
     @apply text-neutral-100;
   }
 
   .section-subtitle {
-    @apply text-lg text-neutral-500 mt-4 max-w-2xl mx-auto;
+    @apply text-base text-neutral-500 mt-4 max-w-2xl mx-auto leading-relaxed;
   }
   .dark .section-subtitle {
     @apply text-neutral-400;
@@ -262,4 +262,35 @@
     background-color: rgba(255, 255, 255, 0.1);
     opacity: 1;
   }
+}
+
+@keyframes pluckAndFall {
+  0% {
+    transform: translateY(0);
+  }
+  12% {
+    transform: translateY(-18px);
+  }
+  100% {
+    transform: translateY(var(--fall-distance, 50vh));
+  }
+}
+
+@keyframes fadeOutCard {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.animate-pluck-fall {
+  animation: pluckAndFall 0.9s cubic-bezier(0.22, 0.68, 0.36, 1.1) forwards;
+}
+
+.animate-fade-out-card {
+  animation: fadeOutCard 0.35s ease-out forwards;
 }

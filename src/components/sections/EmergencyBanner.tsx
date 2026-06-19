@@ -12,7 +12,7 @@ export function EmergencyBanner({ clinic }: EmergencyBannerProps) {
         <div className="flex items-center gap-4">
           <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
           <div>
-            <h3 className="font-bold text-lg">24/7 Emergency Services Available</h3>
+            <h3 className="font-bold text-xl">24/7 Emergency Services Available</h3>
             <p className="text-neutral-400 text-sm">Emergency Helpline: {clinic?.phone || '+91 98765 00999'}</p>
           </div>
         </div>

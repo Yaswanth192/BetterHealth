@@ -55,7 +55,7 @@ export function BlogSection() {
           <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Health Tips
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
             Stay Informed, Stay Healthy
           </h2>
         </div>
@@ -84,7 +84,7 @@ export function BlogSection() {
                     {post.readTime}
                   </span>
                 </div>
-                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-primary-600 transition-colors">
+                <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-primary-600 transition-colors">
                   {post.title}
                 </h3>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-4">{post.excerpt}</p>

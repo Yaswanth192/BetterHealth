@@ -86,7 +86,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
             Our Team
           </span>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
               Meet Our Doctors
             </h2>
             <Link to={`${appointmentPath}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold text-sm flex items-center gap-1">
@@ -118,27 +118,27 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
         {/* Director spotlight */}
         {activeFilter === 'All' && director && (
           <div className={`card overflow-hidden mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-              <div className="h-80 md:h-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
+              <div className="h-56 sm:h-auto">
                 <img
                   src={director.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
                   alt={director.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-8 flex flex-col justify-center">
-                <span className="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold mb-3 w-fit">
+              <div className="p-6 flex flex-col justify-center">
+                <span className="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold mb-2 w-fit">
                   Meet Our Director
                 </span>
-                <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">{director.name}</h3>
-                <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">{director.specialization}</p>
-                <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4">
+                <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">{director.name}</h3>
+                <p className="text-primary-600 dark:text-primary-400 font-medium text-sm mb-3">{director.specialization}</p>
+                <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-3">
                   {director.bio || `${director.name} founded our clinic with a vision to bring world-class healthcare to every family. With over ${director.experience_years} years of experience, he has treated thousands of patients.`}
                 </p>
                 {director.qualifications && director.qualifications.length > 0 && (
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">{director.qualifications.join(', ')}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{director.qualifications.join(', ')}</p>
                 )}
-                <blockquote className="border-l-3 border-primary-400 pl-4 italic text-neutral-600 dark:text-neutral-300 text-sm">
+                <blockquote className="border-l-3 border-primary-400 pl-3 italic text-neutral-600 dark:text-neutral-300 text-xs">
                   "Every patient deserves to be treated like family. We don't just treat symptoms — we build lasting health."
                 </blockquote>
               </div>
@@ -162,7 +162,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
                 />
               </div>
               <div className="p-5">
-                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">{doctor.name}</h3>
+                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-xl">{doctor.name}</h3>
                 <span className="inline-block px-2 py-0.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded-full text-xs font-medium mt-1">
                   {doctor.specialization}
                 </span>
@@ -206,8 +206,8 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
         </div>
 
         {/* Collective Achievements */}
-        <div className={`mt-16 bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 rounded-2xl p-10 text-white transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h3 className="text-2xl font-bold text-center mb-8">Our Collective Achievements</h3>
+        <div className={`mt-16 bg-[#080f24] bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 rounded-2xl p-10 text-white transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h3 className="text-2xl font-bold font-heading text-center mb-8">Our Collective Achievements</h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
               { value: '45+', label: 'Research Papers' },
@@ -225,7 +225,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
 
         {/* Book Consultation CTA */}
         <div className="text-center mt-12">
-          <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Book a Consultation</h3>
+          <h3 className="text-2xl font-bold font-heading text-neutral-900 dark:text-neutral-100 mb-2">Book a Consultation</h3>
           <p className="text-neutral-500 dark:text-neutral-400 mb-6">Choose your preferred doctor and book an appointment at your convenience.</p>
           <Link to={appointmentPath} className="btn-book">
             Book Appointment

@@ -43,7 +43,7 @@ export function Navbar({ clinic }: NavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-40">
       {/* Top bar */}
-      <div className={`transition-all duration-300 ${solidHeader ? 'bg-neutral-900 text-white dark:bg-black dark:text-neutral-100' : 'bg-neutral-900/80 text-white/90 dark:bg-black/80 dark:text-neutral-100/90'}`}>
+      <div className={`transition-all duration-300 ${solidHeader ? 'bg-[#080f24] text-white dark:bg-[#080f24] dark:text-neutral-100' : 'bg-[#080f24]/80 text-white/90 dark:bg-[#080f24]/80 dark:text-neutral-100/90'}`}>
         <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 text-xs">
           <div className="flex items-center gap-4">
             {clinic?.phone && (

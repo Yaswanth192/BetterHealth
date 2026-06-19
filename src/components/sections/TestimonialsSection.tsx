@@ -44,7 +44,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
           <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Testimonials
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
             What Our Patients Say
           </h2>
         </div>

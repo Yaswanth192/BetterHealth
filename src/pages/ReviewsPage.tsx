@@ -55,7 +55,7 @@ export function ReviewsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center py-20">
+      <section className="bg-[#080f24] bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 text-white text-center py-20">
         <div className="container-max px-4">
           <span className="inline-block px-4 py-1.5 bg-white/10 text-white/80 border border-white/20 rounded-full text-sm font-semibold mb-4">
             Customer Reviews
