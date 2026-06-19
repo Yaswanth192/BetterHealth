@@ -206,7 +206,7 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
         </div>
 
         {/* Collective Achievements */}
-        <div className={`mt-16 bg-[#080f24] bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 rounded-2xl p-10 text-white transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`mt-16 bg-primary-950 bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 rounded-2xl p-10 text-white transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h3 className="text-2xl font-bold font-heading text-center mb-8">Our Collective Achievements</h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
