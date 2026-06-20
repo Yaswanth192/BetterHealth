@@ -218,6 +218,23 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
             </div>
           </div>
         </div>
+
+        {/* Map Embed */}
+        {clinic?.address && (
+          <div className={`mt-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '400ms' }}>
+            <div className="card overflow-hidden">
+              <iframe
+                title="Clinic Location"
+                width="100%"
+                height="350"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(`${clinic.address}, ${clinic.city}, ${clinic.state} ${clinic.zip}`)}&zoom=15`}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -43,17 +43,17 @@ export function Navbar({ clinic }: NavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-40">
       {/* Top bar */}
-      <div className={`transition-all duration-300 ${solidHeader ? 'bg-primary-950 text-white dark:bg-primary-950 dark:text-neutral-100' : 'bg-primary-950 text-white/90 dark:bg-primary-950 dark:text-neutral-100/90'}`}>
-        <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2 text-xs">
+      <div className={`transition-all duration-300 ${solidHeader ? 'bg-[#1a1a2e] text-white dark:bg-[#1a1a2e] dark:text-neutral-100' : 'bg-[#1a1a2e] text-white/90 dark:bg-[#1a1a2e] dark:text-neutral-100/90'}`}>
+        <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-1 text-xs">
           <div className="flex items-center gap-4">
             {clinic?.phone && (
-              <a href={`tel:${clinic.phone}`} className="flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+              <a href={`tel:${clinic.phone}`} className="flex items-center gap-1.5 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] transition-all">
                 <Phone className="w-3 h-3" />
                 {clinic.phone}
               </a>
             )}
             {clinic?.email && (
-              <a href={`mailto:${clinic.email}`} className="hidden sm:flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+              <a href={`mailto:${clinic.email}`} className="hidden sm:flex items-center gap-1.5 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] transition-all">
                 <span className="w-3 h-3 flex items-center justify-center">✉</span>
                 {clinic.email}
               </a>
@@ -71,7 +71,7 @@ export function Navbar({ clinic }: NavbarProps) {
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
               Emergency 24/7
             </span>
-            <a href="#" className="flex items-center gap-1.5 hover:text-primary-300 transition-colors">
+            <a href="#" className="flex items-center gap-1.5 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] transition-all">
               <MessageCircle className="w-3 h-3" />
               WhatsApp
             </a>
