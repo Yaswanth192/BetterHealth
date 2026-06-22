@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Calendar, MessageSquare, Users, Settings,
-  LogOut, Menu, X, Activity, ChevronRight, Bell, Sun, Moon
+  LogOut, Menu, X, Activity, ChevronRight, Bell, Sun, Moon,
+  Image, Lightbulb, Package, HelpCircle, ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -15,7 +16,13 @@ const navItems = [
   { to: '/admin/messages', icon: MessageSquare, label: 'Messages' },
   { to: '/admin/doctors', icon: Users, label: 'Doctors' },
   { to: '/admin/services', icon: Activity, label: 'Services' },
-  { to: '/admin/settings', icon: Settings, label: 'Settings' },
+];
+
+const contentItems = [
+  { to: '/admin/hospital-images', icon: Image, label: 'Hospital Images' },
+  { to: '/admin/health-tips', icon: Lightbulb, label: 'Health Tips' },
+  { to: '/admin/health-packages', icon: Package, label: 'Health Packages' },
+  { to: '/admin/faq', icon: HelpCircle, label: 'FAQ' },
 ];
 
 export function AdminLayout() {
@@ -25,7 +32,8 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [clinic, setClinic] = useState<any | null>(null);
+  const [contentOpen, setContentOpen] = useState(false);
+  const [clinic, setClinic] = useState<Record<string, unknown> | null>(null);
   const publicSitePath = typeof window !== 'undefined' && window.location.hostname === 'localhost' && clinic?.slug ? `/${clinic.slug}` : '/';
   const totalNotifications = counts.pendingAppointments + counts.unreadMessages;
 
@@ -106,6 +114,63 @@ export function AdminLayout() {
               )}
             </NavLink>
           ))}
+
+          {/* Content Group */}
+          <div>
+            <button
+              onClick={() => setContentOpen(!contentOpen)}
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100"
+            >
+              <Package className="w-5 h-5 flex-shrink-0 text-neutral-400 dark:text-neutral-500" />
+              Content
+              <ChevronDown className={`w-4 h-4 ml-auto transition-transform duration-200 ${contentOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {contentOpen && (
+              <div className="ml-4 mt-1 space-y-1">
+                {contentItems.map(({ to, icon: Icon, label }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    onClick={() => setSidebarOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 group ${
+                        isActive
+                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                          : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-400 dark:text-neutral-500'}`} />
+                        {label}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <NavLink
+            to="/admin/settings"
+            onClick={() => setSidebarOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
+                isActive
+                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                  : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Settings className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300'}`} />
+                Settings
+                {isActive && <ChevronRight className="w-4 h-4 ml-auto text-primary-400 dark:text-primary-300" />}
+              </>
+            )}
+          </NavLink>
         </nav>
 
         {/* User */}

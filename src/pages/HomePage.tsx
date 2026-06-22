@@ -6,6 +6,8 @@ import { ServicesMarquee } from '../components/sections/ServicesMarquee';
 import { AboutUsSection } from '../components/sections/AboutUsSection';
 import { ServicesSection } from '../components/sections/ServicesSection';
 import { DoctorsSection } from '../components/sections/DoctorsSection';
+import { HospitalImagesCarousel } from '../components/sections/HospitalImagesCarousel';
+import { HospitalImagesParallax } from '../components/sections/HospitalImagesParallax';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { InsuranceSection } from '../components/sections/InsuranceSection';
 import { BlogSection } from '../components/sections/BlogSection';
@@ -23,7 +25,7 @@ import { Navigate, useParams } from 'react-router-dom';
 
 export function HomePage() {
   const { slug, page } = useParams<{ slug?: string; page?: string }>();
-  const { clinic, services, doctors, timings, testimonials, faqs, loading, error } = useClinicData(slug);
+  const { clinic, services, doctors, timings, testimonials, faqs, blogPosts, healthPackages, architectureImages, loading, error } = useClinicData(slug);
 
   if (loading) return <PageLoader />;
 
@@ -44,14 +46,27 @@ export function HomePage() {
   const clinicBasePath = `/${clinic.slug || slug || 'medicare-clinic'}`;
   const appointmentPath = `${clinicBasePath}/appointment`;
 
+  const sectionSettings: Record<string, { show: boolean; useDummies: boolean }> = (clinic as Record<string, unknown>).section_settings as Record<string, { show: boolean; useDummies: boolean }> ?? {};
+  const faqSettings = sectionSettings.faq ?? { show: true, useDummies: true };
+  const healthTipsSettings = sectionSettings.healthTips ?? { show: true, useDummies: true };
+  const healthPackagesSettings = sectionSettings.healthPackages ?? { show: true, useDummies: true };
+  const architectureSettings = sectionSettings.architecture ?? { show: true, useDummies: true };
+
   const pages: Record<string, ReactNode> = {
-    services: <ServicesSection services={services} appointmentPath={appointmentPath} />,
+    services: (
+      <>
+        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} />
+        {architectureSettings.show && (
+          <HospitalImagesParallax images={architectureImages} />
+        )}
+      </>
+    ),
     doctors: <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />,
     appointment: <AppointmentSection clinic={clinic} doctors={doctors} services={services} />,
     testimonials: <TestimonialsSection testimonials={testimonials} />,
-    faq: <FAQSection faqs={faqs} />,
+    faq: faqSettings.show ? <FAQSection faqs={faqSettings.useDummies ? [] : faqs} /> : null,
     contact: <ContactSection clinic={clinic} timings={timings} />,
-    blog: <BlogPage />,
+    blog: <BlogPage posts={healthTipsSettings.useDummies ? [] : blogPosts} />,
     reviews: <ReviewsPage />,
   };
 
@@ -72,14 +87,21 @@ export function HomePage() {
       />
       <ServicesMarquee services={services} />
       <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} />
-      <ServicesSection services={services} appointmentPath={appointmentPath} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} />
       <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />
+      {architectureSettings.show && (
+        <HospitalImagesCarousel images={architectureImages} />
+      )}
       <TestimonialsSection testimonials={testimonials} />
       <InsuranceSection />
-      <BlogSection />
+      {healthTipsSettings.show && (
+        <BlogSection posts={healthTipsSettings.useDummies ? [] : blogPosts} />
+      )}
       <EmergencyBanner clinic={clinic} />
       <ContactSection clinic={clinic} timings={timings} />
-      <FAQSection faqs={faqs} />
+      {faqSettings.show && (
+        <FAQSection faqs={faqSettings.useDummies ? [] : faqs} />
+      )}
       <CTASection clinic={clinic} appointmentPath={appointmentPath} />
     </>
   );

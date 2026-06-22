@@ -1,7 +1,12 @@
 import { Clock, ArrowRight } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { BlogPost as BlogPostType } from '../../types';
 
-interface BlogPost {
+interface BlogSectionProps {
+  posts: BlogPostType[];
+}
+
+interface FallbackBlogPost {
   id: string;
   title: string;
   excerpt: string;
@@ -12,7 +17,7 @@ interface BlogPost {
   date: string;
 }
 
-const fallbackPosts: BlogPost[] = [
+const fallbackPosts: FallbackBlogPost[] = [
   {
     id: '1',
     title: '5 Tips for a Healthy Heart',
@@ -45,8 +50,20 @@ const fallbackPosts: BlogPost[] = [
   },
 ];
 
-export function BlogSection() {
+export function BlogSection({ posts }: BlogSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
+  const displayPosts = posts.length > 0
+    ? posts.slice(0, 3).map(p => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt,
+        category: p.category,
+        image: p.image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+        readTime: p.read_time,
+        author: p.author,
+        date: p.publish_date,
+      }))
+    : fallbackPosts;
 
   return (
     <section className="section-padding bg-neutral-50 dark:bg-neutral-900">
@@ -61,7 +78,7 @@ export function BlogSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {fallbackPosts.map((post, i) => (
+          {displayPosts.map((post, i) => (
             <div
               key={post.id}
               className={`card overflow-hidden group transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Stethoscope, Heart, Brain, Bone, Eye, Baby, Microscope, Pill, Check, ArrowRight, MessageCircle, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ClinicService } from '../../types';
+import { ClinicService, HealthPackage } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface ServicesSectionProps {
   services: ClinicService[];
   appointmentPath: string;
+  healthPackages?: HealthPackage[];
+  showHealthPackages?: boolean;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -57,7 +59,7 @@ const healthPackages = [
   },
 ];
 
-export function ServicesSection({ services, appointmentPath }: ServicesSectionProps) {
+export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const [activeFilter, setActiveFilter] = useState('All');
   const displayServices = services.length > 0
@@ -67,6 +69,17 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
   const feeServices = services.length > 0
     ? services.filter(s => s.consultation_fee > 0)
     : fallbackServices;
+
+  const displayPackages = !showHealthPackages
+    ? []
+    : dbPackages.length > 0
+      ? dbPackages.map(p => ({
+          name: p.name,
+          price: p.price.toLocaleString(),
+          features: p.features ?? [],
+          popular: p.is_popular,
+        }))
+      : healthPackages;
 
   const filters = ['All', ...new Set(displayServices.map(s => {
     const words = s.title.split(' ');
@@ -204,13 +217,14 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
         </div>
 
         {/* Health Packages */}
+        {displayPackages.length > 0 && (
         <div className={`transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '400ms' }}>
           <div className="text-center mb-10">
             <span className="inline-block px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-semibold mb-4">Health Packages</span>
             <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Preventive Health Check-ups</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {healthPackages.map((pkg) => (
+            {displayPackages.map((pkg) => (
               <div key={pkg.name} className={`card p-6 relative ${pkg.popular ? 'ring-2 ring-primary-500 shadow-lg' : ''}`}>
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary-600 text-white text-xs font-semibold rounded-full">
@@ -241,6 +255,7 @@ export function ServicesSection({ services, appointmentPath }: ServicesSectionPr
             ))}
           </div>
         </div>
+        )}
 
         {/* CTA */}
         <div className="text-center mt-12">

@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Clock, User } from 'lucide-react';
+import { BlogPost as BlogPostType } from '../types';
 
-interface BlogPost {
+interface BlogPageProps {
+  posts?: BlogPostType[];
+}
+
+interface DisplayPost {
   id: string;
   title: string;
   excerpt: string;
@@ -12,7 +17,7 @@ interface BlogPost {
   date: string;
 }
 
-const allPosts: BlogPost[] = [
+const fallbackPosts: DisplayPost[] = [
   {
     id: '1',
     title: 'Understanding Seasonal Allergies in India',
@@ -95,10 +100,23 @@ const allPosts: BlogPost[] = [
   },
 ];
 
-const categories = ['All', 'Health Tips', 'Wellness', 'Pediatrics', 'Seasonal Health', 'Heart Health'];
-
-export function BlogPage() {
+export function BlogPage({ posts = [] }: BlogPageProps) {
   const [activeCategory, setActiveCategory] = useState('All');
+
+  const allPosts: DisplayPost[] = posts.length > 0
+    ? posts.map(p => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt,
+        category: p.category,
+        image: p.image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+        readTime: p.read_time,
+        author: p.author,
+        date: p.publish_date,
+      }))
+    : fallbackPosts;
+
+  const categories = ['All', ...new Set(allPosts.map(p => p.category))];
   const filtered = activeCategory === 'All' ? allPosts : allPosts.filter(p => p.category === activeCategory);
 
   return (

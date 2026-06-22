@@ -186,3 +186,14 @@ export interface HealthPackage {
   is_active: boolean;
   created_at: string;
 }
+
+export interface ArchitectureImage {
+  id: string;
+  clinic_id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}

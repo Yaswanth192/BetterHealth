@@ -28,6 +28,8 @@ CREATE TABLE public.clinics (
   instagram_url text DEFAULT ''::text,
   youtube_url text DEFAULT ''::text,
   twitter_url text DEFAULT ''::text,
+  book_button_color text DEFAULT '#f97316'::text,
+  section_settings jsonb DEFAULT '{"faq": {"show": true, "useDummies": true}, "healthTips": {"show": true, "useDummies": true}, "architecture": {"show": true, "useDummies": true}, "healthPackages": {"show": true, "useDummies": true}}'::jsonb,
   CONSTRAINT clinics_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.clinic_admins (
@@ -197,4 +199,16 @@ CREATE TABLE public.health_packages (
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT health_packages_pkey PRIMARY KEY (id),
   CONSTRAINT health_packages_clinic_id_fkey FOREIGN KEY (clinic_id) REFERENCES public.clinics(id)
+);
+CREATE TABLE public.architecture_images (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  clinic_id uuid NOT NULL,
+  title text NOT NULL DEFAULT ''::text,
+  description text NOT NULL DEFAULT ''::text,
+  image_url text NOT NULL,
+  sort_order integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT architecture_images_pkey PRIMARY KEY (id),
+  CONSTRAINT architecture_images_clinic_id_fkey FOREIGN KEY (clinic_id) REFERENCES public.clinics(id)
 );
