@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Search, Trash2, Mail, Phone, MessageSquare } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 import { ContactMessage } from '../../types';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
@@ -11,6 +12,7 @@ import { ToastContainer } from '../../components/ui/Toast';
 export function AdminMessagesPage() {
   const { clinicId } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
+  const { refresh: refreshNotifications } = useNotifications();
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -34,6 +36,7 @@ export function AdminMessagesPage() {
   async function markRead(id: string) {
     await supabase.from('contact_messages').update({ is_read: true }).eq('id', id);
     setMessages((prev) => prev.map((m) => m.id === id ? { ...m, is_read: true } : m));
+    refreshNotifications();
   }
 
   async function deleteMessage(id: string) {

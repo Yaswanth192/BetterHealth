@@ -73,16 +73,19 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
     service_id: string | null;
   }) {
     try {
-      const doctor = doctors.find(d => d.id === appointmentData.doctor_id);
-      if (!doctor?.whatsapp_number) {
-        console.warn('Doctor has no WhatsApp number set');
+      const doctor = appointmentData.doctor_id ? doctors.find(d => d.id === appointmentData.doctor_id) : null;
+      const recipientNumber = doctor?.whatsapp_number || clinic?.whatsapp_number;
+
+      if (!recipientNumber) {
+        console.warn('No WhatsApp number available (doctor or clinic)');
         return;
       }
 
       const service = services.find(s => s.id === appointmentData.service_id);
       const serviceTitle = service?.title || 'Not specified';
+      const doctorLabel = doctor ? `Dr. ${doctor.name}` : 'Any available doctor';
 
-      const whatsappMessage = `New Appointment Booked!\n\nPatient: ${appointmentData.patient_name}\nPhone: ${appointmentData.patient_phone}\nDate: ${appointmentData.preferred_date}\nTime: ${appointmentData.preferred_time}\nService: ${serviceTitle}\nMessage: ${appointmentData.message || 'None'}\n\n---\npls confirm appointment in admin`;
+      const whatsappMessage = `New Appointment Booked!\n\nPatient: ${appointmentData.patient_name}\nPhone: ${appointmentData.patient_phone}\nDoctor: ${doctorLabel}\nDate: ${appointmentData.preferred_date}\nTime: ${appointmentData.preferred_time}\nService: ${serviceTitle}\nMessage: ${appointmentData.message || 'None'}\n\n---\npls confirm appointment in admin`;
 
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const res = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp`, {
@@ -92,7 +95,7 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
-          to: doctor.whatsapp_number,
+          to: recipientNumber,
           message: whatsappMessage,
         }),
       });
@@ -101,10 +104,10 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
       if (!res.ok) {
         console.error('WhatsApp send failed:', data);
       } else {
-        console.log('WhatsApp sent to doctor:', data);
+        console.log('WhatsApp sent:', data);
       }
     } catch (err) {
-      console.error('Failed to send doctor notification:', err);
+      console.error('Failed to send notification:', err);
     }
   }
 
@@ -132,17 +135,15 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
     if (err) {
       setError('Failed to book appointment. Please try again or call us directly.');
     } else {
-      if (form.doctor_id) {
-        sendDoctorNotification({
-          patient_name: form.patient_name,
-          patient_phone: form.patient_phone,
-          preferred_date: form.preferred_date,
-          preferred_time: form.preferred_time,
-          message: form.message,
-          doctor_id: form.doctor_id,
-          service_id: form.service_id || null,
-        });
-      }
+      sendDoctorNotification({
+        patient_name: form.patient_name,
+        patient_phone: form.patient_phone,
+        preferred_date: form.preferred_date,
+        preferred_time: form.preferred_time,
+        message: form.message,
+        doctor_id: form.doctor_id,
+        service_id: form.service_id || null,
+      });
       setSubmitted(true);
       setForm({ patient_name: '', patient_email: '', patient_phone: '', doctor_id: '', service_id: '', preferred_date: '', preferred_time: '', message: '' });
     }

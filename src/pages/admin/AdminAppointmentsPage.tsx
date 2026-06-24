@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Search, Filter, Eye, CheckCircle, XCircle, Check, Calendar, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 import { Appointment, AppointmentStatus } from '../../types';
 import { AppointmentStatusBadge } from '../../components/admin/AppointmentStatusBadge';
 import { Modal } from '../../components/ui/Modal';
@@ -14,6 +15,7 @@ const STATUS_OPTIONS: AppointmentStatus[] = ['pending', 'confirmed', 'rejected',
 export function AdminAppointmentsPage() {
   const { clinicId } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
+  const { refresh: refreshNotifications } = useNotifications();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -37,7 +39,7 @@ export function AdminAppointmentsPage() {
     setLoading(false);
   }
 
-  async function updateStatus(id: string, status: AppointmentStatus, notesText?: string) {
+  async function updateStatus(id: string, status: AppointmentStatus, notesText?: string, apptData?: Appointment) {
     setUpdating(true);
     const { error } = await supabase
       .from('appointments')
@@ -50,10 +52,10 @@ export function AdminAppointmentsPage() {
       setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status, notes: notesText ?? '' } : a));
       if (selected?.id === id) setSelected({ ...selected, status, notes: notesText ?? '' });
       addToast('success', `Appointment ${status}`);
+      refreshNotifications();
 
-      if (status === 'confirmed') {
-        const appt = appointments.find(a => a.id === id) || selected;
-        if (appt) sendPatientConfirmation(appt);
+      if (status === 'confirmed' && apptData) {
+        sendPatientConfirmation(apptData);
       }
     }
     setUpdating(false);
@@ -212,10 +214,10 @@ export function AdminAppointmentsPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          {appt.status === 'pending' && (
+                           {appt.status === 'pending' && (
                             <>
                               <button
-                                onClick={() => updateStatus(appt.id, 'confirmed')}
+                                onClick={() => updateStatus(appt.id, 'confirmed', undefined, appt)}
                                 className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 transition-colors"
                                 title="Confirm"
                               >
@@ -315,7 +317,7 @@ export function AdminAppointmentsPage() {
                 {STATUS_OPTIONS.map((status) => (
                   <button
                     key={status}
-                    onClick={() => updateStatus(selected.id, status, notes)}
+                    onClick={() => updateStatus(selected.id, status, notes, selected)}
                     disabled={updating || selected.status === status}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-40 capitalize ${
                       selected.status === status

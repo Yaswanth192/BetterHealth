@@ -29,7 +29,7 @@ const contentItems = [
 
 export function AdminLayout() {
   const { signOut, user, adminRecord } = useAuth();
-  const { counts } = useNotifications();
+  const { counts, dismissAppointments, dismissMessages } = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -246,7 +246,7 @@ export function AdminLayout() {
                       {counts.pendingAppointments > 0 && (
                         <NavLink
                           to="/admin/appointments"
-                          onClick={() => setNotificationsOpen(false)}
+                          onClick={() => { dismissAppointments(); setNotificationsOpen(false); }}
                           className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                         >
                           <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
@@ -261,7 +261,7 @@ export function AdminLayout() {
                       {counts.unreadMessages > 0 && (
                         <NavLink
                           to="/admin/messages"
-                          onClick={() => setNotificationsOpen(false)}
+                          onClick={() => { dismissMessages(); setNotificationsOpen(false); }}
                           className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                         >
                           <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">

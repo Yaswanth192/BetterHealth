@@ -10,11 +10,15 @@ interface NotificationCounts {
 interface NotificationContextType {
   counts: NotificationCounts;
   refresh: () => Promise<void>;
+  dismissAppointments: () => void;
+  dismissMessages: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType>({
   counts: { pendingAppointments: 0, unreadMessages: 0 },
   refresh: async () => {},
+  dismissAppointments: () => {},
+  dismissMessages: () => {},
 });
 
 export function useNotifications() {
@@ -48,6 +52,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     });
   }, [clinicId]);
 
+  const dismissAppointments = useCallback(() => {
+    setCounts(prev => ({ ...prev, pendingAppointments: 0 }));
+  }, []);
+
+  const dismissMessages = useCallback(() => {
+    setCounts(prev => ({ ...prev, unreadMessages: 0 }));
+  }, []);
+
   useEffect(() => {
     refresh();
     const interval = setInterval(refresh, 30000);
@@ -55,7 +67,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   return (
-    <NotificationContext.Provider value={{ counts, refresh }}>
+    <NotificationContext.Provider value={{ counts, refresh, dismissAppointments, dismissMessages }}>
       {children}
     </NotificationContext.Provider>
   );
