@@ -23,9 +23,9 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
   const hasFallen = useRef(false);
 
   const stats = [
-    { value: '15+', label: 'Years' },
-    { value: '4.8★', label: 'Rating' },
-    { value: '50,000+', label: 'Patients' },
+    { value: clinic?.years_of_service ? `${clinic.years_of_service}+` : '15+', label: 'Years' },
+    { value: clinic?.google_rating ? `${clinic.google_rating}★` : '4.8★', label: 'Rating' },
+    { value: clinic?.patients_treated || '50,000+', label: 'Patients' },
   ];
 
   useEffect(() => {
@@ -108,14 +108,15 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
           {/* Left content */}
           <div>
             <h1 className="text-5xl sm:text-5xl lg:text-6xl font-bold font-heading text-white leading-[1.1] mb-6 animate-slide-up">
-              Caring for You &{' '}
+              {clinic?.hero_headline || 'Caring for You &'}{' '}
               <span className="bg-gradient-to-r from-primary-300 to-teal-300 bg-clip-text text-transparent">
-                Your Family
+                {(clinic?.hero_headline || 'Your Family').split(' ').slice(-2).join(' ')}
               </span>
             </h1>
 
             <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-xl animate-slide-up animate-delay-100 font-light">
-              Multi-specialty healthcare with a personal touch. 15+ years of trusted medical care in the heart of the community.
+              {clinic?.hero_subtitle || 'Multi-specialty healthcare with a personal touch.'}
+              {clinic?.years_of_service ? ` ${clinic.years_of_service}+ years of trusted medical care in the heart of the community.` : ''}
             </p>
 
             {/* Stats badges */}

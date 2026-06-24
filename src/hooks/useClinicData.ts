@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Clinic, ClinicService, ClinicDoctor, ClinicTiming, Testimonial, FAQ, BlogPost, HealthPackage, ArchitectureImage } from '../types';
+import { Clinic, ClinicService, ClinicDoctor, ClinicTiming, Testimonial, FAQ, BlogPost, HealthPackage, ArchitectureImage, InsuranceProvider, Certification } from '../types';
 
 function hexToRgb(hex: string): string {
   const h = hex.replace('#', '');
@@ -34,6 +34,8 @@ interface ClinicData {
   blogPosts: BlogPost[];
   healthPackages: HealthPackage[];
   architectureImages: ArchitectureImage[];
+  insuranceProviders: InsuranceProvider[];
+  certifications: Certification[];
   loading: boolean;
   error: string | null;
 }
@@ -48,6 +50,8 @@ export function useClinicData(slug?: string): ClinicData {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [healthPackages, setHealthPackages] = useState<HealthPackage[]>([]);
   const [architectureImages, setArchitectureImages] = useState<ArchitectureImage[]>([]);
+  const [insuranceProviders, setInsuranceProviders] = useState<InsuranceProvider[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,7 +103,7 @@ export function useClinicData(slug?: string): ClinicData {
       applyClinicColors(clinicData.primary_color, clinicData.secondary_color, clinicData.book_button_color);
     }
 
-    const [servicesRes, doctorsRes, timingsRes, testimonialsRes, faqsRes, blogRes, packagesRes, archRes] = await Promise.all([
+    const [servicesRes, doctorsRes, timingsRes, testimonialsRes, faqsRes, blogRes, packagesRes, archRes, insuranceRes, certRes] = await Promise.all([
       supabase.from('clinic_services').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
       supabase.from('clinic_doctors').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
       supabase.from('clinic_timings').select('*').eq('clinic_id', clinicData.id).order('day_of_week'),
@@ -108,6 +112,8 @@ export function useClinicData(slug?: string): ClinicData {
       supabase.from('blog_posts').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
       supabase.from('health_packages').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
       supabase.from('architecture_images').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
+      supabase.from('insurance_providers').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
+      supabase.from('certifications').select('*').eq('clinic_id', clinicData.id).eq('is_active', true).order('sort_order'),
     ]);
 
     if (servicesRes.error) console.error('Failed to fetch services:', servicesRes.error.message);
@@ -118,6 +124,8 @@ export function useClinicData(slug?: string): ClinicData {
     if (blogRes.error) console.error('Failed to fetch blog posts:', blogRes.error.message);
     if (packagesRes.error) console.error('Failed to fetch health packages:', packagesRes.error.message);
     if (archRes.error) console.error('Failed to fetch architecture images:', archRes.error.message);
+    if (insuranceRes.error) console.error('Failed to fetch insurance providers:', insuranceRes.error.message);
+    if (certRes.error) console.error('Failed to fetch certifications:', certRes.error.message);
 
     setServices(servicesRes.data ?? []);
     setDoctors(doctorsRes.data ?? []);
@@ -127,8 +135,10 @@ export function useClinicData(slug?: string): ClinicData {
     setBlogPosts(blogRes.data ?? []);
     setHealthPackages(packagesRes.data ?? []);
     setArchitectureImages(archRes.data ?? []);
+    setInsuranceProviders(insuranceRes.data ?? []);
+    setCertifications(certRes.data ?? []);
     setLoading(false);
   }
 
-  return { clinic, services, doctors, timings, testimonials, faqs, blogPosts, healthPackages, architectureImages, loading, error };
+  return { clinic, services, doctors, timings, testimonials, faqs, blogPosts, healthPackages, architectureImages, insuranceProviders, certifications, loading, error };
 }

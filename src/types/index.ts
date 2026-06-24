@@ -29,6 +29,23 @@ export interface Clinic {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  years_of_service: number;
+  patients_treated: string;
+  google_rating: number;
+  research_papers: string;
+  successful_surgeries: string;
+  awards_won: number;
+  combined_experience: string;
+  hero_headline: string;
+  hero_subtitle: string;
+  cta_headline: string;
+  cta_description: string;
+  emergency_title: string;
+  footer_description: string;
+  footer_tagline: string;
+  opening_hours_display: string;
+  process_steps: Array<{ title: string; description: string }>;
+  section_settings: Record<string, { show: boolean; useDummies: boolean }>;
 }
 
 export interface ClinicService {

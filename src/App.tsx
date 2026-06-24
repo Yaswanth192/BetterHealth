@@ -19,6 +19,7 @@ const AdminHospitalImagesPage = lazy(() => import('./pages/admin/AdminHospitalIm
 const AdminHealthTipsPage = lazy(() => import('./pages/admin/AdminHealthTipsPage').then(m => ({ default: m.AdminHealthTipsPage })));
 const AdminHealthPackagesPage = lazy(() => import('./pages/admin/AdminHealthPackagesPage').then(m => ({ default: m.AdminHealthPackagesPage })));
 const AdminFAQPage = lazy(() => import('./pages/admin/AdminFAQPage').then(m => ({ default: m.AdminFAQPage })));
+const AdminClinicInfoPage = lazy(() => import('./pages/admin/AdminClinicInfoPage').then(m => ({ default: m.AdminClinicInfoPage })));
 const DevPanelPage = lazy(() => import('./pages/dev/DevPanelPage').then(m => ({ default: m.DevPanelPage })));
 
 export default function App() {
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="health-tips" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminHealthTipsPage /> </Suspense>} />
             <Route path="health-packages" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminHealthPackagesPage /> </Suspense>} />
             <Route path="faq" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminFAQPage /> </Suspense>} />
+            <Route path="clinic-info" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminClinicInfoPage /> </Suspense>} />
             <Route path="settings" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminSettingsPage /> </Suspense>} />
           </Route>
 

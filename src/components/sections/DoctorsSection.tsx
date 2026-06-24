@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ClinicDoctor } from '../../types';
+import { ClinicDoctor, Clinic } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface DoctorsSectionProps {
   doctors: ClinicDoctor[];
   appointmentPath: string;
+  clinic?: Clinic | null;
 }
 
 const fallbackDoctors = [
@@ -60,7 +61,7 @@ const fallbackDoctors = [
   },
 ];
 
-export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps) {
+export function DoctorsSection({ doctors, appointmentPath, clinic }: DoctorsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors as unknown as ClinicDoctor[];
   const [activeFilter, setActiveFilter] = useState('All');
@@ -210,10 +211,10 @@ export function DoctorsSection({ doctors, appointmentPath }: DoctorsSectionProps
           <h3 className="text-2xl font-bold font-heading text-center mb-8">Our Collective Achievements</h3>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
-              { value: '45+', label: 'Research Papers' },
-              { value: '8,000+', label: 'Successful Surgeries' },
-              { value: '12', label: 'Awards Won' },
-              { value: '55+ Years', label: 'Combined Experience' },
+              { value: clinic?.research_papers || '45+', label: 'Research Papers' },
+              { value: clinic?.successful_surgeries || '8,000+', label: 'Successful Surgeries' },
+              { value: clinic?.awards_won ? String(clinic.awards_won) : '12', label: 'Awards Won' },
+              { value: clinic?.combined_experience || '55+ Years', label: 'Combined Experience' },
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-3xl font-bold mb-1">{stat.value}</div>

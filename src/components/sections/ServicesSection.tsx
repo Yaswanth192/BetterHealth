@@ -9,6 +9,7 @@ interface ServicesSectionProps {
   appointmentPath: string;
   healthPackages?: HealthPackage[];
   showHealthPackages?: boolean;
+  clinic?: import('../../types').Clinic | null;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -59,7 +60,7 @@ const healthPackages = [
   },
 ];
 
-export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true }: ServicesSectionProps) {
+export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true, clinic }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const [activeFilter, setActiveFilter] = useState('All');
   const displayServices = services.length > 0
@@ -201,13 +202,13 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
             <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">How It Works</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <div key={step.num} className="text-center relative">
-                {i < processSteps.length - 1 && (
+            {(clinic?.process_steps?.length ? clinic.process_steps : processSteps).map((step, i) => (
+              <div key={i} className="text-center relative">
+                {i < (clinic?.process_steps?.length || processSteps.length) - 1 && (
                   <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] border-t-2 border-dashed border-primary-300" />
                 )}
                 <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-4 relative z-10">
-                  {step.num}
+                  {'num' in step ? step.num : i + 1}
                 </div>
                 <h4 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2">{step.title}</h4>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">{step.description}</p>
@@ -261,12 +262,14 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
         <div className="text-center mt-12">
           <p className="text-neutral-600 dark:text-neutral-300 mb-4">Not sure which specialty? Call us for guidance.</p>
           <div className="flex justify-center gap-3">
-            <a href="tel:+919876500999" className="btn-primary bg-primary-600 hover:bg-primary-700">
+            <a href={`tel:${(clinic?.emergency_phone || clinic?.phone || '+919876500999').replace(/\s/g, '')}`} className="btn-primary bg-primary-600 hover:bg-primary-700">
               <Phone className="w-4 h-4" /> Call Us
             </a>
-            <a href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
-              <MessageCircle className="w-4 h-4" /> WhatsApp
-            </a>
+            {clinic?.whatsapp_number && (
+              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
+                <MessageCircle className="w-4 h-4" /> WhatsApp
+              </a>
+            )}
           </div>
         </div>
       </div>

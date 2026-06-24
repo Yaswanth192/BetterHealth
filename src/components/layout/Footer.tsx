@@ -23,12 +23,14 @@ export function Footer({ clinic }: FooterProps) {
               <span className="text-xl font-bold">{clinic?.name || 'Clinic'}</span>
             </div>
             <p className="text-neutral-400 text-sm leading-relaxed mb-4">
-              {clinic?.description || 'Serving families since 2015. Providing compassionate, evidence-based care.'}
+              {clinic?.footer_description || clinic?.description || 'Serving families since 2015. Providing compassionate, evidence-based care.'}
             </p>
-            <a href="#" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp
-            </a>
+            {clinic?.whatsapp_number && (
+              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </a>
+            )}
           </div>
 
           {/* Quick Links */}
@@ -70,7 +72,7 @@ export function Footer({ clinic }: FooterProps) {
                   Emergency 24/7
                 </span>
                 <span className="flex items-start gap-3 text-neutral-300 text-sm ml-7">
-                  {clinic?.phone || '+91 98765 00999'}
+                  {clinic?.emergency_phone || clinic?.phone || '+91 98765 00999'}
                 </span>
               </li>
               {clinic?.email && (
@@ -95,7 +97,7 @@ export function Footer({ clinic }: FooterProps) {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-500 mb-4">Hours</h4>
             <div className="flex items-center gap-2 text-neutral-300 text-sm">
               <Clock className="w-4 h-4 text-primary-400" />
-              9 AM – 10 PM
+              {clinic?.opening_hours_display || '9 AM – 10 PM'}
             </div>
           </div>
         </div>
@@ -105,7 +107,7 @@ export function Footer({ clinic }: FooterProps) {
             &copy; {year} {clinic?.name || 'Clinic'}. All rights reserved.
           </p>
           <p className="text-neutral-600 text-xs">
-            Designed for better healthcare delivery
+            {clinic?.footer_tagline || 'Designed for better healthcare delivery'}
           </p>
         </div>
       </div>

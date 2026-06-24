@@ -1,16 +1,21 @@
 import { Shield, MessageCircle } from 'lucide-react';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { InsuranceProvider, Certification, Clinic } from '../../types';
 
-const insuranceProviders = [
-  'Star Health', 'HDFC Ergo', 'ICICI Lombard', 'Bajaj Allianz', 'New India Assurance', 'Max Bupa',
-];
+interface InsuranceSectionProps {
+  insuranceProviders?: InsuranceProvider[];
+  certifications?: Certification[];
+  clinic?: Clinic | null;
+}
 
-const certifications = [
-  'NABH Accredited', 'ISO 9001:2015', 'AERB Licensed', 'Fire Safety Certified',
-];
+const fallbackProviders = ['Star Health', 'HDFC Ergo', 'ICICI Lombard', 'Bajaj Allianz', 'New India Assurance', 'Max Bupa'];
+const fallbackCertifications = ['NABH Accredited', 'ISO 9001:2015', 'AERB Licensed', 'Fire Safety Certified'];
 
-export function InsuranceSection() {
+export function InsuranceSection({ insuranceProviders = [], certifications = [], clinic }: InsuranceSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
+  const displayProviders = insuranceProviders.length > 0 ? insuranceProviders.map(p => p.name) : fallbackProviders;
+  const displayCerts = certifications.length > 0 ? certifications.map(c => c.name) : fallbackCertifications;
+  const whatsappNumber = clinic?.whatsapp_number?.replace(/\s/g, '') || '';
 
   return (
     <section className="section-padding bg-white dark:bg-neutral-900">
@@ -25,20 +30,24 @@ export function InsuranceSection() {
           </h2>
 
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {insuranceProviders.map((provider) => (
+            {displayProviders.map((provider) => (
               <div key={provider} className="px-6 py-3 rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm hover:border-primary-400 hover:text-primary-700 transition-colors">
                 {provider}
               </div>
             ))}
           </div>
 
-          <a
-            href="#"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
-          >
-            <MessageCircle className="w-5 h-5" />
-            Check Insurance Coverage on WhatsApp
-          </a>
+          {whatsappNumber && (
+            <a
+              href={`https://wa.me/${whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Check Insurance Coverage on WhatsApp
+            </a>
+          )}
         </div>
 
         {/* Certifications */}
@@ -47,7 +56,7 @@ export function InsuranceSection() {
             Certifications & Accreditations
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
-            {certifications.map((cert) => (
+            {displayCerts.map((cert) => (
               <div key={cert} className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-neutral-200 dark:border-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-200">
                 <Shield className="w-4 h-4 text-primary-500" />
                 {cert}

@@ -5,9 +5,10 @@ import { Clinic } from '../../types';
 interface AboutUsSectionProps {
   clinic: Clinic | null;
   doctorsPath: string;
+  doctorsCount?: number;
 }
 
-export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
+export function AboutUsSection({ clinic, doctorsPath, doctorsCount }: AboutUsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
 
   return (
@@ -24,7 +25,7 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
               />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-primary-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">
-              Since 2015
+              {clinic?.founded_year ? `Since ${clinic.founded_year}` : 'Since 2015'}
             </div>
           </div>
 
@@ -34,7 +35,7 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
               About Us
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100 mb-6">
-              Trusted Healthcare Since 2015
+              Trusted Healthcare{clinic?.founded_year ? ` Since ${clinic.founded_year}` : ''}
             </h2>
             <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed mb-8">
               {clinic?.description || 'Our clinic was founded with a simple mission — to make quality healthcare accessible and affordable for every family. Our team of specialists across multiple departments delivers compassionate, evidence-based care using state-of-the-art equipment.'}
@@ -43,15 +44,15 @@ export function AboutUsSection({ clinic, doctorsPath }: AboutUsSectionProps) {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
-                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">15+</div>
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">{clinic?.years_of_service ? `${clinic.years_of_service}+` : '15+'}</div>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Years of Service</div>
               </div>
               <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
-                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">12</div>
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">{doctorsCount || '12'}</div>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Expert Doctors</div>
               </div>
               <div className="text-center p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700">
-                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">4.8</div>
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">{clinic?.google_rating || '4.8'}</div>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Google Rating</div>
               </div>
             </div>

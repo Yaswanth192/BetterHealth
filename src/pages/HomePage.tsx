@@ -25,7 +25,7 @@ import { Navigate, useParams } from 'react-router-dom';
 
 export function HomePage() {
   const { slug, page } = useParams<{ slug?: string; page?: string }>();
-  const { clinic, services, doctors, timings, testimonials, faqs, blogPosts, healthPackages, architectureImages, loading, error } = useClinicData(slug);
+  const { clinic, services, doctors, timings, testimonials, faqs, blogPosts, healthPackages, architectureImages, insuranceProviders, certifications, loading, error } = useClinicData(slug);
 
   if (loading) return <PageLoader />;
 
@@ -46,7 +46,7 @@ export function HomePage() {
   const clinicBasePath = `/${clinic.slug || slug || 'medicare-clinic'}`;
   const appointmentPath = `${clinicBasePath}/appointment`;
 
-  const sectionSettings: Record<string, { show: boolean; useDummies: boolean }> = (clinic as Record<string, unknown>).section_settings as Record<string, { show: boolean; useDummies: boolean }> ?? {};
+  const sectionSettings = clinic?.section_settings ?? {};
   const faqSettings = sectionSettings.faq ?? { show: true, useDummies: true };
   const healthTipsSettings = sectionSettings.healthTips ?? { show: true, useDummies: true };
   const healthPackagesSettings = sectionSettings.healthPackages ?? { show: true, useDummies: true };
@@ -55,7 +55,7 @@ export function HomePage() {
   const pages: Record<string, ReactNode> = {
     services: (
       <>
-        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} />
+        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
         {architectureSettings.show && (
           <HospitalImagesParallax images={architectureImages} />
         )}
@@ -86,14 +86,14 @@ export function HomePage() {
         services={services}
       />
       <ServicesMarquee services={services} />
-      <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} />
-      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} />
-      <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />
+      <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} doctorsCount={doctors.length} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
+      <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} />
       {architectureSettings.show && (
         <HospitalImagesCarousel images={architectureImages} />
       )}
       <TestimonialsSection testimonials={testimonials} />
-      <InsuranceSection />
+      <InsuranceSection insuranceProviders={insuranceProviders} certifications={certifications} clinic={clinic} />
       {healthTipsSettings.show && (
         <BlogSection posts={healthTipsSettings.useDummies ? [] : blogPosts} />
       )}
