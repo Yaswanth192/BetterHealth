@@ -24,6 +24,7 @@ interface DoctorForm {
   available_days: string;
   open_time: string;
   close_time: string;
+  whatsapp_number: string;
   sort_order: number;
   is_active: boolean;
 }
@@ -35,7 +36,7 @@ const EMPTY_FORM: DoctorForm = {
   qualifications: '', experience_years: '', languages: 'English, Hindi',
   is_director: false, director_bio: '', director_quote: '',
   available_days: '', open_time: '09:00', close_time: '17:00',
-  sort_order: 0, is_active: true,
+  whatsapp_number: '', sort_order: 0, is_active: true,
 };
 
 interface DoctorFormModalProps {
@@ -73,6 +74,7 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
           available_days: editing.available_days?.join(', ') ?? '',
           open_time: editing.open_time || '09:00',
           close_time: editing.close_time || '17:00',
+          whatsapp_number: editing.whatsapp_number ?? '',
           sort_order: editing.sort_order,
           is_active: editing.is_active,
         });
@@ -200,6 +202,40 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
             <input type="time" value={form.close_time} onChange={(e) => setField('close_time', e.target.value)} className="input-field" />
           </div>
         </div>
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">WhatsApp Number</label>
+          <div className="flex gap-2">
+            <select
+              value={form.whatsapp_number ? (form.whatsapp_number.startsWith('+91') ? '+91' : form.whatsapp_number.startsWith('+1') ? '+1' : form.whatsapp_number.startsWith('+44') ? '+44' : form.whatsapp_number.startsWith('+61') ? '+61' : form.whatsapp_number.startsWith('+971') ? '+971' : '+91') : '+91'}
+              onChange={(e) => {
+                const currentNumber = form.whatsapp_number.replace(/^\+\d{1,4}/, '');
+                setField('whatsapp_number', `${e.target.value}${currentNumber}`);
+              }}
+              className="input-field w-24 appearance-none"
+            >
+              <option value="+91">+91 🇮🇳</option>
+              <option value="+1">+1 🇺🇸</option>
+              <option value="+44">+44 🇬🇧</option>
+              <option value="+61">+61 🇦🇺</option>
+              <option value="+971">+971 🇦🇪</option>
+            </select>
+            <input
+              type="tel"
+              value={form.whatsapp_number.replace(/^\+\d{1,4}/, '')}
+              onChange={(e) => {
+                const country = form.whatsapp_number.match(/^\+\d{1,4}/)?.[0] || '+91';
+                const digits = e.target.value.replace(/[^0-9]/g, '');
+                setField('whatsapp_number', `${country}${digits}`);
+              }}
+              className="input-field flex-1"
+              placeholder="98765 43210"
+            />
+          </div>
+          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Include country code. Used for automated WhatsApp notifications.</p>
+          {form.whatsapp_number && (
+            <p className="mt-1 text-xs text-primary-600 dark:text-primary-400">Preview: {form.whatsapp_number}</p>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <input type="checkbox" id="doctor-active" checked={form.is_active} onChange={(e) => setField('is_active', e.target.checked)} className="w-4 h-4 accent-primary-600" />
           <label htmlFor="doctor-active" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Active (visible on website)</label>
@@ -283,6 +319,7 @@ export function AdminDoctorsPage() {
       available_days: form.available_days.split(',').map((d) => d.trim()).filter(Boolean),
       open_time: form.open_time,
       close_time: form.close_time,
+      whatsapp_number: form.whatsapp_number,
       sort_order: form.sort_order,
       is_active: form.is_active,
     };

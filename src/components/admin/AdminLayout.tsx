@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { supabase } from '../../lib/supabase';
+import { applyClinicColors } from '../../hooks/useClinicData';
 
 const navItems = [
   { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -48,6 +49,9 @@ export function AdminLayout() {
       if (!adminRecord?.clinic_id) return setClinic(null);
       const { data } = await supabase.from('clinics').select('*').eq('id', adminRecord!.clinic_id).maybeSingle();
       setClinic(data ?? null);
+      if (data?.primary_color) {
+        applyClinicColors(data.primary_color, data.secondary_color, data.book_button_color);
+      }
     }
 
     fetchClinic();

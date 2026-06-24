@@ -26,7 +26,7 @@ export function Footer({ clinic }: FooterProps) {
               {clinic?.footer_description || clinic?.description || 'Serving families since 2015. Providing compassionate, evidence-based care.'}
             </p>
             {clinic?.whatsapp_number && (
-              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
+              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
               </a>

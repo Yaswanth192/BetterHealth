@@ -28,7 +28,7 @@ export function CTASection({ clinic, appointmentPath }: CTASectionProps) {
           </Link>
           {whatsappNumber && (
             <a
-              href={`https://wa.me/${whatsappNumber}`}
+              href={`https://wa.me/${whatsappNumber}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors text-base"

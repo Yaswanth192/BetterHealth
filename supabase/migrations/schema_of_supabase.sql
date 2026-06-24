@@ -73,6 +73,7 @@ CREATE TABLE public.clinic_doctors (
   open_time text NOT NULL DEFAULT '06:00'::text,
   close_time text NOT NULL DEFAULT '21:00'::text,
   languages ARRAY DEFAULT '{English,Hindi}'::text[],
+  whatsapp_number text DEFAULT ''::text,
   is_director boolean DEFAULT false,
   director_bio text DEFAULT ''::text,
   director_quote text DEFAULT ''::text,

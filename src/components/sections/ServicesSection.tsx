@@ -266,7 +266,7 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
               <Phone className="w-4 h-4" /> Call Us
             </a>
             {clinic?.whatsapp_number && (
-              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
+              <a href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
                 <MessageCircle className="w-4 h-4" /> WhatsApp
               </a>
             )}

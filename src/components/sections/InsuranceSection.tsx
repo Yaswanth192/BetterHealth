@@ -39,7 +39,7 @@ export function InsuranceSection({ insuranceProviders = [], certifications = [],
 
           {whatsappNumber && (
             <a
-              href={`https://wa.me/${whatsappNumber}`}
+              href={`https://wa.me/${whatsappNumber}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"

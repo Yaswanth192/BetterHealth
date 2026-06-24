@@ -50,8 +50,56 @@ export function AdminAppointmentsPage() {
       setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status, notes: notesText ?? '' } : a));
       if (selected?.id === id) setSelected({ ...selected, status, notes: notesText ?? '' });
       addToast('success', `Appointment ${status}`);
+
+      if (status === 'confirmed') {
+        const appt = appointments.find(a => a.id === id) || selected;
+        if (appt) sendPatientConfirmation(appt);
+      }
     }
     setUpdating(false);
+  }
+
+  async function sendPatientConfirmation(appt: Appointment) {
+    try {
+      if (!appt.patient_phone) {
+        console.warn('Patient has no phone number');
+        return;
+      }
+
+      const { data: clinicData } = await supabase
+        .from('clinics')
+        .select('name, address')
+        .eq('id', clinicId!)
+        .single();
+
+      const doctorName = (appt.clinic_doctors as any)?.name || 'Any available doctor';
+      const clinicName = clinicData?.name || 'Our Clinic';
+      const clinicAddress = clinicData?.address || '';
+
+      const whatsappMessage = `Hi ${appt.patient_name}, your appointment is confirmed!\n\nDoctor: Dr. ${doctorName}\nDate: ${appt.preferred_date}\nTime: ${appt.preferred_time}\nClinic: ${clinicName}${clinicAddress ? `\nAddress: ${clinicAddress}` : ''}`;
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          to: appt.patient_phone,
+          message: whatsappMessage,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('WhatsApp send failed:', data);
+      } else {
+        console.log('WhatsApp sent to patient:', data);
+      }
+    } catch (err) {
+      console.error('Failed to send patient confirmation:', err);
+    }
   }
 
   async function deleteAppointment(id: string) {

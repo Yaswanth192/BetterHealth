@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Calendar, Clock, User, Phone, Mail, MessageSquare, CheckCircle, Stethoscope } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Calendar, Clock, User, Phone, Mail, MessageSquare, CheckCircle, Stethoscope, AlertTriangle } from 'lucide-react';
 import { Clinic, ClinicDoctor, ClinicService } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
@@ -32,8 +32,81 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [conflictCount, setConflictCount] = useState(0);
+  const [selectedDoctorName, setSelectedDoctorName] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
+
+  const checkSlotConflict = useCallback(async () => {
+    if (!form.doctor_id || !form.preferred_date || !form.preferred_time) return;
+
+    const { count } = await supabase
+      .from('appointments')
+      .select('*', { count: 'exact', head: true })
+      .eq('doctor_id', form.doctor_id)
+      .eq('preferred_date', form.preferred_date)
+      .eq('preferred_time', form.preferred_time)
+      .in('status', ['pending', 'confirmed']);
+
+    if (count && count >= 5) {
+      const doctor = doctors.find(d => d.id === form.doctor_id);
+      setSelectedDoctorName(doctor?.name || 'the selected doctor');
+      setConflictCount(count);
+      setShowConflictDialog(true);
+    }
+  }, [form.doctor_id, form.preferred_date, form.preferred_time, doctors]);
+
+  useEffect(() => {
+    if (form.doctor_id && form.preferred_date && form.preferred_time) {
+      checkSlotConflict();
+    }
+  }, [form.doctor_id, form.preferred_date, form.preferred_time, checkSlotConflict]);
+
+  async function sendDoctorNotification(appointmentData: {
+    patient_name: string;
+    patient_phone: string;
+    preferred_date: string;
+    preferred_time: string;
+    message: string;
+    doctor_id: string;
+    service_id: string | null;
+  }) {
+    try {
+      const doctor = doctors.find(d => d.id === appointmentData.doctor_id);
+      if (!doctor?.whatsapp_number) {
+        console.warn('Doctor has no WhatsApp number set');
+        return;
+      }
+
+      const service = services.find(s => s.id === appointmentData.service_id);
+      const serviceTitle = service?.title || 'Not specified';
+
+      const whatsappMessage = `New Appointment Booked!\n\nPatient: ${appointmentData.patient_name}\nPhone: ${appointmentData.patient_phone}\nDate: ${appointmentData.preferred_date}\nTime: ${appointmentData.preferred_time}\nService: ${serviceTitle}\nMessage: ${appointmentData.message || 'None'}\n\n---\npls confirm appointment in admin`;
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          to: doctor.whatsapp_number,
+          message: whatsappMessage,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('WhatsApp send failed:', data);
+      } else {
+        console.log('WhatsApp sent to doctor:', data);
+      }
+    } catch (err) {
+      console.error('Failed to send doctor notification:', err);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,6 +132,17 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
     if (err) {
       setError('Failed to book appointment. Please try again or call us directly.');
     } else {
+      if (form.doctor_id) {
+        sendDoctorNotification({
+          patient_name: form.patient_name,
+          patient_phone: form.patient_phone,
+          preferred_date: form.preferred_date,
+          preferred_time: form.preferred_time,
+          message: form.message,
+          doctor_id: form.doctor_id,
+          service_id: form.service_id || null,
+        });
+      }
       setSubmitted(true);
       setForm({ patient_name: '', patient_email: '', patient_phone: '', doctor_id: '', service_id: '', preferred_date: '', preferred_time: '', message: '' });
     }
@@ -285,6 +369,44 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
           </div>
         </div>
       </div>
+
+      {/* Conflict Dialog */}
+      {showConflictDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Busy Time Slot</h3>
+            </div>
+            <p className="text-neutral-600 dark:text-neutral-300 mb-1">
+              This time slot might take some time.
+            </p>
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-6">
+              {conflictCount}+ patients already booked for <strong>Dr. {selectedDoctorName}</strong> at <strong>{form.preferred_time}</strong> on <strong>{form.preferred_date}</strong>.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConflictDialog(false)}
+                className="flex-1 px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 font-medium rounded-xl transition-colors text-sm"
+              >
+                Choose Another Slot
+              </button>
+              <button
+                onClick={() => {
+                  setShowConflictDialog(false);
+                  const formEl = document.querySelector('#appointment form') as HTMLFormElement;
+                  if (formEl) formEl.requestSubmit();
+                }}
+                className="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors text-sm"
+              >
+                Continue Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

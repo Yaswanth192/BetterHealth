@@ -79,6 +79,7 @@ export interface ClinicDoctor {
   available_days: string[];
   open_time: string;
   close_time: string;
+  whatsapp_number: string;
   sort_order: number;
   is_active: boolean;
   created_at: string;

@@ -71,7 +71,7 @@ export function Navbar({ clinic }: NavbarProps) {
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
               Emergency 24/7
             </span>
-            <a href={clinic?.whatsapp_number ? `https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}` : '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] transition-all">
+            <a href={clinic?.whatsapp_number ? `https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic` : '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] transition-all">
               <MessageCircle className="w-3 h-3" />
               WhatsApp
             </a>
