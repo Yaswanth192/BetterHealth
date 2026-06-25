@@ -11,11 +11,10 @@ interface HospitalImagesParallaxProps {
 }
 
 const fallbackImages: HospitalImage[] = [
-  { title: 'Modern Reception', description: 'Our welcoming reception area designed for comfort', image_url: 'https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=1200' },
-  { title: 'Operation Theater', description: 'State-of-the-art surgical facilities', image_url: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=1200' },
-  { title: 'Patient Rooms', description: 'Comfortable and hygienic patient rooms', image_url: 'https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=1200' },
-  { title: 'Laboratory', description: 'Advanced diagnostic laboratory', image_url: 'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=1200' },
-  { title: 'Pharmacy', description: 'In-house pharmacy for all your medication needs', image_url: 'https://images.pexels.com/photos/5699516/pexels-photo-5699516.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { title: 'Modern Reception', description: 'Our welcoming reception area designed for your comfort. Walk in and feel the difference from the moment you arrive.', image_url: 'https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { title: 'Operation Theater', description: 'State-of-the-art surgical facilities with the latest technology for safe and precise procedures.', image_url: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { title: 'Patient Rooms', description: 'Comfortable, hygienic, and private rooms designed to make your recovery peaceful and relaxing.', image_url: 'https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { title: 'Diagnostic Lab', description: 'Advanced diagnostic laboratory with cutting-edge equipment for accurate and quick results.', image_url: 'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=1200' },
 ];
 
 export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) {
@@ -31,10 +30,10 @@ export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) 
       const rect = section.getBoundingClientRect();
       const sectionHeight = section.offsetHeight;
       const viewportHeight = window.innerHeight;
-      
+
       const scrolled = -rect.top;
       const totalScrollable = sectionHeight - viewportHeight;
-      
+
       if (scrolled >= 0 && totalScrollable > 0) {
         const progress = Math.min(scrolled / totalScrollable, 1);
         const idx = Math.min(
@@ -46,96 +45,93 @@ export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) 
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [displayImages.length]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative"
-      style={{ height: `${displayImages.length * 100}vh` }}
-    >
+    <section ref={sectionRef} className="relative bg-neutral-900" style={{ height: `${displayImages.length * 100}vh` }}>
       {/* Sticky container */}
       <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Background images with parallax */}
-        {displayImages.map((img, i) => {
-          const isActive = i === activeIndex;
-          const isPast = i < activeIndex;
-          
-          let translateY = '100%';
-          let opacity = 0;
-          let scale = 1;
-          
-          if (isActive) {
-            translateY = '0%';
-            opacity = 1;
-            scale = 1;
-          } else if (isPast) {
-            translateY = '-100%';
-            opacity = 0;
-            scale = 1.1;
-          } else {
-            translateY = '100%';
-            opacity = 0;
-            scale = 0.9;
-          }
-
-          return (
-            <div
-              key={i}
-              className="absolute inset-0 transition-all duration-700 ease-out"
-              style={{
-                transform: `translateY(${translateY}) scale(${scale})`,
-                opacity,
-              }}
-            >
-              <img
-                src={img.image_url}
-                alt={img.title}
-                className="w-full h-full object-cover"
-              />
-              {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40" />
-              
-              {/* Content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`text-center px-4 max-w-3xl transition-all duration-700 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                  <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white/80 border border-white/20 rounded-full text-sm font-semibold mb-4">
-                    Our Facility
-                  </span>
-                  <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-heading text-white mb-4">
-                    {img.title}
-                  </h2>
-                  <p className="text-white/70 text-lg sm:text-xl max-w-xl mx-auto">
+        <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-6">
+          {/* Left side - Text content */}
+          <div className="w-[40%] hidden md:flex flex-col justify-between h-full">
+            <div className="relative flex-1">
+              {displayImages.map((img, i) => (
+                <div
+                  key={i}
+                  className={`absolute inset-0 flex flex-col justify-center transition-all duration-500 ${
+                    i === activeIndex
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-8 pointer-events-none'
+                  }`}
+                >
+                  <h3 className="text-3xl lg:text-4xl font-bold font-heading text-white mb-4 leading-tight">
+                    {img.title.split(' ').map((word, wi) => (
+                      <span key={wi} className={wi === img.title.split(' ').length - 1 ? 'text-primary-400' : ''}>
+                        {word}{' '}
+                      </span>
+                    ))}
+                  </h3>
+                  <div className="w-16 h-0.5 bg-primary-400 mb-4" />
+                  <p className="text-neutral-400 text-sm leading-relaxed max-w-sm">
                     {img.description}
                   </p>
                 </div>
-              </div>
+              ))}
             </div>
-          );
-        })}
 
-        {/* Progress bar */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
-          {displayImages.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 rounded-full transition-all duration-500 ${
-                i === activeIndex
-                  ? 'w-12 bg-primary-400'
-                  : i < activeIndex
-                    ? 'w-6 bg-white/50'
-                    : 'w-6 bg-white/20'
-              }`}
-            />
-          ))}
-        </div>
+            {/* Progress dots */}
+            <div className="flex items-center gap-3 mt-8">
+              {displayImages.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-0.5 rounded-full transition-all duration-500 ${
+                    i === activeIndex
+                      ? 'w-10 bg-primary-400'
+                      : 'w-4 bg-white/20'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
 
-        {/* Image counter */}
-        <div className="absolute bottom-8 right-8 z-10">
-          <span className="text-white/50 text-sm font-mono">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(displayImages.length).padStart(2, '0')}
-          </span>
+          {/* Right side - Images */}
+          <div className="w-full md:w-[60%] h-full relative rounded-2xl overflow-hidden">
+            {displayImages.map((img, i) => (
+              <div
+                key={i}
+                className={`absolute inset-0 transition-all duration-700 ease-out ${
+                  i === activeIndex
+                    ? 'opacity-100 scale-100 z-10'
+                    : i < activeIndex
+                      ? 'opacity-0 scale-110 z-0'
+                      : 'opacity-0 scale-95 z-0'
+                }`}
+              >
+                <img
+                  src={img.image_url}
+                  alt={img.title}
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+
+                {/* Mobile title overlay */}
+                <div className="md:hidden absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold font-heading text-white mb-2">{img.title}</h3>
+                  <p className="text-white/70 text-sm">{img.description}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Image counter */}
+            <div className="absolute top-4 right-4 z-20">
+              <span className="text-white/50 text-sm font-mono bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
+                {String(activeIndex + 1).padStart(2, '0')} / {String(displayImages.length).padStart(2, '0')}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

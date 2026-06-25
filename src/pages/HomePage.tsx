@@ -8,6 +8,7 @@ import { ServicesSection } from '../components/sections/ServicesSection';
 import { DoctorsSection } from '../components/sections/DoctorsSection';
 import { HospitalImagesCarousel } from '../components/sections/HospitalImagesCarousel';
 import { HospitalImagesParallax } from '../components/sections/HospitalImagesParallax';
+import { HospitalImagesParallaxCSS } from '../components/sections/HospitalImagesParallaxCSS';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { InsuranceSection } from '../components/sections/InsuranceSection';
 import { BlogSection } from '../components/sections/BlogSection';
@@ -57,7 +58,7 @@ export function HomePage() {
       <>
         <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
         {architectureSettings.show && (
-          <HospitalImagesParallax images={architectureImages} />
+          <HospitalImagesParallaxCSS images={architectureImages} />
         )}
       </>
     ),
@@ -90,7 +91,7 @@ export function HomePage() {
       <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
       <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} />
       {architectureSettings.show && (
-        <HospitalImagesCarousel images={architectureImages} />
+        <HospitalImagesParallax images={architectureImages} />
       )}
       <TestimonialsSection testimonials={testimonials} />
       <InsuranceSection insuranceProviders={insuranceProviders} certifications={certifications} clinic={clinic} />
