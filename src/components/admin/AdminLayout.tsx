@@ -80,14 +80,14 @@ export function AdminLayout() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-neutral-100 dark:border-neutral-800">
           {clinic?.logo_url ? (
-            <img src={clinic.logo_url} alt={clinic.name} className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
+            <img src={clinic.logo_url as string} alt={clinic.name as string} className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
           ) : (
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center flex-shrink-0">
               <Activity className="w-5 h-5 text-white" />
             </div>
           )}
           <div className="min-w-0">
-            <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-sm">{clinic?.name || 'Clinic Admin'}</p>
+            <p className="font-bold text-neutral-900 dark:text-neutral-100 truncate text-sm">{(clinic?.name as string) || 'Clinic Admin'}</p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500 capitalize">{adminRecord?.role || 'staff'}</p>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto p-1 text-neutral-400 dark:text-neutral-500">

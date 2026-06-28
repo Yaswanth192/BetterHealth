@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { ImageCrop } from '../../components/ImageCrop';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -34,6 +35,8 @@ export function AdminServicesPage() {
   const [editing, setEditing] = useState<ClinicService | null>(null);
   const [form, setForm] = useState<ServiceForm>(EMPTY_FORM);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -191,7 +194,13 @@ export function AdminServicesPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Service Image</label>
-            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} className="input-field" />
+            <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropOpen(true); } }} className="input-field" />
+            {imageFile && (
+              <div className="mt-2 flex items-center gap-3">
+                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+                <button type="button" onClick={() => setImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+              </div>
+            )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Uploads to SellHealthStorage/clinics/{clinicId}/services/[serviceId]/image and saves the public URL into image_url.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -232,6 +241,14 @@ export function AdminServicesPage() {
           </div>
         </div>
       </Modal>
+      <ImageCrop
+        isOpen={cropOpen}
+        onClose={() => { setCropOpen(false); setCropFile(null); }}
+        file={cropFile}
+        onCrop={(blob) => setImageFile(new File([blob], 'service.jpg', { type: 'image/jpeg' }))}
+        aspect={16 / 9}
+        label="Crop Service Image"
+      />
     </>
   );
 }

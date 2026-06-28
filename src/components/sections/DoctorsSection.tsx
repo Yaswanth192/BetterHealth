@@ -8,6 +8,8 @@ interface DoctorsSectionProps {
   doctors: ClinicDoctor[];
   appointmentPath: string;
   clinic?: Clinic | null;
+  showDirector?: boolean;
+  showViewAll?: boolean;
 }
 
 const fallbackDoctors = [
@@ -61,7 +63,7 @@ const fallbackDoctors = [
   },
 ];
 
-export function DoctorsSection({ doctors, appointmentPath, clinic }: DoctorsSectionProps) {
+export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector = true, showViewAll = true }: DoctorsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors as unknown as ClinicDoctor[];
   const [activeFilter, setActiveFilter] = useState('All');
@@ -82,19 +84,21 @@ export function DoctorsSection({ doctors, appointmentPath, clinic }: DoctorsSect
     <section id="doctors" className="section-padding bg-white dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         {/* Header */}
-        <div className={`mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className={`mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${!showViewAll ? 'text-center' : ''}`}>
           <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
             Our Team
           </span>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className={`flex flex-col ${showViewAll ? 'sm:flex-row sm:items-end sm:justify-between' : 'items-center text-center'} gap-4`}>
             <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
               Meet Our Doctors
             </h2>
-            <Link to={`${appointmentPath}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold text-sm flex items-center gap-1">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
+            {showViewAll && (
+              <Link to={`${appointmentPath}`} className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold text-sm flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
           </div>
-          <p className="text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
+          <p className={`text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl ${!showViewAll ? 'mx-auto' : ''}`}>
             Experienced specialists dedicated to your well-being
           </p>
         </div>
@@ -117,30 +121,30 @@ export function DoctorsSection({ doctors, appointmentPath, clinic }: DoctorsSect
         </div>
 
         {/* Director spotlight */}
-        {activeFilter === 'All' && director && (
+        {showDirector && activeFilter === 'All' && director && (
           <div className={`card overflow-hidden mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
-              <div className="h-56 sm:h-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-[380px_1fr] gap-0">
+              <div className="h-64 sm:h-[420px]">
                 <img
                   src={director.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
                   alt={director.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
-              <div className="p-6 flex flex-col justify-center">
-                <span className="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-semibold mb-2 w-fit">
+              <div className="p-5 sm:p-6 flex flex-col justify-center">
+                <span className="inline-block px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 w-fit">
                   Meet Our Director
                 </span>
-                <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">{director.name}</h3>
-                <p className="text-primary-600 dark:text-primary-400 font-medium text-sm mb-3">{director.specialization}</p>
+                <h3 className="text-2xl font-heading font-bold text-neutral-900 dark:text-neutral-100 mb-0.5">{director.name}</h3>
+                <p className="text-teal-600 dark:text-teal-400 font-semibold text-sm mb-3">{director.specialization || 'Founder & Medical Director'}</p>
                 <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-3">
-                  {director.bio || `${director.name} founded our clinic with a vision to bring world-class healthcare to every family. With over ${director.experience_years} years of experience, he has treated thousands of patients.`}
+                  {director.director_bio || director.bio || `${director.name} founded our clinic with a vision to bring world-class healthcare to every family. With over ${director.experience_years} years of experience, he has treated thousands of patients.`}
                 </p>
                 {director.qualifications && director.qualifications.length > 0 && (
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{director.qualifications.join(', ')}</p>
                 )}
-                <blockquote className="border-l-3 border-primary-400 pl-3 italic text-neutral-600 dark:text-neutral-300 text-xs">
-                  "Every patient deserves to be treated like family. We don't just treat symptoms — we build lasting health."
+                <blockquote className="border-l-[3px] border-teal-500 pl-3 italic text-neutral-700 dark:text-neutral-200 text-sm leading-relaxed">
+                  "{director.director_quote || 'Every patient deserves to be treated like family. We don\'t just treat symptoms — we build lasting health.'}"
                 </blockquote>
               </div>
             </div>
@@ -148,59 +152,61 @@ export function DoctorsSection({ doctors, appointmentPath, clinic }: DoctorsSect
         )}
 
         {/* Doctor cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filtered.map((doctor, i) => (
             <div
               key={doctor.id || i}
               className={`card overflow-hidden transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               style={{ transitionDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={doctor.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
-                  alt={doctor.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-5">
-                <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-xl">{doctor.name}</h3>
-                <span className="inline-block px-2 py-0.5 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded-full text-xs font-medium mt-1">
-                  {doctor.specialization}
-                </span>
-                {doctor.qualifications && doctor.qualifications.length > 0 && (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">{doctor.qualifications.join(', ')}</p>
-                )}
-
-                <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
-                  <div>
-                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Experience</span>
-                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">{doctor.experience_years} Years</p>
-                  </div>
-                  <div>
-                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Languages</span>
-                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
-                      {doctor.languages?.length ? doctor.languages.join(', ') : 'English, Hindi'}
-                    </p>
-                  </div>
+              <div className="flex flex-col sm:flex-row">
+                <div className="relative w-full sm:w-48 h-64 sm:h-[260px] flex-shrink-0 overflow-hidden">
+                  <img
+                    src={doctor.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
+                    alt={doctor.name}
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
+                <div className="flex-1 p-5">
+                  <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">{doctor.name}</h3>
+                  <span className="inline-block px-2.5 py-0.5 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 rounded-full text-xs font-semibold mt-1">
+                    {doctor.specialization}
+                  </span>
+                  {doctor.qualifications && doctor.qualifications.length > 0 && (
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">{doctor.qualifications.join(', ')}</p>
+                  )}
 
-                {doctor.open_time && doctor.close_time && (
-                  <div className="mt-3 text-xs">
-                    <span className="text-neutral-400 dark:text-neutral-500 font-medium">Schedule</span>
-                    <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
-                      {doctor.available_days?.slice(0, 2).join('/') || 'Mon-Fri'} {doctor.open_time} - {doctor.close_time}
-                    </p>
+                  <div className="grid grid-cols-2 gap-3 mt-3 text-xs">
+                    <div>
+                      <span className="text-neutral-400 dark:text-neutral-500 font-medium uppercase tracking-wider text-[10px]">Experience</span>
+                      <p className="text-neutral-700 dark:text-neutral-200 font-semibold">{doctor.experience_years} Years</p>
+                    </div>
+                    <div>
+                      <span className="text-neutral-400 dark:text-neutral-500 font-medium uppercase tracking-wider text-[10px]">Languages</span>
+                      <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
+                        {doctor.languages?.length ? doctor.languages.join(', ') : 'English, Hindi'}
+                      </p>
+                    </div>
                   </div>
-                )}
 
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-3 line-clamp-2">{doctor.bio}</p>
+                  {doctor.open_time && doctor.close_time && (
+                    <div className="mt-2.5 text-xs">
+                      <span className="text-neutral-400 dark:text-neutral-500 font-medium uppercase tracking-wider text-[10px]">Schedule</span>
+                      <p className="text-neutral-700 dark:text-neutral-200 font-semibold">
+                        {doctor.available_days?.slice(0, 3).join('/') || 'Mon-Fri'} {doctor.open_time} - {doctor.close_time}
+                      </p>
+                    </div>
+                  )}
 
-                <Link
-                  to={appointmentPath}
-                  className="btn-book mt-4 w-full py-2.5 text-sm justify-center"
-                >
-                  Book with {doctor.name.split(' ').pop()}
-                </Link>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2.5 line-clamp-2">{doctor.bio}</p>
+
+                  <Link
+                    to={appointmentPath}
+                    className="inline-block mt-4 px-6 py-2.5 text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 rounded-full transition-colors"
+                  >
+                    Book with {doctor.name.split(' ').pop()}
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

@@ -208,7 +208,7 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
                   <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] border-t-2 border-dashed border-primary-300" />
                 )}
                 <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-4 relative z-10">
-                  {'num' in step ? step.num : i + 1}
+                  {'num' in step ? (step as { num: number }).num : i + 1}
                 </div>
                 <h4 className="font-bold text-neutral-900 dark:text-neutral-100 mb-2">{step.title}</h4>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">{step.description}</p>

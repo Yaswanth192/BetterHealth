@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClinicDoctor, ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { ImageCrop } from '../../components/ImageCrop';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -51,6 +52,8 @@ interface DoctorFormModalProps {
 const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing, services, clinicId, onSave }: DoctorFormModalProps) {
   const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const setField = useCallback(<K extends keyof DoctorForm>(key: K, value: DoctorForm[K]) => {
@@ -129,7 +132,13 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
         </div>
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Doctor Photo</label>
-          <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} className="input-field" />
+          <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropOpen(true); } }} className="input-field" />
+          {photoFile && (
+            <div className="mt-2 flex items-center gap-3">
+              <img src={URL.createObjectURL(photoFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+              <button type="button" onClick={() => setPhotoFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            </div>
+          )}
           <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Uploads to SellHealthStorage/clinics/{clinicId}/doctors/[doctorId]/photo and saves the public URL into image_url.</p>
         </div>
         <div>
@@ -247,6 +256,14 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
           <button onClick={onClose} className="btn-secondary">Cancel</button>
         </div>
       </div>
+      <ImageCrop
+        isOpen={cropOpen}
+        onClose={() => { setCropOpen(false); setCropFile(null); }}
+        file={cropFile}
+        onCrop={(blob) => setPhotoFile(new File([blob], 'doctor-photo.jpg', { type: 'image/jpeg' }))}
+        aspect={3 / 4}
+        label="Crop Doctor Photo"
+      />
     </Modal>
   );
 });
@@ -376,9 +393,9 @@ export function AdminDoctorsPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {doctors.length === 0 ? (
-            <div className="col-span-3 card dark:bg-neutral-800 text-center py-14">
+            <div className="col-span-2 card dark:bg-neutral-800 text-center py-14">
               <Users className="w-12 h-12 text-neutral-200 dark:text-neutral-600 mx-auto mb-3" />
               <p className="text-neutral-400 dark:text-neutral-500 mb-4">No doctors added yet</p>
               {services.length > 0 ? (
@@ -390,30 +407,32 @@ export function AdminDoctorsPage() {
           ) : (
             doctors.map((doctor) => (
               <div key={doctor.id} className={`card dark:bg-neutral-800 overflow-hidden ${!doctor.is_active ? 'opacity-60' : ''}`}>
-                <div className="h-40 bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
-                  {doctor.image_url ? (
-                    <img src={doctor.image_url} alt={doctor.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
-                      <Users className="w-12 h-12 text-primary-200 dark:text-primary-700" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">{doctor.name}</h3>
-                    {!doctor.is_active && <span className="badge bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">Inactive</span>}
+                <div className="flex flex-col sm:flex-row">
+                  <div className="w-full sm:w-40 h-48 sm:h-[180px] flex-shrink-0 bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+                    {doctor.image_url ? (
+                      <img src={doctor.image_url} alt={doctor.name} className="w-full h-full object-cover object-top" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
+                        <Users className="w-10 h-10 text-primary-200 dark:text-primary-700" />
+                      </div>
+                    )}
                   </div>
-                  <p className="text-xs text-primary-600 dark:text-primary-400 font-medium mb-2">{doctor.specialization}</p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">{doctor.experience_years} years experience</p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">{doctor.open_time} - {doctor.close_time}</p>
-                  <div className="flex gap-2 mt-3">
-                    <button onClick={() => openEdit(doctor)} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-lg transition-colors">
-                      <Pencil className="w-3.5 h-3.5" /> Edit
-                    </button>
-                    <button onClick={() => handleDelete(doctor.id)} className="py-2 px-3 text-xs font-medium bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                  <div className="flex-1 p-4">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">{doctor.name}</h3>
+                      {!doctor.is_active && <span className="badge bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">Inactive</span>}
+                    </div>
+                    <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">{doctor.specialization}</p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">{doctor.experience_years} years experience</p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{doctor.open_time} - {doctor.close_time}</p>
+                    <div className="flex gap-2 mt-3">
+                      <button onClick={() => openEdit(doctor)} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-lg transition-colors">
+                        <Pencil className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button onClick={() => handleDelete(doctor.id)} className="py-2 px-3 text-xs font-medium bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

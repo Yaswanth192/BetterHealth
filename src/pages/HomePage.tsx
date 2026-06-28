@@ -6,7 +6,6 @@ import { ServicesMarquee } from '../components/sections/ServicesMarquee';
 import { AboutUsSection } from '../components/sections/AboutUsSection';
 import { ServicesSection } from '../components/sections/ServicesSection';
 import { DoctorsSection } from '../components/sections/DoctorsSection';
-import { HospitalImagesCarousel } from '../components/sections/HospitalImagesCarousel';
 import { HospitalImagesParallax } from '../components/sections/HospitalImagesParallax';
 import { HospitalImagesParallaxCSS } from '../components/sections/HospitalImagesParallaxCSS';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
@@ -62,13 +61,13 @@ export function HomePage() {
         )}
       </>
     ),
-    doctors: <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} />,
+    doctors: <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} showDirector={true} showViewAll={false} />,
     appointment: <AppointmentSection clinic={clinic} doctors={doctors} services={services} />,
     testimonials: <TestimonialsSection testimonials={testimonials} />,
     faq: faqSettings.show ? <FAQSection faqs={faqSettings.useDummies ? [] : faqs} /> : null,
     contact: <ContactSection clinic={clinic} timings={timings} />,
     blog: <BlogPage posts={healthTipsSettings.useDummies ? [] : blogPosts} />,
-    reviews: <ReviewsPage />,
+    reviews: <ReviewsPage testimonials={testimonials} doctors={doctors} services={services} clinicId={clinic.id} />,
   };
 
   if (page && !pages[page]) {
@@ -89,7 +88,7 @@ export function HomePage() {
       <ServicesMarquee services={services} />
       <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} doctorsCount={doctors.length} />
       <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
-      <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} />
+      <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} showDirector={false} showViewAll={true} />
       {architectureSettings.show && (
         <HospitalImagesParallax images={architectureImages} />
       )}

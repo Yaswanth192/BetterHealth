@@ -6,6 +6,7 @@ import { ArchitectureImage } from '../../types';
 import { uploadPublicFile } from '../../lib/storage';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { ImageCrop } from '../../components/ImageCrop';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -39,6 +40,9 @@ export function AdminHospitalImagesPage() {
   const [inlineForm, setInlineForm] = useState<ImageForm>(EMPTY_FORM);
   const [inlineImageFile, setInlineImageFile] = useState<File | null>(null);
   const [inlineSaving, setInlineSaving] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<'modal' | 'inline'>('modal');
 
   useEffect(() => {
     if (clinicId) {
@@ -249,7 +253,13 @@ export function AdminHospitalImagesPage() {
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Image *</label>
-                <input type="file" accept="image/*" onChange={(e) => setInlineImageFile(e.target.files?.[0] ?? null)} className="input-field" />
+                <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('inline'); setCropOpen(true); } }} className="input-field" />
+                {inlineImageFile && (
+                  <div className="mt-2 flex items-center gap-3">
+                    <img src={URL.createObjectURL(inlineImageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+                    <button type="button" onClick={() => setInlineImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+                  </div>
+                )}
               </div>
             </div>
             <button
@@ -313,7 +323,13 @@ export function AdminHospitalImagesPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Image</label>
-            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} className="input-field" />
+            <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('modal'); setCropOpen(true); } }} className="input-field" />
+            {imageFile && (
+              <div className="mt-2 flex items-center gap-3">
+                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+                <button type="button" onClick={() => setImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -333,6 +349,18 @@ export function AdminHospitalImagesPage() {
           </div>
         </div>
       </Modal>
+      <ImageCrop
+        isOpen={cropOpen}
+        onClose={() => { setCropOpen(false); setCropFile(null); }}
+        file={cropFile}
+        onCrop={(blob) => {
+          const cropped = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+          if (cropTarget === 'inline') setInlineImageFile(cropped);
+          else setImageFile(cropped);
+        }}
+        aspect={16 / 9}
+        label="Crop Hospital Image"
+      />
     </>
   );
 }
