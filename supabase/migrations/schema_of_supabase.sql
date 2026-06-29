@@ -30,6 +30,8 @@ CREATE TABLE public.clinics (
   twitter_url text DEFAULT ''::text,
   book_button_color text DEFAULT '#f97316'::text,
   section_settings jsonb DEFAULT '{"faq": {"show": true, "useDummies": true}, "healthTips": {"show": true, "useDummies": true}, "architecture": {"show": true, "useDummies": true}, "healthPackages": {"show": true, "useDummies": true}}'::jsonb,
+  hero_image_url text DEFAULT ''::text,
+  about_image_url text DEFAULT ''::text,
   CONSTRAINT clinics_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.clinic_admins (

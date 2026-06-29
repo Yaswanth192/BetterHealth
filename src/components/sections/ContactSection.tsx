@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 import { Clinic, ClinicTiming } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { PhoneInput } from '../ui/PhoneInput';
 
 interface ContactSectionProps {
   clinic: Clinic | null;
@@ -167,12 +168,9 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1.5">Phone</label>
-                      <input
-                        type="tel"
+                      <PhoneInput
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="+1 (555) 000-0000"
-                        className="input-field"
+                        onChange={(phone) => setForm({ ...form, phone })}
                       />
                     </div>
                     <div>

@@ -45,6 +45,8 @@ export interface Clinic {
   footer_tagline: string;
   opening_hours_display: string;
   process_steps: Array<{ title: string; description: string }>;
+  hero_image_url: string;
+  about_image_url: string;
   section_settings: Record<string, { show: boolean; useDummies: boolean }>;
 }
 

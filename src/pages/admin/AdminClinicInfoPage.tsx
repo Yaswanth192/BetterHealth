@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Save, Info } from 'lucide-react';
+import { Save, Info, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { useToast } from '../../hooks/useToast';
@@ -16,6 +17,8 @@ interface ClinicInfoForm {
   combined_experience: string;
   hero_headline: string;
   hero_subtitle: string;
+  hero_image_url: string;
+  about_image_url: string;
   cta_headline: string;
   cta_description: string;
   emergency_title: string;
@@ -30,6 +33,8 @@ export function AdminClinicInfoPage() {
   const { toasts, addToast, removeToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [aboutImageFile, setAboutImageFile] = useState<File | null>(null);
   const [form, setForm] = useState<ClinicInfoForm>({
     years_of_service: '0',
     patients_treated: '0',
@@ -40,6 +45,8 @@ export function AdminClinicInfoPage() {
     combined_experience: '',
     hero_headline: '',
     hero_subtitle: '',
+    hero_image_url: '',
+    about_image_url: '',
     cta_headline: '',
     cta_description: '',
     emergency_title: '',
@@ -67,6 +74,8 @@ export function AdminClinicInfoPage() {
         combined_experience: data.combined_experience ?? '',
         hero_headline: data.hero_headline ?? 'Caring for You & Your Family',
         hero_subtitle: data.hero_subtitle ?? 'Multi-specialty healthcare with a personal touch.',
+        hero_image_url: data.hero_image_url ?? '',
+        about_image_url: data.about_image_url ?? '',
         cta_headline: data.cta_headline ?? 'Ready to Take the First Step?',
         cta_description: data.cta_description ?? 'Book a consultation with our expert doctors today. Walk-ins welcome.',
         emergency_title: data.emergency_title ?? '24/7 Emergency Services Available',
@@ -87,6 +96,24 @@ export function AdminClinicInfoPage() {
   async function handleSave() {
     setSaving(true);
     try {
+      let heroImageUrl = form.hero_image_url;
+      let aboutImageUrl = form.about_image_url;
+
+      if (heroImageFile) {
+        heroImageUrl = await uploadPublicFile(heroImageFile, {
+          bucket: 'SellHealthStorage',
+          path: `clinics/${clinicId}/hero`,
+          fileName: 'hero-image',
+        });
+      }
+      if (aboutImageFile) {
+        aboutImageUrl = await uploadPublicFile(aboutImageFile, {
+          bucket: 'SellHealthStorage',
+          path: `clinics/${clinicId}/about`,
+          fileName: 'about-image',
+        });
+      }
+
       const { error } = await supabase.from('clinics').update({
         years_of_service: parseInt(form.years_of_service) || 0,
         patients_treated: form.patients_treated,
@@ -97,6 +124,8 @@ export function AdminClinicInfoPage() {
         combined_experience: form.combined_experience,
         hero_headline: form.hero_headline,
         hero_subtitle: form.hero_subtitle,
+        hero_image_url: heroImageUrl,
+        about_image_url: aboutImageUrl,
         cta_headline: form.cta_headline,
         cta_description: form.cta_description,
         emergency_title: form.emergency_title,
@@ -106,6 +135,9 @@ export function AdminClinicInfoPage() {
         process_steps: form.process_steps,
       }).eq('id', clinicId!);
       if (error) throw error;
+      setForm((prev) => ({ ...prev, hero_image_url: heroImageUrl, about_image_url: aboutImageUrl }));
+      setHeroImageFile(null);
+      setAboutImageFile(null);
       addToast('success', 'Clinic info updated');
       window.dispatchEvent(new Event('clinic-updated'));
     } catch {
@@ -145,9 +177,15 @@ export function AdminClinicInfoPage() {
         </div>
 
         {/* Hero Section */}
-        <Section title="Hero Section" description="Headline and subtitle shown on the homepage hero">
+        <Section title="Hero Section" description="Headline, subtitle, and hero image shown on the homepage hero">
           <Field label="Hero Headline" value={form.hero_headline} onChange={(v) => setForm({ ...form, hero_headline: v })} placeholder="Caring for You & Your Family" />
           <Field label="Hero Subtitle" value={form.hero_subtitle} onChange={(v) => setForm({ ...form, hero_subtitle: v })} textarea placeholder="Multi-specialty healthcare with a personal touch." />
+          <ImageUpload label="Hero Image" currentUrl={form.hero_image_url} file={heroImageFile} onFileChange={setHeroImageFile} />
+        </Section>
+
+        {/* About Section */}
+        <Section title="About Us Section" description="Image shown in the About Us section on the homepage">
+          <ImageUpload label="About Us Image" currentUrl={form.about_image_url} file={aboutImageFile} onFileChange={setAboutImageFile} />
         </Section>
 
         {/* Stats */}
@@ -242,6 +280,51 @@ function Field({ label, value, onChange, type = 'text', placeholder, textarea, s
       ) : (
         <input type={type} step={step} value={value} onChange={(e) => onChange(e.target.value)} className="input-field" placeholder={placeholder} />
       )}
+    </div>
+  );
+}
+
+function ImageUpload({ label, currentUrl, file, onFileChange }: {
+  label: string;
+  currentUrl: string;
+  file: File | null;
+  onFileChange: (file: File | null) => void;
+}) {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) { setPreview(null); return; }
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const displayUrl = preview || currentUrl || null;
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">{label}</label>
+      <div className="flex items-start gap-4">
+        <label className="flex-1 cursor-pointer">
+          <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl p-4 hover:border-primary-400 transition-colors text-center">
+            {displayUrl ? (
+              <img src={displayUrl} alt={label} className="w-full h-40 object-cover rounded-lg mb-2" />
+            ) : (
+              <div className="py-6">
+                <Upload className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
+                <p className="text-sm text-neutral-500">Click to upload image</p>
+                <p className="text-xs text-neutral-400 mt-1">JPG, PNG, WebP</p>
+              </div>
+            )}
+          </div>
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
+        </label>
+        {displayUrl && (
+          <button type="button" onClick={() => onFileChange(null)} className="text-sm text-red-500 hover:text-red-700 flex-shrink-0 mt-1">
+            Remove
+          </button>
+        )}
+      </div>
     </div>
   );
 }

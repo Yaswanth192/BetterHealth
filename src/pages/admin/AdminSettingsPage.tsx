@@ -3,6 +3,7 @@ import { Save, Building2, Phone, Clock, Palette } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
+import { PhoneInput } from '../../components/ui/PhoneInput';
 import { Clinic, ClinicTiming } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { useToast } from '../../hooks/useToast';
@@ -195,7 +196,7 @@ export function AdminSettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Phone</label>
-              <input type="tel" value={clinic.phone} onChange={(e) => setClinic({ ...clinic, phone: e.target.value })} className="input-field" />
+              <PhoneInput value={clinic.phone ?? ''} onChange={(phone) => setClinic({ ...clinic, phone })} />
             </div>
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Email</label>
@@ -206,11 +207,11 @@ export function AdminSettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Emergency Phone</label>
-              <input type="tel" value={clinic.emergency_phone ?? ''} onChange={(e) => setClinic({ ...clinic, emergency_phone: e.target.value })} className="input-field" placeholder="24/7 emergency line" />
+              <PhoneInput value={clinic.emergency_phone ?? ''} onChange={(phone) => setClinic({ ...clinic, emergency_phone: phone })} placeholder="24/7 emergency line" />
             </div>
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">WhatsApp Number</label>
-              <input type="tel" value={clinic.whatsapp_number ?? ''} onChange={(e) => setClinic({ ...clinic, whatsapp_number: e.target.value })} className="input-field" placeholder="+91 98765 43210" />
+              <PhoneInput value={clinic.whatsapp_number ?? ''} onChange={(phone) => setClinic({ ...clinic, whatsapp_number: phone })} />
             </div>
           </div>
 

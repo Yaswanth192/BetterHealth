@@ -19,7 +19,7 @@ export function AboutUsSection({ clinic, doctorsPath, doctorsCount }: AboutUsSec
           <div className="relative">
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <img
-                src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src={clinic?.about_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
                 alt="Clinic"
                 className="w-full h-[400px] object-cover"
               />

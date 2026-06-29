@@ -175,6 +175,7 @@ export function AdminAppointmentsPage() {
                   <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Patient</th>
                   <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3 hidden md:table-cell">Doctor / Service</th>
                   <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3 hidden sm:table-cell">Date & Time</th>
+                  <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3 hidden lg:table-cell">Booked On</th>
                   <th className="text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Status</th>
                   <th className="text-right text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider px-6 py-3">Actions</th>
                 </tr>
@@ -203,11 +204,21 @@ export function AdminAppointmentsPage() {
                       </td>
                       <td className="px-6 py-4 hidden md:table-cell">
                         <p className="text-sm text-neutral-700 dark:text-neutral-200">{(appt.clinic_doctors as any)?.name || '—'}</p>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500">{(appt.clinic_services as any)?.title || '—'}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                          {appt.message?.startsWith('Package:') ? (
+                            <span className="text-amber-600 dark:text-amber-400 font-medium">{appt.message.split(' — ')[0].replace('Package: ', '')}</span>
+                          ) : (
+                            (appt.clinic_services as any)?.title || '—'
+                          )}
+                        </p>
                       </td>
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <p className="text-sm text-neutral-700 dark:text-neutral-200">{appt.preferred_date}</p>
                         <p className="text-xs text-neutral-400 dark:text-neutral-500">{appt.preferred_time}</p>
+                      </td>
+                      <td className="px-6 py-4 hidden lg:table-cell">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{new Date(appt.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(appt.created_at).toLocaleTimeString()}</p>
                       </td>
                       <td className="px-6 py-4">
                         <AppointmentStatusBadge status={appt.status} />
@@ -288,8 +299,19 @@ export function AdminAppointmentsPage() {
                 <p className="text-neutral-700 dark:text-neutral-200">{(selected.clinic_doctors as any)?.name || 'Not specified'}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Service</p>
-                <p className="text-neutral-700 dark:text-neutral-200">{(selected.clinic_services as any)?.title || 'Not specified'}</p>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Service / Package</p>
+                <p className="text-neutral-700 dark:text-neutral-200">
+                  {selected.message?.startsWith('Package:') ? (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">{selected.message.split(' — ')[0].replace('Package: ', '')}</span>
+                  ) : (
+                    (selected.clinic_services as any)?.title || 'Not specified'
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-1">Booked On</p>
+                <p className="text-sm text-neutral-700 dark:text-neutral-200">{new Date(selected.created_at).toLocaleDateString()}</p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(selected.created_at).toLocaleTimeString()}</p>
               </div>
             </div>
 

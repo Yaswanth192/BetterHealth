@@ -18,6 +18,7 @@ import { FAQSection } from '../components/sections/FAQSection';
 import { AppointmentSection } from '../components/sections/AppointmentSection';
 import { BlogPage } from './BlogPage';
 import { ReviewsPage } from './ReviewsPage';
+import { PackageBookingPage } from './PackageBookingPage';
 import { useClinicData } from '../hooks/useClinicData';
 import { PageLoader } from '../components/ui/LoadingSpinner';
 import { Activity } from 'lucide-react';
@@ -68,6 +69,7 @@ export function HomePage() {
     contact: <ContactSection clinic={clinic} timings={timings} />,
     blog: <BlogPage posts={healthTipsSettings.useDummies ? [] : blogPosts} />,
     reviews: <ReviewsPage testimonials={testimonials} doctors={doctors} services={services} clinicId={clinic.id} />,
+    'package-booking': <PackageBookingPage clinic={clinic} doctors={doctors} healthPackages={healthPackages} />,
   };
 
   if (page && !pages[page]) {

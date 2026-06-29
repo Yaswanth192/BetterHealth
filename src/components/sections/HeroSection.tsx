@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Calendar, X } from 'lucide-react';
+import { Phone, Calendar, Clock, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Clinic, ClinicDoctor, ClinicService } from '../../types';
 import { supabase } from '../../lib/supabase';
+import { PhoneInput } from '../ui/PhoneInput';
 
 interface HeroProps {
   clinic: Clinic | null;
@@ -16,6 +17,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
   const [quickForm, setQuickForm] = useState({ name: '', phone: '' });
   const [quickLoading, setQuickLoading] = useState(false);
   const [quickSubmitted, setQuickSubmitted] = useState(false);
+  const [showTimePopup, setShowTimePopup] = useState(false);
   const [cardState, setCardState] = useState<'attached' | 'falling' | 'detached' | 'fading'>('attached');
   const [fallOrigin, setFallOrigin] = useState({ top: 0, right: 0, width: 0 });
   const [fallDistance, setFallDistance] = useState(0);
@@ -60,18 +62,52 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
     }, 380);
   }, []);
 
-  async function handleQuickBook(e: React.FormEvent) {
+  function handleQuickBook(e: React.FormEvent) {
     e.preventDefault();
     if (!clinic) return;
+    setShowTimePopup(true);
+  }
+
+  async function handleTimeSelect(choice: 'now' | 'next_hour' | 'next_day') {
+    if (!clinic) return;
     setQuickLoading(true);
+    setShowTimePopup(false);
+
+    const now = new Date();
+    let date: string;
+    let time: string;
+
+    if (choice === 'now') {
+      date = now.toISOString().split('T')[0];
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      time = `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    } else if (choice === 'next_hour') {
+      const next = new Date(now.getTime() + 60 * 60 * 1000);
+      date = next.toISOString().split('T')[0];
+      const h = next.getHours();
+      const m = next.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      time = `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    } else {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      date = tomorrow.toISOString().split('T')[0];
+      time = '09:00 AM';
+    }
+
     await supabase.from('appointments').insert({
       clinic_id: clinic.id,
       patient_name: quickForm.name,
       patient_phone: quickForm.phone,
-      preferred_date: new Date().toISOString().split('T')[0],
-      preferred_time: '10:00 AM',
+      preferred_date: date,
+      preferred_time: time,
       status: 'pending',
     });
+
     setQuickLoading(false);
     setQuickSubmitted(true);
     setQuickForm({ name: '', phone: '' });
@@ -84,6 +120,8 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
     quickSubmitted,
     setQuickSubmitted,
     handleQuickBook,
+    showTimePopup,
+    handleTimeSelect,
   };
 
   return (
@@ -149,7 +187,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
             <div className="relative max-w-lg ml-auto">
               <div className="relative rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl">
                 <img
-                  src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  src={clinic?.hero_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
                   alt="Clinic Building"
                   className="w-full h-80 object-cover"
                 />
@@ -221,6 +259,8 @@ function QuickAppointmentForm({
   quickSubmitted,
   setQuickSubmitted,
   handleQuickBook,
+  showTimePopup,
+  handleTimeSelect,
   showDismiss,
   onDismiss,
 }: {
@@ -230,6 +270,8 @@ function QuickAppointmentForm({
   quickSubmitted: boolean;
   setQuickSubmitted: (v: boolean) => void;
   handleQuickBook: (e: React.FormEvent) => void;
+  showTimePopup: boolean;
+  handleTimeSelect: (choice: 'now' | 'next_hour' | 'next_day') => void;
   showDismiss?: boolean;
   onDismiss?: () => void;
 }) {
@@ -260,6 +302,39 @@ function QuickAppointmentForm({
             Book Another
           </button>
         </div>
+      ) : showTimePopup ? (
+        <div className="text-center py-2">
+          <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">When do you want to visit?</p>
+          <div className="flex flex-col gap-1.5">
+            <button
+              onClick={() => handleTimeSelect('now')}
+              disabled={quickLoading}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              {quickLoading ? 'Booking...' : 'Now'}
+            </button>
+            <button
+              onClick={() => handleTimeSelect('next_hour')}
+              disabled={quickLoading}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              {quickLoading ? 'Booking...' : 'Next Hour'}
+            </button>
+            <button
+              onClick={() => handleTimeSelect('next_day')}
+              disabled={quickLoading}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              {quickLoading ? 'Booking...' : 'Next Day (9:00 AM)'}
+            </button>
+          </div>
+          <button onClick={() => setShowTimePopup(false)} className="mt-2 text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200">
+            Back
+          </button>
+        </div>
       ) : (
         <form onSubmit={handleQuickBook}>
           <div className="flex gap-2 mb-2">
@@ -271,13 +346,12 @@ function QuickAppointmentForm({
               onChange={(e) => setQuickForm({ ...quickForm, name: e.target.value })}
               className="input-field flex-1 py-2 px-3 text-sm"
             />
-            <input
-              type="tel"
-              required
-              placeholder="Phone"
+            <PhoneInput
               value={quickForm.phone}
-              onChange={(e) => setQuickForm({ ...quickForm, phone: e.target.value })}
-              className="input-field flex-1 py-2 px-3 text-sm"
+              onChange={(phone) => setQuickForm({ ...quickForm, phone })}
+              placeholder="98765 43210"
+              required
+              className="flex-1"
             />
           </div>
           <button
@@ -285,7 +359,7 @@ function QuickAppointmentForm({
             disabled={quickLoading}
             className="btn-book w-full py-2 text-sm disabled:opacity-50"
           >
-            {quickLoading ? 'Booking...' : 'Book Now'}
+            Book Now
           </button>
         </form>
       )}

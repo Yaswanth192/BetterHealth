@@ -3,6 +3,7 @@ import { Calendar, Clock, User, Phone, Mail, MessageSquare, CheckCircle, Stethos
 import { Clinic, ClinicDoctor, ClinicService } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { PhoneInput } from '../ui/PhoneInput';
 
 interface AppointmentSectionProps {
   clinic: Clinic | null;
@@ -74,7 +75,7 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
   }) {
     try {
       const doctor = appointmentData.doctor_id ? doctors.find(d => d.id === appointmentData.doctor_id) : null;
-      const recipientNumber = doctor?.whatsapp_number || clinic?.whatsapp_number;
+      const recipientNumber = (doctor?.whatsapp_number || clinic?.whatsapp_number)?.replace(/\s/g, '');
 
       if (!recipientNumber) {
         console.warn('No WhatsApp number available (doctor or clinic)');
@@ -214,12 +215,11 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Email Address *</label>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Email Address</label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
                         <input
                           type="email"
-                          required
                           value={form.patient_email}
                           onChange={(e) => setForm({ ...form, patient_email: e.target.value })}
                           placeholder="your@email.com"
@@ -230,17 +230,11 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
 
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Phone Number *</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
-                        <input
-                          type="tel"
-                          required
-                          value={form.patient_phone}
-                          onChange={(e) => setForm({ ...form, patient_phone: e.target.value })}
-                          placeholder="+1 (555) 000-0000"
-                          className="input-field pl-10"
-                        />
-                      </div>
+                      <PhoneInput
+                        value={form.patient_phone}
+                        onChange={(phone) => setForm({ ...form, patient_phone: phone })}
+                        required
+                      />
                     </div>
 
                     <div>
