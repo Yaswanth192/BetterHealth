@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { Star, BadgeCheck, MessageSquare, X, Send } from 'lucide-react';
-import { Testimonial, ClinicDoctor, ClinicService } from '../types';
+import { Testimonial, ClinicDoctor, ClinicService, Clinic } from '../types';
 import { supabase } from '../lib/supabase';
+import { useGoogleReviews } from '../hooks/useGoogleReviews';
 
 interface ReviewsPageProps {
   testimonials?: Testimonial[];
   doctors?: ClinicDoctor[];
   services?: ClinicService[];
   clinicId?: string;
+  clinic?: Clinic | null;
 }
 
-export function ReviewsPage({ testimonials = [], doctors = [], services = [], clinicId }: ReviewsPageProps) {
+export function ReviewsPage({ testimonials = [], doctors = [], services = [], clinicId, clinic }: ReviewsPageProps) {
+  const { data: googleReviews, loading: googleLoading } = useGoogleReviews();
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
@@ -56,51 +59,98 @@ export function ReviewsPage({ testimonials = [], doctors = [], services = [], cl
             Customer Reviews
           </span>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">Customer Reviews</h1>
-          <p className="text-white/70 text-lg">Real reviews from real customers</p>
+          <p className="text-white/70 text-lg">{clinic?.reviews_hero_subtitle || 'Real reviews from real customers'}</p>
           <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-            <span className="flex items-center gap-1">⭐ 4.8 Overall</span>
+            <span className="flex items-center gap-1">⭐ {googleReviews?.rating || clinic?.google_rating || '4.8'} Overall</span>
             <span className="flex items-center gap-1">✅ 100% Genuine</span>
-            <span className="flex items-center gap-1">🏥 {testimonials.length}+ Reviews</span>
+            <span className="flex items-center gap-1">🏥 {googleReviews?.total_reviews || testimonials.length}+ Reviews</span>
           </div>
         </div>
       </section>
 
       {/* Reviews */}
       <div className="container-max px-4 py-12">
-        {testimonials.length === 0 && (
+        {testimonials.length === 0 && !googleLoading && !googleReviews?.reviews.length && (
           <p className="text-center text-neutral-500 dark:text-neutral-400 mb-8">
             No reviews yet? Be the first to share your experience!
           </p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {testimonials.map((review) => (
-            <div key={review.id} className="card p-6">
-              <div className="flex items-center gap-0.5 mb-3">
-                {Array.from({ length: review.rating }).map((_, j) => (
-                  <Star key={j} className="w-4 h-4 text-amber-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4 italic">"{review.message}"</p>
-              <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
-                {review.patient_avatar_url ? (
-                  <img src={review.patient_avatar_url} alt={review.patient_name} className="w-9 h-9 rounded-full object-cover" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm">
-                    {review.patient_name.charAt(0)}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">{review.patient_name}</p>
-                  <p className="text-xs text-neutral-400">{review.designation}</p>
-                </div>
-                <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                  <BadgeCheck className="w-3.5 h-3.5" /> Verified
-                </span>
-              </div>
+        {/* Google Reviews */}
+        {googleReviews?.reviews && googleReviews.reviews.length > 0 && (
+          <>
+            <div className="flex items-center gap-2 mb-6">
+              <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" alt="Google" className="h-6" />
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Google Reviews</h3>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {googleReviews.reviews.map((review, i) => (
+                <div key={`google-${i}`} className="card p-6 relative">
+                  <div className="absolute top-3 right-3">
+                    <span className="text-[10px] font-medium px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full">Google</span>
+                  </div>
+                  <div className="flex items-center gap-0.5 mb-3">
+                    {Array.from({ length: review.rating }).map((_, j) => (
+                      <Star key={j} className="w-4 h-4 text-amber-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4 italic">"{review.text}"</p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
+                    {review.author_photo_url ? (
+                      <img src={review.author_photo_url} alt={review.author_name} className="w-9 h-9 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold text-sm">
+                        {review.author_name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">{review.author_name}</p>
+                      <p className="text-xs text-neutral-400">{review.time_description}</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-medium">
+                      <BadgeCheck className="w-3.5 h-3.5" /> Google
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Site Reviews */}
+        {testimonials.length > 0 && (
+          <>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-6">Patient Reviews</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {testimonials.map((review) => (
+                <div key={review.id} className="card p-6">
+                  <div className="flex items-center gap-0.5 mb-3">
+                    {Array.from({ length: review.rating }).map((_, j) => (
+                      <Star key={j} className="w-4 h-4 text-amber-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed mb-4 italic">"{review.message}"</p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
+                    {review.patient_avatar_url ? (
+                      <img src={review.patient_avatar_url} alt={review.patient_name} className="w-9 h-9 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-sm">
+                        {review.patient_name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">{review.patient_name}</p>
+                      <p className="text-xs text-neutral-400">{review.designation}</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                      <BadgeCheck className="w-3.5 h-3.5" /> Verified
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Share Experience */}
         <div className="text-center">

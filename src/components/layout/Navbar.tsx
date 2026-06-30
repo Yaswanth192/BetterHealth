@@ -23,7 +23,7 @@ export function Navbar({ clinic }: NavbarProps) {
     { label: 'Doctors', href: `${publicBasePath}/doctors` },
     { label: 'Contact', href: `${publicBasePath}/contact` },
     { label: 'Reviews', href: `${publicBasePath}/reviews` },
-    { label: 'Blog', href: `${publicBasePath}/blog` },
+    { label: clinic?.section_settings?.healthTips?.show !== false ? 'Blog' : 'About', href: `${publicBasePath}/blog` },
   ];
 
   useEffect(() => {

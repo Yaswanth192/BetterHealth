@@ -17,6 +17,7 @@ import { CTASection } from '../components/sections/CTASection';
 import { FAQSection } from '../components/sections/FAQSection';
 import { AppointmentSection } from '../components/sections/AppointmentSection';
 import { BlogPage } from './BlogPage';
+import { AboutUsPage } from './AboutUsPage';
 import { ReviewsPage } from './ReviewsPage';
 import { PackageBookingPage } from './PackageBookingPage';
 import { useClinicData } from '../hooks/useClinicData';
@@ -64,11 +65,13 @@ export function HomePage() {
     ),
     doctors: <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} showDirector={true} showViewAll={false} />,
     appointment: <AppointmentSection clinic={clinic} doctors={doctors} services={services} />,
-    testimonials: <TestimonialsSection testimonials={testimonials} />,
+    testimonials: <TestimonialsSection testimonials={testimonials} clinic={clinic} />,
     faq: faqSettings.show ? <FAQSection faqs={faqSettings.useDummies ? [] : faqs} /> : null,
     contact: <ContactSection clinic={clinic} timings={timings} />,
-    blog: <BlogPage posts={healthTipsSettings.useDummies ? [] : blogPosts} />,
-    reviews: <ReviewsPage testimonials={testimonials} doctors={doctors} services={services} clinicId={clinic.id} />,
+    blog: healthTipsSettings.show
+      ? <BlogPage posts={healthTipsSettings.useDummies ? [] : blogPosts} />
+      : <AboutUsPage clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} doctorsCount={doctors.length} />,
+    reviews: <ReviewsPage testimonials={testimonials} doctors={doctors} services={services} clinicId={clinic.id} clinic={clinic} />,
     'package-booking': <PackageBookingPage clinic={clinic} doctors={doctors} healthPackages={healthPackages} />,
   };
 
@@ -94,7 +97,7 @@ export function HomePage() {
       {architectureSettings.show && (
         <HospitalImagesParallax images={architectureImages} />
       )}
-      <TestimonialsSection testimonials={testimonials} />
+      <TestimonialsSection testimonials={testimonials} clinic={clinic} />
       <InsuranceSection insuranceProviders={insuranceProviders} certifications={certifications} clinic={clinic} />
       {healthTipsSettings.show && (
         <BlogSection posts={healthTipsSettings.useDummies ? [] : blogPosts} />

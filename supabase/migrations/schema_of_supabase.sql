@@ -32,6 +32,9 @@ CREATE TABLE public.clinics (
   section_settings jsonb DEFAULT '{"faq": {"show": true, "useDummies": true}, "healthTips": {"show": true, "useDummies": true}, "architecture": {"show": true, "useDummies": true}, "healthPackages": {"show": true, "useDummies": true}}'::jsonb,
   hero_image_url text DEFAULT ''::text,
   about_image_url text DEFAULT ''::text,
+  doctors_section_subtitle text DEFAULT ''::text,
+  testimonials_section_subtitle text DEFAULT ''::text,
+  reviews_hero_subtitle text DEFAULT ''::text,
   CONSTRAINT clinics_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.clinic_admins (

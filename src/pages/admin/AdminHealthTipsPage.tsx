@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Info } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { BlogPost } from '../../types';
@@ -268,6 +268,19 @@ export function AdminHealthTipsPage() {
             )}
           </div>
         </div>
+
+        {/* About Page Info - shown when blog is toggled off */}
+        {!settings.show && (
+          <div className="card p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <div className="flex gap-3">
+              <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="font-medium mb-1">About Us page is now active</p>
+                <p>When Health Tips is hidden, the <strong>About Us</strong> page replaces the Blog page in the navigation. The About page content (headline, description, image, stats) is managed in <strong>Clinic Info</strong> under the Hero Section and About Us Section.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Inline Quick-Add Form */}
         {settings.show && !settings.useDummies && posts.length === 0 && (

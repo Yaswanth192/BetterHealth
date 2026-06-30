@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { Phone, MapPin, Clock, Send, CheckCircle, MessageCircle } from 'lucide-react';
 import { Clinic, ClinicTiming } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
@@ -65,52 +65,69 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Info Column */}
-          <div className={`space-y-6 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`} style={{ transitionDelay: '200ms' }}>
-            <div className="card p-6">
-              <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4">Contact Information</h3>
-              <div className="space-y-4">
-                {clinic?.phone && (
-                  <a href={`tel:${clinic.phone}`} className="flex items-start gap-3 hover:text-primary-600 transition-colors">
-                    <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 text-primary-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">Phone</p>
-                      <p className="text-neutral-700 dark:text-neutral-200 font-medium">{clinic.phone}</p>
-                    </div>
-                  </a>
-                )}
-                {clinic?.email && (
-                  <a href={`mailto:${clinic.email}`} className="flex items-start gap-3 hover:text-primary-600 transition-colors">
-                    <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-primary-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">Email</p>
-                      <p className="text-neutral-700 dark:text-neutral-200 font-medium">{clinic.email}</p>
-                    </div>
-                  </a>
-                )}
-                {clinic?.address && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-primary-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">Address</p>
-                      <p className="text-neutral-700 dark:text-neutral-200 font-medium">{clinic.address}<br />{clinic.city}, {clinic.state} {clinic.zip}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+        {/* Info Cards - Horizontal */}
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '100ms' }}>
+          {/* Phone & Email */}
+          <div className="card p-6 text-center">
+            <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Phone className="w-6 h-6 text-teal-600 dark:text-teal-400" />
             </div>
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Phone & Email</h3>
+            <div className="space-y-2">
+              {clinic?.phone && (
+                <a href={`tel:${clinic.phone}`} className="block text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-sm">
+                  {clinic.phone}
+                </a>
+              )}
+              {clinic?.email && (
+                <a href={`mailto:${clinic.email}`} className="block text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-sm break-all">
+                  {clinic.email}
+                </a>
+              )}
+            </div>
+          </div>
 
+          {/* Address */}
+          <div className="card p-6 text-center">
+            <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+            </div>
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Address</h3>
+            {clinic?.address && (
+              <p className="text-neutral-600 dark:text-neutral-300 text-sm leading-relaxed">
+                {clinic.address}<br />
+                {clinic.city}, {clinic.state} {clinic.zip}
+              </p>
+            )}
+          </div>
+
+          {/* Emergency */}
+          <div className="card p-6 text-center">
+            <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-6 h-6 text-red-500 dark:text-red-400" />
+            </div>
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Emergency</h3>
+            {clinic?.whatsapp_number && (
+              <a
+                href={`https://wa.me/${clinic.whatsapp_number.replace(/\s/g, '')}?text=Hi%2C%20I'd%20like%20to%20know%20more%20about%20your%20clinic`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium text-sm transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp Us
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Opening Hours */}
+          <div className={`transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`} style={{ transitionDelay: '200ms' }}>
             {sortedTimings.length > 0 && (
               <div className="card p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Clock className="w-5 h-5 text-primary-600" />
+                  <Clock className="w-5 h-5 text-teal-600" />
                   <h3 className="font-bold text-neutral-900 dark:text-neutral-100">Opening Hours</h3>
                 </div>
                 <div className="space-y-2">

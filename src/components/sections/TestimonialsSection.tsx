@@ -1,9 +1,10 @@
 import { Star, BadgeCheck } from 'lucide-react';
-import { Testimonial } from '../../types';
+import { Testimonial, Clinic } from '../../types';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
+  clinic?: Clinic | null;
 }
 
 const fallbackTestimonials = [
@@ -33,7 +34,7 @@ const fallbackTestimonials = [
   },
 ];
 
-export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials, clinic }: TestimonialsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const displayTestimonials = testimonials.length > 0 ? testimonials : fallbackTestimonials as unknown as Testimonial[];
 
@@ -45,7 +46,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
             Testimonials
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
-            What Our Patients Say
+            {clinic?.testimonials_section_subtitle || 'What Our Patients Say'}
           </h2>
         </div>
 

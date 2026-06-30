@@ -43,7 +43,7 @@ export function Footer({ clinic }: FooterProps) {
                 { label: 'Doctors', href: `${publicBasePath}/doctors` },
                 { label: 'Contact', href: `${publicBasePath}/contact` },
                 { label: 'Reviews', href: `${publicBasePath}/reviews` },
-                { label: 'Blog', href: `${publicBasePath}/blog` },
+                { label: clinic?.section_settings?.healthTips?.show !== false ? 'Blog' : 'About', href: `${publicBasePath}/blog` },
               ].map((link) => (
                 <li key={link.href}>
                   <Link to={link.href} className="text-neutral-300 hover:text-white transition-colors text-sm">

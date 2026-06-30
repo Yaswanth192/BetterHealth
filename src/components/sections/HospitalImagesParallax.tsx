@@ -50,7 +50,7 @@ export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) 
   }, [displayImages.length]);
 
   return (
-    <section ref={sectionRef} className="relative bg-neutral-900" style={{ height: `${displayImages.length * 100}vh` }}>
+    <section ref={sectionRef} className="relative bg-white dark:bg-neutral-900" style={{ height: `${displayImages.length * 100}vh` }}>
       {/* Sticky container */}
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-6">
@@ -66,15 +66,15 @@ export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) 
                       : 'opacity-0 translate-y-8 pointer-events-none'
                   }`}
                 >
-                  <h3 className="text-3xl lg:text-4xl font-bold font-heading text-white mb-4 leading-tight">
+                  <h3 className="text-3xl lg:text-4xl font-bold font-heading text-neutral-900 dark:text-white mb-4 leading-tight">
                     {img.title.split(' ').map((word, wi) => (
-                      <span key={wi} className={wi === img.title.split(' ').length - 1 ? 'text-primary-400' : ''}>
+                      <span key={wi} className={wi === img.title.split(' ').length - 1 ? 'text-primary-600 dark:text-primary-400' : ''}>
                         {word}{' '}
                       </span>
                     ))}
                   </h3>
-                  <div className="w-16 h-0.5 bg-primary-400 mb-4" />
-                  <p className="text-neutral-400 text-sm leading-relaxed max-w-sm">
+                  <div className="w-16 h-0.5 bg-primary-600 dark:bg-primary-400 mb-4" />
+                  <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed max-w-sm">
                     {img.description}
                   </p>
                 </div>
@@ -88,8 +88,8 @@ export function HospitalImagesParallax({ images }: HospitalImagesParallaxProps) 
                   key={i}
                   className={`h-0.5 rounded-full transition-all duration-500 ${
                     i === activeIndex
-                      ? 'w-10 bg-primary-400'
-                      : 'w-4 bg-white/20'
+                      ? 'w-10 bg-primary-600 dark:bg-primary-400'
+                      : 'w-4 bg-neutral-300 dark:bg-white/20'
                   }`}
                 />
               ))}

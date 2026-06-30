@@ -19,6 +19,9 @@ interface ClinicInfoForm {
   hero_subtitle: string;
   hero_image_url: string;
   about_image_url: string;
+  doctors_section_subtitle: string;
+  testimonials_section_subtitle: string;
+  reviews_hero_subtitle: string;
   cta_headline: string;
   cta_description: string;
   emergency_title: string;
@@ -47,6 +50,9 @@ export function AdminClinicInfoPage() {
     hero_subtitle: '',
     hero_image_url: '',
     about_image_url: '',
+    doctors_section_subtitle: '',
+    testimonials_section_subtitle: '',
+    reviews_hero_subtitle: '',
     cta_headline: '',
     cta_description: '',
     emergency_title: '',
@@ -76,6 +82,9 @@ export function AdminClinicInfoPage() {
         hero_subtitle: data.hero_subtitle ?? 'Multi-specialty healthcare with a personal touch.',
         hero_image_url: data.hero_image_url ?? '',
         about_image_url: data.about_image_url ?? '',
+        doctors_section_subtitle: data.doctors_section_subtitle ?? '',
+        testimonials_section_subtitle: data.testimonials_section_subtitle ?? '',
+        reviews_hero_subtitle: data.reviews_hero_subtitle ?? '',
         cta_headline: data.cta_headline ?? 'Ready to Take the First Step?',
         cta_description: data.cta_description ?? 'Book a consultation with our expert doctors today. Walk-ins welcome.',
         emergency_title: data.emergency_title ?? '24/7 Emergency Services Available',
@@ -126,6 +135,9 @@ export function AdminClinicInfoPage() {
         hero_subtitle: form.hero_subtitle,
         hero_image_url: heroImageUrl,
         about_image_url: aboutImageUrl,
+        doctors_section_subtitle: form.doctors_section_subtitle,
+        testimonials_section_subtitle: form.testimonials_section_subtitle,
+        reviews_hero_subtitle: form.reviews_hero_subtitle,
         cta_headline: form.cta_headline,
         cta_description: form.cta_description,
         emergency_title: form.emergency_title,
@@ -189,7 +201,7 @@ export function AdminClinicInfoPage() {
         </Section>
 
         {/* Stats */}
-        <Section title="Stats & Numbers" description="Numbers shown across the site (hero, about, doctors)">
+        <Section title="Stats & Numbers" description="Numbers shown across the site (hero, about, doctors, reviews)">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <Field label="Years of Service" value={form.years_of_service} onChange={(v) => setForm({ ...form, years_of_service: v })} type="number" />
             <Field label="Patients Treated" value={form.patients_treated} onChange={(v) => setForm({ ...form, patients_treated: v })} placeholder="50,000+" />
@@ -199,6 +211,13 @@ export function AdminClinicInfoPage() {
             <Field label="Awards Won" value={form.awards_won} onChange={(v) => setForm({ ...form, awards_won: v })} type="number" />
           </div>
           <Field label="Combined Experience" value={form.combined_experience} onChange={(v) => setForm({ ...form, combined_experience: v })} placeholder="55+ Years" />
+        </Section>
+
+        {/* Section Subtitles */}
+        <Section title="Section Subtitles" description="Customize the subtitle text shown on doctors, testimonials, and reviews pages">
+          <Field label="Doctors Section Subtitle" value={form.doctors_section_subtitle} onChange={(v) => setForm({ ...form, doctors_section_subtitle: v })} placeholder="Experienced specialists dedicated to your well-being" />
+          <Field label="Testimonials Section Subtitle" value={form.testimonials_section_subtitle} onChange={(v) => setForm({ ...form, testimonials_section_subtitle: v })} placeholder="What Our Patients Say" />
+          <Field label="Reviews Page Subtitle" value={form.reviews_hero_subtitle} onChange={(v) => setForm({ ...form, reviews_hero_subtitle: v })} placeholder="Real reviews from real customers" />
         </Section>
 
         {/* CTA Section */}

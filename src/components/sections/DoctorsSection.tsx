@@ -12,60 +12,10 @@ interface DoctorsSectionProps {
   showViewAll?: boolean;
 }
 
-const fallbackDoctors = [
-  {
-    name: 'Dr. Arun Mehta',
-    specialization: 'Internal Medicine',
-    image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 20,
-    qualifications: ['MBBS', 'MD (Internal Medicine)'],
-    languages: ['English', 'Hindi', 'Marathi'],
-    open_time: '09:00',
-    close_time: '14:00',
-    available_days: ['Monday', 'Wednesday', 'Friday'],
-    bio: 'Medical Director with expertise in chronic disease management and preventive care. Published researcher in diabetes treatment protocols.',
-  },
-  {
-    name: 'Dr. Priya Sharma',
-    specialization: 'Orthodontics',
-    image: 'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 12,
-    qualifications: ['BDS', 'MDS (Orthodontics)'],
-    languages: ['English', 'Hindi', 'Gujarati'],
-    open_time: '10:00',
-    close_time: '18:00',
-    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    bio: 'Head of Dental Department specializing in invisible braces and complex orthodontic cases. Over 3,000 smile transformations.',
-  },
-  {
-    name: 'Dr. Karthik Iyer',
-    specialization: 'Dermatology',
-    image: 'https://images.pexels.com/photos/4173239/pexels-photo-4173239.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 8,
-    qualifications: ['MBBS', 'MD (Dermatology)'],
-    languages: ['English', 'Hindi', 'Tamil'],
-    open_time: '10:00',
-    close_time: '17:00',
-    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    bio: 'Expert in cosmetic dermatology, laser treatments, and skin allergy management. Trained at AIIMS.',
-  },
-  {
-    name: 'Dr. Neha Gupta',
-    specialization: 'Ophthalmology',
-    image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600',
-    experience_years: 15,
-    qualifications: ['MBBS', 'MS (Ophthalmology)', 'AIIMS Fellow'],
-    languages: ['English', 'Hindi'],
-    open_time: '09:00',
-    close_time: '16:00',
-    available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    bio: 'Leading ophthalmologist with expertise in LASIK, cataract surgery, and glaucoma management.',
-  },
-];
-
 export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector = true, showViewAll = true }: DoctorsSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
-  const displayDoctors = doctors.length > 0 ? doctors : fallbackDoctors as unknown as ClinicDoctor[];
+  const hasDoctors = doctors.length > 0;
+  const displayDoctors = doctors;
   const [activeFilter, setActiveFilter] = useState('All');
 
   const specializations = [...new Set(displayDoctors.map(d => {
@@ -79,6 +29,30 @@ export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector 
     : displayDoctors.filter(d => d.specialization.toLowerCase().includes(activeFilter.toLowerCase()));
 
   const director = displayDoctors[0];
+
+  if (!hasDoctors) {
+    return (
+      <section id="doctors" className="section-padding bg-white dark:bg-neutral-900">
+        <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
+          <div className={`mb-14 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${!showViewAll ? 'text-center' : ''}`}>
+            <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-semibold mb-4">
+              Our Team
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 dark:text-neutral-100">
+              Meet Our Doctors
+            </h2>
+            <p className={`text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl ${!showViewAll ? 'mx-auto' : ''}`}>
+              {clinic?.doctors_section_subtitle || 'Experienced specialists dedicated to your well-being'}
+            </p>
+          </div>
+          <div className="text-center py-16">
+            <p className="text-neutral-500 dark:text-neutral-400 mb-4">No doctors added yet.</p>
+            <Link to={appointmentPath} className="btn-primary">Book an Appointment</Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="doctors" className="section-padding bg-white dark:bg-neutral-900">
@@ -99,7 +73,7 @@ export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector 
             )}
           </div>
           <p className={`text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl ${!showViewAll ? 'mx-auto' : ''}`}>
-            Experienced specialists dedicated to your well-being
+            {clinic?.doctors_section_subtitle || 'Experienced specialists dedicated to your well-being'}
           </p>
         </div>
 

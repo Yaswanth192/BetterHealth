@@ -19,7 +19,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
   const [quickSubmitted, setQuickSubmitted] = useState(false);
   const [showTimePopup, setShowTimePopup] = useState(false);
   const [cardState, setCardState] = useState<'attached' | 'falling' | 'detached' | 'fading'>('attached');
-  const [fallOrigin, setFallOrigin] = useState({ top: 0, right: 0, width: 0 });
+  const [fallOrigin, setFallOrigin] = useState({ top: 0, right: 0, left: 0, width: 0 });
   const [fallDistance, setFallDistance] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const hasFallen = useRef(false);
@@ -37,10 +37,10 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
         hasFallen.current = true;
         const rect = cardRef.current.getBoundingClientRect();
         const originTop = rect.top;
-        const originRight = window.innerWidth - rect.right;
+        const originLeft = rect.left;
         const cardWidth = rect.width;
         const distance = window.innerHeight - originTop - rect.height - 24;
-        setFallOrigin({ top: originTop, right: originRight, width: cardWidth });
+        setFallOrigin({ top: originTop, right: 0, left: originLeft, width: cardWidth });
         setFallDistance(distance);
         setCardState('falling');
       }
@@ -216,7 +216,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
           className="fixed z-50 animate-pluck-fall"
           style={{
             top: `${fallOrigin.top}px`,
-            right: `${fallOrigin.right}px`,
+            left: `${fallOrigin.left}px`,
             width: `${fallOrigin.width}px`,
             '--fall-distance': `${fallDistance}px`,
           } as React.CSSProperties}
@@ -232,7 +232,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
       {cardState === 'detached' && (
         <div
           className="fixed bottom-6 z-50"
-          style={{ right: `${fallOrigin.right}px`, width: `${fallOrigin.width}px` }}
+          style={{ left: `${fallOrigin.left}px`, width: `${fallOrigin.width}px` }}
         >
           <div className="bg-white rounded-2xl shadow-2xl p-4 dark:bg-neutral-900 dark:shadow-neutral-950/50">
             <QuickAppointmentForm {...formProps} showDismiss onDismiss={handleDismiss} />
