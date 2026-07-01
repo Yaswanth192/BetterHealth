@@ -47,6 +47,9 @@ export interface Clinic {
   process_steps: Array<{ title: string; description: string }>;
   hero_image_url: string;
   about_image_url: string;
+  about_hero_image_url: string;
+  services_heading_image_url: string;
+  services_content: string;
   doctors_section_subtitle: string;
   testimonials_section_subtitle: string;
   reviews_hero_subtitle: string;

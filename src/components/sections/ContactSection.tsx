@@ -68,8 +68,8 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
         {/* Info Cards - Horizontal */}
         <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '100ms' }}>
           {/* Phone & Email */}
-          <div className="card p-6 text-center">
-            <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="glass rounded-2xl p-6 text-center hover-lift">
+            <div className="w-14 h-14 bg-teal-100/80 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <Phone className="w-6 h-6 text-teal-600 dark:text-teal-400" />
             </div>
             <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Phone & Email</h3>
@@ -88,8 +88,8 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
           </div>
 
           {/* Address */}
-          <div className="card p-6 text-center">
-            <div className="w-14 h-14 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="glass rounded-2xl p-6 text-center hover-lift">
+            <div className="w-14 h-14 bg-teal-100/80 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <MapPin className="w-6 h-6 text-teal-600 dark:text-teal-400" />
             </div>
             <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Address</h3>
@@ -102,8 +102,8 @@ export function ContactSection({ clinic, timings }: ContactSectionProps) {
           </div>
 
           {/* Emergency */}
-          <div className="card p-6 text-center">
-            <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="glass rounded-2xl p-6 text-center hover-lift">
+            <div className="w-14 h-14 bg-red-100/80 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <MessageCircle className="w-6 h-6 text-red-500 dark:text-red-400" />
             </div>
             <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-3 uppercase tracking-wider text-sm">Emergency</h3>

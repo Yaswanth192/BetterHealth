@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, Clock, User, Phone, Mail, MessageSquare, CheckCircle, Stethoscope, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, User, Mail, MessageSquare, CheckCircle, Stethoscope, AlertTriangle } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Clinic, ClinicDoctor, ClinicService } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
@@ -20,6 +21,9 @@ const timeSlots = [
 
 export function AppointmentSection({ clinic, doctors, services }: AppointmentSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
+  const [searchParams] = useSearchParams();
+  const doctorFromUrl = searchParams.get('doctor');
+
   const [form, setForm] = useState({
     patient_name: '',
     patient_email: '',
@@ -38,6 +42,17 @@ export function AppointmentSection({ clinic, doctors, services }: AppointmentSec
   const [selectedDoctorName, setSelectedDoctorName] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (doctorFromUrl && doctors.length > 0) {
+      const matched = doctors.find(
+        (d) => d.name.toLowerCase() === decodeURIComponent(doctorFromUrl).toLowerCase()
+      );
+      if (matched) {
+        setForm((prev) => ({ ...prev, doctor_id: matched.id }));
+      }
+    }
+  }, [doctorFromUrl, doctors]);
 
   const checkSlotConflict = useCallback(async () => {
     if (!form.doctor_id || !form.preferred_date || !form.preferred_time) return;

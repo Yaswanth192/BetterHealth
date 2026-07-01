@@ -19,6 +19,9 @@ interface ClinicInfoForm {
   hero_subtitle: string;
   hero_image_url: string;
   about_image_url: string;
+  about_hero_image_url: string;
+  services_heading_image_url: string;
+  services_content: string;
   doctors_section_subtitle: string;
   testimonials_section_subtitle: string;
   reviews_hero_subtitle: string;
@@ -38,6 +41,8 @@ export function AdminClinicInfoPage() {
   const [saving, setSaving] = useState(false);
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [aboutImageFile, setAboutImageFile] = useState<File | null>(null);
+  const [aboutHeroImageFile, setAboutHeroImageFile] = useState<File | null>(null);
+  const [servicesHeadingImageFile, setServicesHeadingImageFile] = useState<File | null>(null);
   const [form, setForm] = useState<ClinicInfoForm>({
     years_of_service: '0',
     patients_treated: '0',
@@ -50,6 +55,9 @@ export function AdminClinicInfoPage() {
     hero_subtitle: '',
     hero_image_url: '',
     about_image_url: '',
+    about_hero_image_url: '',
+    services_heading_image_url: '',
+    services_content: '',
     doctors_section_subtitle: '',
     testimonials_section_subtitle: '',
     reviews_hero_subtitle: '',
@@ -82,6 +90,9 @@ export function AdminClinicInfoPage() {
         hero_subtitle: data.hero_subtitle ?? 'Multi-specialty healthcare with a personal touch.',
         hero_image_url: data.hero_image_url ?? '',
         about_image_url: data.about_image_url ?? '',
+        about_hero_image_url: data.about_hero_image_url ?? '',
+        services_heading_image_url: data.services_heading_image_url ?? '',
+        services_content: data.services_content ?? '',
         doctors_section_subtitle: data.doctors_section_subtitle ?? '',
         testimonials_section_subtitle: data.testimonials_section_subtitle ?? '',
         reviews_hero_subtitle: data.reviews_hero_subtitle ?? '',
@@ -107,6 +118,8 @@ export function AdminClinicInfoPage() {
     try {
       let heroImageUrl = form.hero_image_url;
       let aboutImageUrl = form.about_image_url;
+      let aboutHeroImageUrl = form.about_hero_image_url;
+      let servicesHeadingImageUrl = form.services_heading_image_url;
 
       if (heroImageFile) {
         heroImageUrl = await uploadPublicFile(heroImageFile, {
@@ -122,6 +135,20 @@ export function AdminClinicInfoPage() {
           fileName: 'about-image',
         });
       }
+      if (aboutHeroImageFile) {
+        aboutHeroImageUrl = await uploadPublicFile(aboutHeroImageFile, {
+          bucket: 'SellHealthStorage',
+          path: `clinics/${clinicId}/about-hero`,
+          fileName: 'about-hero-image',
+        });
+      }
+      if (servicesHeadingImageFile) {
+        servicesHeadingImageUrl = await uploadPublicFile(servicesHeadingImageFile, {
+          bucket: 'SellHealthStorage',
+          path: `clinics/${clinicId}/services`,
+          fileName: 'services-heading-image',
+        });
+      }
 
       const { error } = await supabase.from('clinics').update({
         years_of_service: parseInt(form.years_of_service) || 0,
@@ -135,6 +162,9 @@ export function AdminClinicInfoPage() {
         hero_subtitle: form.hero_subtitle,
         hero_image_url: heroImageUrl,
         about_image_url: aboutImageUrl,
+        about_hero_image_url: aboutHeroImageUrl,
+        services_heading_image_url: servicesHeadingImageUrl,
+        services_content: form.services_content,
         doctors_section_subtitle: form.doctors_section_subtitle,
         testimonials_section_subtitle: form.testimonials_section_subtitle,
         reviews_hero_subtitle: form.reviews_hero_subtitle,
@@ -147,9 +177,11 @@ export function AdminClinicInfoPage() {
         process_steps: form.process_steps,
       }).eq('id', clinicId!);
       if (error) throw error;
-      setForm((prev) => ({ ...prev, hero_image_url: heroImageUrl, about_image_url: aboutImageUrl }));
+      setForm((prev) => ({ ...prev, hero_image_url: heroImageUrl, about_image_url: aboutImageUrl, about_hero_image_url: aboutHeroImageUrl, services_heading_image_url: servicesHeadingImageUrl }));
       setHeroImageFile(null);
       setAboutImageFile(null);
+      setAboutHeroImageFile(null);
+      setServicesHeadingImageFile(null);
       addToast('success', 'Clinic info updated');
       window.dispatchEvent(new Event('clinic-updated'));
     } catch {
@@ -196,8 +228,24 @@ export function AdminClinicInfoPage() {
         </Section>
 
         {/* About Section */}
-        <Section title="About Us Section" description="Image shown in the About Us section on the homepage">
+        <Section title="About Us Section" description="Hero image for the About Us page and inline image used in the Our Story section">
+          <ImageUpload label="About Hero Image" currentUrl={form.about_hero_image_url} file={aboutHeroImageFile} onFileChange={setAboutHeroImageFile} />
           <ImageUpload label="About Us Image" currentUrl={form.about_image_url} file={aboutImageFile} onFileChange={setAboutImageFile} />
+        </Section>
+
+        {/* Services Section */}
+        <Section title="Dermatology Services" description="Heading image and full content text shown on the About page services section">
+          <ImageUpload label="Services Heading Image" currentUrl={form.services_heading_image_url} file={servicesHeadingImageFile} onFileChange={setServicesHeadingImageFile} />
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Services Content</label>
+            <textarea
+              rows={12}
+              value={form.services_content}
+              onChange={(e) => setForm({ ...form, services_content: e.target.value })}
+              className="input-field resize-y"
+              placeholder="Full dermatology services content (supports markdown formatting)..."
+            />
+          </div>
         </Section>
 
         {/* Stats */}

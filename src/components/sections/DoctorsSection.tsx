@@ -175,7 +175,7 @@ export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector 
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2.5 line-clamp-2">{doctor.bio}</p>
 
                   <Link
-                    to={appointmentPath}
+                    to={`${appointmentPath}?doctor=${encodeURIComponent(doctor.name)}`}
                     className="inline-block mt-4 px-6 py-2.5 text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 rounded-full transition-colors"
                   >
                     Book with {doctor.name.split(' ').pop()}

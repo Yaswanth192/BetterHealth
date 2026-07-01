@@ -198,7 +198,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
               {(cardState === 'attached' || cardState === 'fading') && (
                 <div
                   ref={cardRef}
-                  className={`absolute -bottom-5 -right-3 left-6 sm:left-10 bg-white rounded-2xl shadow-2xl p-4 dark:bg-neutral-900 dark:shadow-neutral-950/50 ${
+                  className={`absolute -bottom-5 -right-3 left-6 sm:left-10 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-4 dark:bg-neutral-900/80 dark:shadow-neutral-950/50 border border-white/20 dark:border-neutral-700/30 ${
                     cardState === 'fading' ? 'animate-fade-out-card' : ''
                   }`}
                 >
@@ -222,7 +222,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
           } as React.CSSProperties}
           onAnimationEnd={handleFallEnd}
         >
-          <div className="bg-white rounded-2xl shadow-2xl p-4 dark:bg-neutral-900 dark:shadow-neutral-950/50">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-4 dark:bg-neutral-900/80 dark:shadow-neutral-950/50 border border-white/20 dark:border-neutral-700/30">
             <QuickAppointmentForm {...formProps} />
           </div>
         </div>
@@ -234,18 +234,12 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
           className="fixed bottom-6 z-50"
           style={{ left: `${fallOrigin.left}px`, width: `${fallOrigin.width}px` }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl p-4 dark:bg-neutral-900 dark:shadow-neutral-950/50">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-4 dark:bg-neutral-900/80 dark:shadow-neutral-950/50 border border-white/20 dark:border-neutral-700/30">
             <QuickAppointmentForm {...formProps} showDismiss onDismiss={handleDismiss} />
           </div>
         </div>
       )}
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center pt-1.5">
-          <div className="w-1 h-2 bg-white/40 rounded-full animate-float" />
-        </div>
-      </div>
     </section>
   );
 }

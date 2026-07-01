@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { Activity, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
+import { Activity, Mail, Lock, Eye, EyeOff, AlertCircle, ExternalLink } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export function AdminLoginPage() {
@@ -46,7 +46,7 @@ export function AdminLoginPage() {
             <div className="w-12 h-12 rounded-2xl bg-white/10 dark:bg-neutral-700/50 backdrop-blur-sm border border-white/20 dark:border-neutral-600 flex items-center justify-center">
               <Activity className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">MediCare Admin</span>
+            <span className="text-2xl font-bold text-white">Accrecent Admin</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
           <p className="text-white/60 dark:text-neutral-400">Sign in to access your clinic dashboard</p>
@@ -116,9 +116,16 @@ export function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-white/30 dark:text-neutral-500 text-xs mt-6">
-          Admin access only. Unauthorized access is prohibited.
-        </p>
+        {/* Go to Clinic Site button */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm text-white/80 border border-white/20 rounded-xl text-sm font-medium hover:bg-white/20 hover:text-white transition-all duration-200"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Go to Clinic Site
+          </Link>
+        </div>
       </div>
     </div>
   );
