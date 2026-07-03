@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Pencil, Trash2, Activity, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
@@ -26,8 +27,16 @@ interface ServiceForm {
 
 const EMPTY_FORM: ServiceForm = { title: '', description: '', icon: 'stethoscope', image_url: '', features: '', consultation_fee: '', follow_up_fee: '', sort_order: 0, is_active: true };
 
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export function AdminServicesPage() {
   const { clinicId } = useAuth();
+  const navigate = useNavigate();
   const { toasts, addToast, removeToast } = useToast();
   const [services, setServices] = useState<ClinicService[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +97,7 @@ export function AdminServicesPage() {
         follow_up_fee: parseInt(form.follow_up_fee, 10) || 0,
         sort_order: form.sort_order,
         is_active: form.is_active,
+        ...(!editing ? { slug: generateSlug(form.title) } : {}),
       };
       const { error } = editing
         ? await supabase.from('clinic_services').update(payload).eq('id', editing.id)
@@ -166,6 +176,13 @@ export function AdminServicesPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => navigate(`/admin/services/${s.id}/page`)}
+                          className="p-1.5 rounded-lg bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-colors"
+                          title="Manage Page"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                         <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300 transition-colors">
                           <Pencil className="w-4 h-4" />
                         </button>

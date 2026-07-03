@@ -10,6 +10,7 @@ interface ServicesSectionProps {
   healthPackages?: HealthPackage[];
   showHealthPackages?: boolean;
   clinic?: import('../../types').Clinic | null;
+  clinicSlug?: string;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -60,7 +61,7 @@ const healthPackages = [
   },
 ];
 
-export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true, clinic }: ServicesSectionProps) {
+export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true, clinic, clinicSlug }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const [activeFilter, setActiveFilter] = useState('All');
   const displayServices = services.length > 0
@@ -155,7 +156,10 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
                     ))}
                   </ul>
                 )}
-                <Link to={appointmentPath} className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group/btn">
+                <Link
+                  to={service.slug && clinicSlug ? `/${clinicSlug}/services/${service.slug}` : appointmentPath}
+                  className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group/btn"
+                >
                   Learn More <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>

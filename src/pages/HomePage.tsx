@@ -57,7 +57,7 @@ export function HomePage() {
   const pages: Record<string, ReactNode> = {
     services: (
       <>
-        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
+        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} clinicSlug={clinic?.slug || slug} />
         {architectureSettings.show && (
           <HospitalImagesParallaxCSS images={architectureImages} />
         )}
@@ -92,7 +92,7 @@ export function HomePage() {
       />
       <ServicesMarquee services={services} />
       <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} doctorsCount={doctors.length} />
-      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} clinicSlug={clinic?.slug || slug} />
       <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} showDirector={false} showViewAll={true} />
       {architectureSettings.show && (
         <HospitalImagesParallax images={architectureImages} />

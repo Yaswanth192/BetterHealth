@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { HomePage } from './pages/HomePage';
+import { ServiceDetailPage } from './components/ServiceDetailPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
@@ -14,6 +15,7 @@ const AdminAppointmentsPage = lazy(() => import('./pages/admin/AdminAppointments
 const AdminMessagesPage = lazy(() => import('./pages/admin/AdminMessagesPage').then(m => ({ default: m.AdminMessagesPage })));
 const AdminDoctorsPage = lazy(() => import('./pages/admin/AdminDoctorsPage').then(m => ({ default: m.AdminDoctorsPage })));
 const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage').then(m => ({ default: m.AdminServicesPage })));
+const AdminServicePageEditor = lazy(() => import('./pages/admin/AdminServicePageEditor').then(m => ({ default: m.AdminServicePageEditor })));
 const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })));
 const AdminHospitalImagesPage = lazy(() => import('./pages/admin/AdminHospitalImagesPage').then(m => ({ default: m.AdminHospitalImagesPage })));
 const AdminHealthTipsPage = lazy(() => import('./pages/admin/AdminHealthTipsPage').then(m => ({ default: m.AdminHealthTipsPage })));
@@ -31,6 +33,7 @@ export default function App() {
           {/* Public */}
           {/* <Route path="/" element={<HomePage />} /> */}
           <Route path="/" element={<Navigate to="/medicare-clinic" replace />} />
+          <Route path="/:slug/services/:serviceSlug" element={<ServiceDetailPage />} />
           <Route path="/:slug" element={<HomePage />} />
           <Route path="/:slug/:page" element={<HomePage />} />
 
@@ -53,6 +56,7 @@ export default function App() {
             <Route path="messages" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminMessagesPage /> </Suspense>} />
             <Route path="doctors" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminDoctorsPage /> </Suspense>} />
             <Route path="services" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminServicesPage /> </Suspense>} />
+            <Route path="services/:serviceId/page" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminServicePageEditor /> </Suspense>} />
             <Route path="hospital-images" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminHospitalImagesPage /> </Suspense>} />
             <Route path="health-tips" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminHealthTipsPage /> </Suspense>} />
             <Route path="health-packages" element={<Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner size="lg" /></div>}> <AdminHealthPackagesPage /> </Suspense>} />

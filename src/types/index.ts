@@ -56,6 +56,17 @@ export interface Clinic {
   section_settings: Record<string, { show: boolean; useDummies: boolean }>;
 }
 
+export type ContentSectionType = 'heading' | 'paragraph' | 'bullets' | 'image' | 'callout';
+
+export interface ServiceContentSection {
+  id: string;
+  type: ContentSectionType;
+  content: string;
+  level?: number;
+  items?: string[];
+  alt?: string;
+}
+
 export interface ClinicService {
   id: string;
   clinic_id: string;
@@ -69,6 +80,10 @@ export interface ClinicService {
   sort_order: number;
   is_active: boolean;
   created_at: string;
+  slug?: string;
+  content_sections?: ServiceContentSection[];
+  meta_title?: string;
+  meta_description?: string;
 }
 
 export interface ClinicDoctor {
