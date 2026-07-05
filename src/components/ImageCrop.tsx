@@ -18,7 +18,7 @@ export function ImageCrop({ isOpen, onClose, file, onCrop, aspect = 1, label = '
   const [offsetY, setOffsetY] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [, setImgNatural] = useState({ w: 0, h: 0 });
+  const [imgLoaded, setImgLoaded] = useState(false);
   const previewRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -34,10 +34,11 @@ export function ImageCrop({ isOpen, onClose, file, onCrop, aspect = 1, label = '
 
   useEffect(() => {
     if (!imgSrc) return;
+    setImgLoaded(false);
     const img = new Image();
     img.onload = () => {
       imgRef.current = img;
-      setImgNatural({ w: img.naturalWidth, h: img.naturalHeight });
+      setImgLoaded(true);
     };
     img.src = imgSrc;
   }, [imgSrc]);
@@ -68,7 +69,7 @@ export function ImageCrop({ isOpen, onClose, file, onCrop, aspect = 1, label = '
     const cy = H / 2 + offsetY;
 
     ctx.drawImage(img, cx - drawW / 2, cy - drawH / 2, drawW, drawH);
-  }, [imgSrc, zoom, offsetX, offsetY, aspect]);
+  }, [imgLoaded, zoom, offsetX, offsetY, aspect]);
 
   useEffect(() => {
     drawPreview();

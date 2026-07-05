@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Save, Info, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { uploadPublicFile } from '../../lib/storage';
+import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
+import { ImageCrop } from '../../components/ImageCrop';
 
 interface ClinicInfoForm {
   years_of_service: string;

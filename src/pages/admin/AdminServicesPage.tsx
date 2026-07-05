@@ -78,11 +78,11 @@ export function AdminServicesPage() {
     try {
       const serviceId = editing?.id ?? crypto.randomUUID();
       const imageUrl = imageFile
-        ? await uploadPublicFile(imageFile, {
+        ? (await uploadPublicFile(imageFile, {
             bucket: 'SellHealthStorage',
             path: `clinics/${clinicId}/services/${serviceId}`,
             fileName: 'image',
-          })
+          })) + `?v=${Date.now()}`
         : form.image_url;
 
       const payload = {

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { uploadPublicFile } from '../../lib/storage';
+import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClinicDoctor, ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
@@ -133,10 +133,10 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Doctor Photo</label>
           <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropOpen(true); } }} className="input-field" />
-          {photoFile && (
+          {(photoFile || form.image_url) && (
             <div className="mt-2 flex items-center gap-3">
-              <img src={URL.createObjectURL(photoFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-              <button type="button" onClick={() => setPhotoFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+              <img src={photoFile ? URL.createObjectURL(photoFile) : form.image_url} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+              <button type="button" onClick={() => { setPhotoFile(null); setField('image_url', ''); }} className="text-xs text-red-500 hover:text-red-600">Remove</button>
             </div>
           )}
           <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Uploads to SellHealthStorage/clinics/{clinicId}/doctors/[doctorId]/photo and saves the public URL into image_url.</p>
@@ -215,10 +215,10 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">WhatsApp Number</label>
           <div className="flex gap-2">
             <select
-              value={form.whatsapp_number ? (form.whatsapp_number.startsWith('+91') ? '+91' : form.whatsapp_number.startsWith('+1') ? '+1' : form.whatsapp_number.startsWith('+44') ? '+44' : form.whatsapp_number.startsWith('+61') ? '+61' : form.whatsapp_number.startsWith('+971') ? '+971' : '+91') : '+91'}
+              value={form.whatsapp_number ? (form.whatsapp_number.match(/^\+\d{1,4}/)?.[0] || '+91') : '+91'}
               onChange={(e) => {
-                const currentNumber = form.whatsapp_number.replace(/^\+\d{1,4}/, '');
-                setField('whatsapp_number', `${e.target.value}${currentNumber}`);
+                const digits = form.whatsapp_number.replace(/^\+\d{1,4}\s*/, '');
+                setField('whatsapp_number', `${e.target.value} ${digits}`.trim());
               }}
               className="input-field w-24 appearance-none"
             >
@@ -230,11 +230,11 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
             </select>
             <input
               type="tel"
-              value={form.whatsapp_number.replace(/^\+\d{1,4}/, '')}
+              value={form.whatsapp_number.replace(/^\+\d{1,4}\s*/, '')}
               onChange={(e) => {
                 const country = form.whatsapp_number.match(/^\+\d{1,4}/)?.[0] || '+91';
                 const digits = e.target.value.replace(/[^0-9]/g, '');
-                setField('whatsapp_number', `${country}${digits}`);
+                setField('whatsapp_number', `${country} ${digits}`.trim());
               }}
               className="input-field flex-1"
               placeholder="98765 43210"
@@ -312,12 +312,18 @@ export function AdminDoctorsPage() {
 
   async function handleSave(form: DoctorForm, photoFile: File | null, editingDoctor: ClinicDoctor | null) {
     const doctorId = editingDoctor?.id ?? crypto.randomUUID();
+    
+    // Delete old image if uploading a new one
+    if (photoFile && editingDoctor?.image_url) {
+      await deletePublicFile(editingDoctor.image_url);
+    }
+    
     const imageUrl = photoFile
-      ? await uploadPublicFile(photoFile, {
+      ? (await uploadPublicFile(photoFile, {
           bucket: 'SellHealthStorage',
           path: `clinics/${clinicId}/doctors/${doctorId}`,
           fileName: 'photo',
-        })
+        })) + `?v=${Date.now()}`
       : form.image_url;
 
     const payload = {
@@ -354,10 +360,18 @@ export function AdminDoctorsPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this doctor?')) return;
+    
+    // Find the doctor to get their image URL
+    const doctor = doctors.find(d => d.id === id);
+    
     const { error } = await supabase.from('clinic_doctors').delete().eq('id', id);
     if (error) {
       addToast('error', 'Failed to delete');
     } else {
+      // Delete image from storage
+      if (doctor?.image_url) {
+        await deletePublicFile(doctor.image_url);
+      }
       setDoctors((prev) => prev.filter((d) => d.id !== id));
       addToast('success', 'Doctor deleted');
     }
