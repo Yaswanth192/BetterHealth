@@ -73,6 +73,8 @@ export interface ServiceContentSection {
   level?: number;
   items?: string[];
   alt?: string;
+  position?: { x: number; y: number };
+  zoom?: number;
 }
 
 export interface ClinicService {
@@ -82,6 +84,8 @@ export interface ClinicService {
   description: string;
   icon: string;
   image_url: string;
+  image_position: { x: number; y: number } | null;
+  image_zoom: number | null;
   features: string[];
   consultation_fee: number;
   follow_up_fee: number;
@@ -101,6 +105,8 @@ export interface ClinicDoctor {
   specialization: string;
   bio: string;
   image_url: string;
+  image_position: { x: number; y: number } | null;
+  image_zoom: number | null;
   qualifications: string[];
   experience_years: number;
   languages: string[];
@@ -196,6 +202,8 @@ export interface BlogPost {
   content: string;
   category: string;
   image_url: string;
+  image_position: { x: number; y: number } | null;
+  image_zoom: number | null;
   read_time: string;
   author: string;
   publish_date: string;
@@ -242,6 +250,8 @@ export interface ArchitectureImage {
   title: string;
   description: string;
   image_url: string;
+  image_position: { x: number; y: number } | null;
+  image_zoom: number | null;
   sort_order: number;
   is_active: boolean;
   created_at: string;

@@ -96,6 +96,11 @@ export function HospitalImagesCarousel({ images }: HospitalImagesCarouselProps) 
                   src={displayImages[prevIdx].image_url}
                   alt={displayImages[prevIdx].title}
                   className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: displayImages[prevIdx].image_position ? `${displayImages[prevIdx].image_position!.x}% ${displayImages[prevIdx].image_position!.y}%` : undefined,
+                    transform: displayImages[prevIdx].image_zoom && displayImages[prevIdx].image_zoom! > 1 ? `scale(${displayImages[prevIdx].image_zoom})` : undefined,
+                    transformOrigin: displayImages[prevIdx].image_position ? `${displayImages[prevIdx].image_position!.x}% ${displayImages[prevIdx].image_position!.y}%` : undefined,
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/60" />
               </div>
@@ -118,6 +123,11 @@ export function HospitalImagesCarousel({ images }: HospitalImagesCarouselProps) 
                   src={current.image_url}
                   alt={current.title}
                   className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: current.image_position ? `${current.image_position.x}% ${current.image_position.y}%` : undefined,
+                    transform: current.image_zoom && current.image_zoom > 1 ? `scale(${current.image_zoom})` : undefined,
+                    transformOrigin: current.image_position ? `${current.image_position.x}% ${current.image_position.y}%` : undefined,
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
@@ -143,6 +153,11 @@ export function HospitalImagesCarousel({ images }: HospitalImagesCarouselProps) 
                   src={displayImages[nextIdx].image_url}
                   alt={displayImages[nextIdx].title}
                   className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: displayImages[nextIdx].image_position ? `${displayImages[nextIdx].image_position!.x}% ${displayImages[nextIdx].image_position!.y}%` : undefined,
+                    transform: displayImages[nextIdx].image_zoom && displayImages[nextIdx].image_zoom! > 1 ? `scale(${displayImages[nextIdx].image_zoom})` : undefined,
+                    transformOrigin: displayImages[nextIdx].image_position ? `${displayImages[nextIdx].image_position!.x}% ${displayImages[nextIdx].image_position!.y}%` : undefined,
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/60" />
               </div>

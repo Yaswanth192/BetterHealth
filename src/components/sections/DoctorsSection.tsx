@@ -98,11 +98,16 @@ export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector 
         {showDirector && activeFilter === 'All' && director && (
           <div className={`card overflow-hidden mb-12 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
               <div className="grid grid-cols-1 sm:grid-cols-[380px_1fr] gap-0">
-              <div className="min-h-[420px] bg-neutral-100 dark:bg-neutral-700">
+              <div className="min-h-[420px] bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
                 <img
                   src={director.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
                   alt={director.name}
                   className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: director.image_position ? `${director.image_position.x}% ${director.image_position.y}%` : undefined,
+                    transform: director.image_zoom && director.image_zoom > 1 ? `scale(${director.image_zoom})` : undefined,
+                    transformOrigin: director.image_position ? `${director.image_position.x}% ${director.image_position.y}%` : undefined,
+                  }}
                 />
               </div>
               <div className="p-5 sm:p-6 flex flex-col justify-center">
@@ -139,6 +144,11 @@ export function DoctorsSection({ doctors, appointmentPath, clinic, showDirector 
                     src={doctor.image_url || 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=600'}
                     alt={doctor.name}
                     className="w-full h-full object-cover"
+                    style={{
+                      objectPosition: doctor.image_position ? `${doctor.image_position.x}% ${doctor.image_position.y}%` : undefined,
+                      transform: doctor.image_zoom && doctor.image_zoom > 1 ? `scale(${doctor.image_zoom})` : undefined,
+                      transformOrigin: doctor.image_position ? `${doctor.image_position.x}% ${doctor.image_position.y}%` : undefined,
+                    }}
                   />
                 </div>
                 <div className="flex-1 p-5">

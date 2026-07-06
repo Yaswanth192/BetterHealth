@@ -75,6 +75,11 @@ function ContentRenderer({ sections }: { sections: ServiceContentSection[] }) {
                   src={section.content}
                   alt={section.alt || ''}
                   className="w-full rounded-2xl object-cover max-h-[500px]"
+                  style={{
+                    objectPosition: section.position ? `${section.position.x}% ${section.position.y}%` : undefined,
+                    transform: section.zoom && section.zoom > 1 ? `scale(${section.zoom})` : undefined,
+                    transformOrigin: section.position ? `${section.position.x}% ${section.position.y}%` : undefined,
+                  }}
                 />
                 {section.alt && (
                   <figcaption className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-3">
@@ -184,6 +189,11 @@ export function ServiceDetailPage() {
             src={service.image_url}
             alt={service.title}
             className="absolute inset-0 w-full h-full object-cover opacity-20"
+            style={{
+              objectPosition: service.image_position ? `${service.image_position.x}% ${service.image_position.y}%` : undefined,
+              transform: service.image_zoom && service.image_zoom > 1 ? `scale(${service.image_zoom})` : undefined,
+              transformOrigin: service.image_position ? `${service.image_position.x}% ${service.image_position.y}%` : undefined,
+            }}
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-teal-50 dark:from-primary-950 dark:to-teal-950" />

@@ -7,6 +7,7 @@ import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
+import { ImageWithFocalPoint } from '../../components/ImageWithFocalPoint';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -55,6 +56,10 @@ export function AdminHealthTipsPage() {
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [cropOpen, setCropOpen] = useState(false);
   const [cropTarget, setCropTarget] = useState<'modal' | 'inline'>('modal');
+  const [modalPosition, setModalPosition] = useState({ x: 50, y: 50 });
+  const [modalZoom, setModalZoom] = useState(1);
+  const [inlinePosition, setInlinePosition] = useState({ x: 50, y: 50 });
+  const [inlineZoom, setInlineZoom] = useState(1);
 
   useEffect(() => {
     if (clinicId) {
@@ -118,7 +123,7 @@ export function AdminHealthTipsPage() {
     addToast('success', `Category "${cat}" removed from list`);
   }
 
-  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalOpen(true); }
+  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalPosition({ x: 50, y: 50 }); setModalZoom(1); setModalOpen(true); }
   function openEdit(p: BlogPost) {
     setEditing(p);
     setForm({
@@ -126,6 +131,8 @@ export function AdminHealthTipsPage() {
       image_url: p.image_url, read_time: p.read_time, author: p.author,
       publish_date: p.publish_date, sort_order: p.sort_order, is_active: p.is_active,
     });
+    setModalPosition(p.image_position ?? { x: 50, y: 50 });
+    setModalZoom(p.image_zoom ?? 1);
     setImageFile(null);
     setModalOpen(true);
   }
@@ -150,6 +157,8 @@ export function AdminHealthTipsPage() {
         content: form.content,
         category: form.category,
         image_url: imageUrl,
+        image_position: modalPosition,
+        image_zoom: modalZoom,
         read_time: form.read_time,
         author: form.author,
         publish_date: form.publish_date,
@@ -192,6 +201,8 @@ export function AdminHealthTipsPage() {
         content: inlineForm.content,
         category: inlineForm.category,
         image_url: imageUrl,
+        image_position: inlinePosition,
+        image_zoom: inlineZoom,
         read_time: inlineForm.read_time || '5 min read',
         author: inlineForm.author,
         publish_date: inlineForm.publish_date || new Date().toISOString().split('T')[0],
@@ -313,10 +324,21 @@ export function AdminHealthTipsPage() {
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Cover Image</label>
                 <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('inline'); setCropOpen(true); } }} className="input-field" />
-                {inlineImageFile && (
-                  <div className="mt-2 flex items-center gap-3">
-                    <img src={URL.createObjectURL(inlineImageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-                    <button type="button" onClick={() => setInlineImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+                {(inlineImageFile || inlineForm.image_url) && (
+                  <div className="mt-2">
+                    <ImageWithFocalPoint
+                      currentUrl={inlineForm.image_url}
+                      file={inlineImageFile}
+                      onFileChange={setInlineImageFile}
+                      onRemove={() => setInlineImageFile(null)}
+                      position={inlinePosition}
+                      onPositionChange={setInlinePosition}
+                      zoom={inlineZoom}
+                      onZoomChange={setInlineZoom}
+                      ratio="2:1"
+                      previewAspect="2/1"
+                      previewMaxWidth="300px"
+                    />
                   </div>
                 )}
               </div>
@@ -338,7 +360,11 @@ export function AdminHealthTipsPage() {
               <div key={post.id} className="card overflow-hidden group">
                 {post.image_url && (
                   <div className="relative h-40 overflow-hidden">
-                    <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style={{
+                      objectPosition: post.image_position ? `${post.image_position.x}% ${post.image_position.y}%` : undefined,
+                      transform: post.image_zoom && post.image_zoom > 1 ? `scale(${post.image_zoom})` : undefined,
+                      transformOrigin: post.image_position ? `${post.image_position.x}% ${post.image_position.y}%` : undefined,
+                    }} />
                     <span className="absolute top-2 left-2 px-2 py-0.5 bg-primary-600 text-white text-xs font-semibold rounded-full">{post.category}</span>
                   </div>
                 )}
@@ -429,10 +455,21 @@ export function AdminHealthTipsPage() {
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Cover Image</label>
             <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('modal'); setCropOpen(true); } }} className="input-field" />
-            {imageFile && (
-              <div className="mt-2 flex items-center gap-3">
-                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-                <button type="button" onClick={() => setImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            {(imageFile || form.image_url) && (
+              <div className="mt-2">
+                <ImageWithFocalPoint
+                  currentUrl={form.image_url}
+                  file={imageFile}
+                  onFileChange={setImageFile}
+                  onRemove={() => setImageFile(null)}
+                  position={modalPosition}
+                  onPositionChange={setModalPosition}
+                  zoom={modalZoom}
+                  onZoomChange={setModalZoom}
+                  ratio="2:1"
+                  previewAspect="2/1"
+                  previewMaxWidth="300px"
+                />
               </div>
             )}
           </div>

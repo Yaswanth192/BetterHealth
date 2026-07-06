@@ -7,6 +7,7 @@ import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
+import { ImageWithFocalPoint } from '../../components/ImageWithFocalPoint';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -43,6 +44,10 @@ export function AdminHospitalImagesPage() {
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [cropOpen, setCropOpen] = useState(false);
   const [cropTarget, setCropTarget] = useState<'modal' | 'inline'>('modal');
+  const [modalPosition, setModalPosition] = useState({ x: 50, y: 50 });
+  const [modalZoom, setModalZoom] = useState(1);
+  const [inlinePosition, setInlinePosition] = useState({ x: 50, y: 50 });
+  const [inlineZoom, setInlineZoom] = useState(1);
 
   useEffect(() => {
     if (clinicId) {
@@ -84,10 +89,12 @@ export function AdminHospitalImagesPage() {
     setLoading(false);
   }
 
-  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalOpen(true); }
+  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalPosition({ x: 50, y: 50 }); setModalZoom(1); setModalOpen(true); }
   function openEdit(img: ArchitectureImage) {
     setEditing(img);
     setForm({ title: img.title, description: img.description, image_url: img.image_url, sort_order: img.sort_order, is_active: img.is_active });
+    setModalPosition(img.image_position ?? { x: 50, y: 50 });
+    setModalZoom(img.image_zoom ?? 1);
     setImageFile(null);
     setModalOpen(true);
   }
@@ -116,6 +123,8 @@ export function AdminHospitalImagesPage() {
         title: form.title,
         description: form.description,
         image_url: imageUrl,
+        image_position: modalPosition,
+        image_zoom: modalZoom,
         sort_order: form.sort_order,
         is_active: form.is_active,
       };
@@ -150,6 +159,8 @@ export function AdminHospitalImagesPage() {
         title: inlineForm.title || 'Hospital Image',
         description: inlineForm.description,
         image_url: imageUrl,
+        image_position: inlinePosition,
+        image_zoom: inlineZoom,
         sort_order: 0,
         is_active: true,
       });
@@ -258,10 +269,21 @@ export function AdminHospitalImagesPage() {
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Image *</label>
                 <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('inline'); setCropOpen(true); } }} className="input-field" />
-                {inlineImageFile && (
-                  <div className="mt-2 flex items-center gap-3">
-                    <img src={URL.createObjectURL(inlineImageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-                    <button type="button" onClick={() => setInlineImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+                {(inlineImageFile || inlineForm.image_url) && (
+                  <div className="mt-2">
+                    <ImageWithFocalPoint
+                      currentUrl={inlineForm.image_url}
+                      file={inlineImageFile}
+                      onFileChange={setInlineImageFile}
+                      onRemove={() => setInlineImageFile(null)}
+                      position={inlinePosition}
+                      onPositionChange={setInlinePosition}
+                      zoom={inlineZoom}
+                      onZoomChange={setInlineZoom}
+                      ratio="16:9"
+                      previewAspect="16/9"
+                      previewMaxWidth="400px"
+                    />
                   </div>
                 )}
               </div>
@@ -282,7 +304,11 @@ export function AdminHospitalImagesPage() {
             {images.map((img, idx) => (
               <div key={img.id} className="card overflow-hidden group">
                 <div className="relative h-48 overflow-hidden">
-                  <img src={img.image_url} alt={img.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={img.image_url} alt={img.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style={{
+                    objectPosition: img.image_position ? `${img.image_position.x}% ${img.image_position.y}%` : undefined,
+                    transform: img.image_zoom && img.image_zoom > 1 ? `scale(${img.image_zoom})` : undefined,
+                    transformOrigin: img.image_position ? `${img.image_position.x}% ${img.image_position.y}%` : undefined,
+                  }} />
                   <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => moveImage(img.id, 'up')}
@@ -328,10 +354,21 @@ export function AdminHospitalImagesPage() {
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Image</label>
             <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropTarget('modal'); setCropOpen(true); } }} className="input-field" />
-            {imageFile && (
-              <div className="mt-2 flex items-center gap-3">
-                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-                <button type="button" onClick={() => setImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            {(imageFile || form.image_url) && (
+              <div className="mt-2">
+                <ImageWithFocalPoint
+                  currentUrl={form.image_url}
+                  file={imageFile}
+                  onFileChange={setImageFile}
+                  onRemove={() => setImageFile(null)}
+                  position={modalPosition}
+                  onPositionChange={setModalPosition}
+                  zoom={modalZoom}
+                  onZoomChange={setModalZoom}
+                  ratio="16:9"
+                  previewAspect="16/9"
+                  previewMaxWidth="400px"
+                />
               </div>
             )}
           </div>

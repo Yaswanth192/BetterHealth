@@ -30,6 +30,11 @@ export function HospitalImagesParallaxCSS({ images }: HospitalImagesParallaxCSSP
             src={img.image_url}
             alt={img.title}
             className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              objectPosition: img.image_position ? `${img.image_position.x}% ${img.image_position.y}%` : undefined,
+              transform: img.image_zoom && img.image_zoom > 1 ? `scale(${img.image_zoom})` : undefined,
+              transformOrigin: img.image_position ? `${img.image_position.x}% ${img.image_position.y}%` : undefined,
+            }}
           />
           {/* Shadow overlay */}
           <div className="absolute inset-0 bg-black/50" />

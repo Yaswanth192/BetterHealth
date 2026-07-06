@@ -8,6 +8,7 @@ import { ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
+import { ImageWithFocalPoint } from '../../components/ImageWithFocalPoint';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -47,6 +48,8 @@ export function AdminServicesPage() {
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [cropOpen, setCropOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     if (clinicId) fetchServices();
@@ -59,7 +62,7 @@ export function AdminServicesPage() {
     setLoading(false);
   }
 
-  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setModalOpen(true); }
+  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setImageFile(null); setPosition({ x: 50, y: 50 }); setZoom(1); setModalOpen(true); }
   function openEdit(s: ClinicService) {
     setEditing(s);
     setForm({
@@ -69,6 +72,8 @@ export function AdminServicesPage() {
       follow_up_fee: s.follow_up_fee ? String(s.follow_up_fee) : '',
       sort_order: s.sort_order, is_active: s.is_active,
     });
+    setPosition(s.image_position ?? { x: 50, y: 50 });
+    setZoom(s.image_zoom ?? 1);
     setImageFile(null);
     setModalOpen(true);
   }
@@ -92,6 +97,8 @@ export function AdminServicesPage() {
         description: form.description,
         icon: form.icon,
         image_url: imageUrl,
+        image_position: position,
+        image_zoom: zoom,
         features: form.features.split(',').map((f) => f.trim()).filter(Boolean),
         consultation_fee: parseInt(form.consultation_fee, 10) || 0,
         follow_up_fee: parseInt(form.follow_up_fee, 10) || 0,
@@ -212,10 +219,21 @@ export function AdminServicesPage() {
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Service Image</label>
             <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropOpen(true); } }} className="input-field" />
-            {imageFile && (
-              <div className="mt-2 flex items-center gap-3">
-                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-                <button type="button" onClick={() => setImageFile(null)} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            {(imageFile || form.image_url) && (
+              <div className="mt-2">
+                <ImageWithFocalPoint
+                  currentUrl={form.image_url}
+                  file={imageFile}
+                  onFileChange={setImageFile}
+                  onRemove={() => setImageFile(null)}
+                  position={position}
+                  onPositionChange={setPosition}
+                  zoom={zoom}
+                  onZoomChange={setZoom}
+                  ratio="16:9"
+                  previewAspect="16/9"
+                  previewMaxWidth="400px"
+                />
               </div>
             )}
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Uploads to SellHealthStorage/clinics/{clinicId}/services/[serviceId]/image and saves the public URL into image_url.</p>

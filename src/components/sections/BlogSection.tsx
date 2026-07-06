@@ -12,6 +12,8 @@ interface FallbackBlogPost {
   excerpt: string;
   category: string;
   image: string;
+  image_position: { x: number; y: number } | null;
+  image_zoom: number | null;
   readTime: string;
   author: string;
   date: string;
@@ -24,6 +26,8 @@ const fallbackPosts: FallbackBlogPost[] = [
     excerpt: 'Simple daily habits that can significantly reduce your risk of heart disease and improve cardiovascular health.',
     category: 'Cardiology',
     image: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image_position: null,
+    image_zoom: null,
     readTime: '5 min read',
     author: 'Dr. Sharma',
     date: '7 Jan 2026',
@@ -34,6 +38,8 @@ const fallbackPosts: FallbackBlogPost[] = [
     excerpt: 'Common signs that indicate you should book a consultation with a skin specialist.',
     category: 'Skin Care',
     image: 'https://images.pexels.com/photos/7659564/pexels-photo-7659564.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image_position: null,
+    image_zoom: null,
     readTime: '4 min read',
     author: 'Dr. Patel',
     date: '5 Jan 2026',
@@ -44,6 +50,8 @@ const fallbackPosts: FallbackBlogPost[] = [
     excerpt: 'Complete vaccination schedule for children from birth to 16 years as per IAP guidelines.',
     category: 'Pediatrics',
     image: 'https://images.pexels.com/photos/6823568/pexels-photo-6823568.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image_position: null,
+    image_zoom: null,
     readTime: '6 min read',
     author: 'Dr. Gupta',
     date: '3 Jan 2026',
@@ -59,6 +67,8 @@ export function BlogSection({ posts }: BlogSectionProps) {
         excerpt: p.excerpt,
         category: p.category,
         image: p.image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+        image_position: p.image_position ?? null,
+        image_zoom: p.image_zoom ?? null,
         readTime: p.read_time,
         author: p.author,
         date: p.publish_date,
@@ -89,6 +99,11 @@ export function BlogSection({ posts }: BlogSectionProps) {
                   src={post.image}
                   alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  style={{
+                    objectPosition: post.image_position ? `${post.image_position.x}% ${post.image_position.y}%` : undefined,
+                    transform: post.image_zoom && post.image_zoom > 1 ? `scale(${post.image_zoom})` : undefined,
+                    transformOrigin: post.image_position ? `${post.image_position.x}% ${post.image_position.y}%` : undefined,
+                  }}
                 />
                 <span className="absolute top-3 left-3 px-3 py-1 bg-primary-600 text-white text-xs font-semibold rounded-full">
                   {post.category}

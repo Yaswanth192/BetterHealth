@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, GripVertical, Type, AlignLeft, ListChecks, ImageIcon, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, Type, AlignLeft, ListChecks, ImageIcon, AlertCircle, Crosshair } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClinicService, ServiceContentSection, ContentSectionType } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
+import { FocalPointPicker } from '../../components/FocalPointPicker';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -74,7 +75,7 @@ export function AdminServicePageEditor() {
       content: '',
       ...(type === 'heading' ? { level: 2 } : {}),
       ...(type === 'bullets' ? { items: [''] } : {}),
-      ...(type === 'image' ? { alt: '' } : {}),
+      ...(type === 'image' ? { alt: '', position: { x: 50, y: 50 }, zoom: 1 } : {}),
     };
     setSections([...sections, newSection]);
   }
@@ -378,10 +379,14 @@ export function AdminServicePageEditor() {
                 {section.type === 'image' && (
                   <div className="space-y-3">
                     {section.content && (
-                      <img
-                        src={section.content}
-                        alt={section.alt || ''}
-                        className="w-full h-48 object-cover rounded-lg"
+                      <FocalPointPicker
+                        imageUrl={section.content}
+                        position={section.position ?? { x: 50, y: 50 }}
+                        onChange={(pos) => updateSection(section.id, { position: pos })}
+                        zoom={section.zoom ?? 1}
+                        onZoomChange={(z) => updateSection(section.id, { zoom: z })}
+                        className="w-full rounded-lg overflow-hidden"
+                        style={{ maxHeight: '300px' }}
                       />
                     )}
                     <div className="flex gap-3">
@@ -393,13 +398,18 @@ export function AdminServicePageEditor() {
                       </button>
                       {section.content && (
                         <button
-                          onClick={() => updateSection(section.id, { content: '' })}
+                          onClick={() => updateSection(section.id, { content: '', position: { x: 50, y: 50 }, zoom: 1 })}
                           className="text-sm text-red-500 hover:text-red-600"
                         >
                           Remove
                         </button>
                       )}
                     </div>
+                    {section.content && (
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
+                        <Crosshair className="w-3 h-3" /> Drag on image to choose which part appears on website
+                      </p>
+                    )}
                     <input
                       type="text"
                       value={section.alt || ''}

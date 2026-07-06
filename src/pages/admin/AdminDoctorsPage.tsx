@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClinicDoctor, ClinicService } from '../../types';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
-import { ImageCrop } from '../../components/ImageCrop';
+import { ImageWithFocalPoint } from '../../components/ImageWithFocalPoint';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
 
@@ -46,15 +46,15 @@ interface DoctorFormModalProps {
   editing: ClinicDoctor | null;
   services: ClinicService[];
   clinicId: string;
-  onSave: (form: DoctorForm, photoFile: File | null, editing: ClinicDoctor | null) => Promise<void>;
+  onSave: (form: DoctorForm, photoFile: File | null, editing: ClinicDoctor | null, position: { x: number; y: number }, zoom: number) => Promise<void>;
 }
 
 const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing, services, clinicId, onSave }: DoctorFormModalProps) {
   const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [cropFile, setCropFile] = useState<File | null>(null);
-  const [cropOpen, setCropOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [zoom, setZoom] = useState(1);
 
   const setField = useCallback(<K extends keyof DoctorForm>(key: K, value: DoctorForm[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -81,8 +81,12 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
           sort_order: editing.sort_order,
           is_active: editing.is_active,
         });
+        setPosition(editing.image_position ?? { x: 50, y: 50 });
+        setZoom(editing.image_zoom ?? 1);
       } else {
         setForm(EMPTY_FORM);
+        setPosition({ x: 50, y: 50 });
+        setZoom(1);
       }
       setPhotoFile(null);
     }
@@ -97,7 +101,7 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
   async function handleSave() {
     setSaving(true);
     try {
-      await onSave(form, photoFile, editing);
+      await onSave(form, photoFile, editing, position, zoom);
     } finally {
       setSaving(false);
     }
@@ -132,11 +136,22 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
         </div>
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Upload Doctor Photo</label>
-          <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setCropFile(f); setCropOpen(true); } }} className="input-field" />
+          <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) setPhotoFile(f); }} className="input-field" />
           {(photoFile || form.image_url) && (
-            <div className="mt-2 flex items-center gap-3">
-              <img src={photoFile ? URL.createObjectURL(photoFile) : form.image_url} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
-              <button type="button" onClick={() => { setPhotoFile(null); setField('image_url', ''); }} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            <div className="mt-2">
+              <ImageWithFocalPoint
+                currentUrl={form.image_url}
+                file={photoFile}
+                onFileChange={setPhotoFile}
+                onRemove={() => { setPhotoFile(null); setField('image_url', ''); }}
+                position={position}
+                onPositionChange={setPosition}
+                zoom={zoom}
+                onZoomChange={setZoom}
+                ratio="3:4 (portrait)"
+                previewAspect="3/4"
+                previewMaxWidth="200px"
+              />
             </div>
           )}
           <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Uploads to SellHealthStorage/clinics/{clinicId}/doctors/[doctorId]/photo and saves the public URL into image_url.</p>
@@ -256,14 +271,6 @@ const DoctorFormModal = memo(function DoctorFormModal({ isOpen, onClose, editing
           <button onClick={onClose} className="btn-secondary">Cancel</button>
         </div>
       </div>
-      <ImageCrop
-        isOpen={cropOpen}
-        onClose={() => { setCropOpen(false); setCropFile(null); }}
-        file={cropFile}
-        onCrop={(blob) => setPhotoFile(new File([blob], 'doctor-photo.jpg', { type: 'image/jpeg' }))}
-        aspect={3 / 4}
-        label="Crop Doctor Photo"
-      />
     </Modal>
   );
 });
@@ -310,7 +317,7 @@ export function AdminDoctorsPage() {
     setModalOpen(true);
   }
 
-  async function handleSave(form: DoctorForm, photoFile: File | null, editingDoctor: ClinicDoctor | null) {
+  async function handleSave(form: DoctorForm, photoFile: File | null, editingDoctor: ClinicDoctor | null, position: { x: number; y: number }, zoom: number) {
     const doctorId = editingDoctor?.id ?? crypto.randomUUID();
     
     // Delete old image if uploading a new one
@@ -333,6 +340,8 @@ export function AdminDoctorsPage() {
       specialization: form.specialization,
       bio: form.bio,
       image_url: imageUrl,
+      image_position: position,
+      image_zoom: zoom,
       qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
       experience_years: parseInt(form.experience_years, 10) || 0,
       languages: form.languages.split(',').map((l) => l.trim()).filter(Boolean),
@@ -424,7 +433,11 @@ export function AdminDoctorsPage() {
                 <div className="flex flex-col sm:flex-row">
                   <div className="w-full sm:w-40 h-48 sm:h-[180px] flex-shrink-0 bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
                     {doctor.image_url ? (
-                      <img src={doctor.image_url} alt={doctor.name} className="w-full h-full object-cover object-top" />
+                      <img src={doctor.image_url} alt={doctor.name} className="w-full h-full object-cover object-top" style={{
+                        objectPosition: doctor.image_position ? `${doctor.image_position.x}% ${doctor.image_position.y}%` : undefined,
+                        transform: doctor.image_zoom && doctor.image_zoom > 1 ? `scale(${doctor.image_zoom})` : undefined,
+                        transformOrigin: doctor.image_position ? `${doctor.image_position.x}% ${doctor.image_position.y}%` : undefined,
+                      }} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
                         <Users className="w-10 h-10 text-primary-200 dark:text-primary-700" />
