@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, GripVertical, Type, AlignLeft, ListChecks, ImageIcon, AlertCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { uploadPublicFile } from '../../lib/storage';
+import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClinicService, ServiceContentSection, ContentSectionType } from '../../types';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
@@ -115,11 +115,15 @@ export function AdminServicePageEditor() {
   async function handleImageCrop(blob: Blob) {
     if (!cropSectionId || !clinicId || !serviceId) return;
     const file = new File([blob], 'section.jpg', { type: 'image/jpeg' });
-    const url = await uploadPublicFile(file, {
+    const section = sections.find(s => s.id === cropSectionId);
+    if (section?.content && section.content.startsWith('http')) {
+      await deletePublicFile(section.content);
+    }
+    const url = (await uploadPublicFile(file, {
       bucket: 'SellHealthStorage',
       path: `clinics/${clinicId}/services/${serviceId}/sections/${cropSectionId}`,
       fileName: 'image',
-    });
+    })) + `?v=${Date.now()}`;
     updateSection(cropSectionId, { content: url });
     setCropOpen(false);
     setCropSectionId(null);

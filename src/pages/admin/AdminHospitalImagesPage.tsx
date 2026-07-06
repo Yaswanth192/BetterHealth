@@ -3,7 +3,7 @@ import { Plus, ArrowUp, ArrowDown } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { ArchitectureImage } from '../../types';
-import { uploadPublicFile } from '../../lib/storage';
+import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
@@ -96,12 +96,14 @@ export function AdminHospitalImagesPage() {
     setSaving(true);
     try {
       const imageId = editing?.id ?? crypto.randomUUID();
-      const imageUrl = imageFile
-        ? await uploadPublicFile(imageFile, {
-            path: `clinics/${clinicId}/architecture/${imageId}`,
-            fileName: 'image',
-          })
-        : form.image_url;
+      let imageUrl = form.image_url;
+      if (imageFile) {
+        if (form.image_url) await deletePublicFile(form.image_url);
+        imageUrl = (await uploadPublicFile(imageFile, {
+          path: `clinics/${clinicId}/architecture/${imageId}`,
+          fileName: 'image',
+        })) + `?v=${Date.now()}`;
+      }
 
       if (!imageUrl) {
         addToast('error', 'Please upload an image');
@@ -138,10 +140,10 @@ export function AdminHospitalImagesPage() {
     setInlineSaving(true);
     try {
       const imageId = crypto.randomUUID();
-      const imageUrl = await uploadPublicFile(inlineImageFile, {
+      const imageUrl = (await uploadPublicFile(inlineImageFile, {
         path: `clinics/${clinicId}/architecture/${imageId}`,
         fileName: 'image',
-      });
+      })) + `?v=${Date.now()}`;
       const { error } = await supabase.from('architecture_images').insert({
         id: imageId,
         clinic_id: clinicId!,
@@ -165,10 +167,12 @@ export function AdminHospitalImagesPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this image?')) return;
+    const img = images.find(i => i.id === id);
     const { error } = await supabase.from('architecture_images').delete().eq('id', id);
     if (error) {
       addToast('error', 'Failed to delete');
     } else {
+      if (img?.image_url) await deletePublicFile(img.image_url);
       setImages(prev => prev.filter(i => i.id !== id));
       addToast('success', 'Image deleted');
     }

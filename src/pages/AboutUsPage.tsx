@@ -45,6 +45,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
           src={clinic?.about_hero_image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=1920'}
           alt=""
           className="absolute inset-0 w-full h-full object-cover opacity-20"
+          style={{ objectPosition: clinic?.about_hero_image_position ? `${clinic.about_hero_image_position.x}% ${clinic.about_hero_image_position.y}%` : undefined, transform: clinic?.about_hero_image_zoom && clinic.about_hero_image_zoom > 1 ? `scale(${clinic.about_hero_image_zoom})` : undefined, transformOrigin: clinic?.about_hero_image_position ? `${clinic.about_hero_image_position.x}% ${clinic.about_hero_image_position.y}%` : undefined }}
         />
         {/* Theme color overlay - makes image faintly visible */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-800 via-primary-700 to-teal-800" />
@@ -89,6 +90,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
                     src={clinic?.about_image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800'}
                     alt="Our Clinic"
                     className="w-full h-[420px] object-cover"
+                    style={{ objectPosition: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined, transform: clinic?.about_image_zoom && clinic.about_image_zoom > 1 ? `scale(${clinic.about_image_zoom})` : undefined, transformOrigin: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined }}
                   />
                 </div>
                 {/* Glassy floating card */}
@@ -200,6 +202,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
                   src={clinic.services_heading_image_url || 'https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=compress&cs=tinysrgb&w=1920'}
                   alt="Dermatology Services"
                   className="w-full h-64 sm:h-80 object-cover"
+                  style={{ objectPosition: clinic.services_heading_image_position ? `${clinic.services_heading_image_position.x}% ${clinic.services_heading_image_position.y}%` : undefined, transform: clinic.services_heading_image_zoom && clinic.services_heading_image_zoom > 1 ? `scale(${clinic.services_heading_image_zoom})` : undefined, transformOrigin: clinic.services_heading_image_position ? `${clinic.services_heading_image_position.x}% ${clinic.services_heading_image_position.y}%` : undefined }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 via-primary-800/60 to-teal-800/40 flex items-center justify-center">
                   <h2 className="text-3xl sm:text-5xl font-bold font-heading text-white text-center px-4">

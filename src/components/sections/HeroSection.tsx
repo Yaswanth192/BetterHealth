@@ -190,6 +190,7 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
                   src={clinic?.hero_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
                   alt="Clinic Building"
                   className="w-full h-80 object-cover"
+                  style={{ objectPosition: clinic?.hero_image_position ? `${clinic.hero_image_position.x}% ${clinic.hero_image_position.y}%` : undefined, transform: clinic?.hero_image_zoom && clinic.hero_image_zoom > 1 ? `scale(${clinic.hero_image_zoom})` : undefined, transformOrigin: clinic?.hero_image_position ? `${clinic.hero_image_position.x}% ${clinic.hero_image_position.y}%` : undefined }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/40 via-transparent to-transparent" />
               </div>

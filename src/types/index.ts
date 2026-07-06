@@ -46,9 +46,17 @@ export interface Clinic {
   opening_hours_display: string;
   process_steps: Array<{ title: string; description: string }>;
   hero_image_url: string;
+  hero_image_position: { x: number; y: number } | null;
+  hero_image_zoom: number | null;
   about_image_url: string;
+  about_image_position: { x: number; y: number } | null;
+  about_image_zoom: number | null;
   about_hero_image_url: string;
+  about_hero_image_position: { x: number; y: number } | null;
+  about_hero_image_zoom: number | null;
   services_heading_image_url: string;
+  services_heading_image_position: { x: number; y: number } | null;
+  services_heading_image_zoom: number | null;
   services_content: string;
   doctors_section_subtitle: string;
   testimonials_section_subtitle: string;

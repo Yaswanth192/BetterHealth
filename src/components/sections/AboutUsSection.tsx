@@ -22,6 +22,7 @@ export function AboutUsSection({ clinic, doctorsPath, doctorsCount }: AboutUsSec
                 src={clinic?.about_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
                 alt="Clinic"
                 className="w-full h-[400px] object-cover"
+                style={{ objectPosition: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined, transform: clinic?.about_image_zoom && clinic.about_image_zoom > 1 ? `scale(${clinic.about_image_zoom})` : undefined, transformOrigin: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined }}
               />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-primary-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">

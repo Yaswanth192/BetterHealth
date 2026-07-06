@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Save, Info, Upload } from 'lucide-react';
+import { Save, Info, Upload, Crosshair } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
-import { ImageCrop } from '../../components/ImageCrop';
+import { FocalPointPicker } from '../../components/FocalPointPicker';
 
 interface ClinicInfoForm {
   years_of_service: string;
@@ -44,6 +44,14 @@ export function AdminClinicInfoPage() {
   const [aboutImageFile, setAboutImageFile] = useState<File | null>(null);
   const [aboutHeroImageFile, setAboutHeroImageFile] = useState<File | null>(null);
   const [servicesHeadingImageFile, setServicesHeadingImageFile] = useState<File | null>(null);
+  const [heroPosition, setHeroPosition] = useState({ x: 50, y: 50 });
+  const [aboutPosition, setAboutPosition] = useState({ x: 50, y: 50 });
+  const [aboutHeroPosition, setAboutHeroPosition] = useState({ x: 50, y: 50 });
+  const [servicesHeadingPosition, setServicesHeadingPosition] = useState({ x: 50, y: 50 });
+  const [heroZoom, setHeroZoom] = useState(1);
+  const [aboutZoom, setAboutZoom] = useState(1);
+  const [aboutHeroZoom, setAboutHeroZoom] = useState(1);
+  const [servicesHeadingZoom, setServicesHeadingZoom] = useState(1);
   const [form, setForm] = useState<ClinicInfoForm>({
     years_of_service: '0',
     patients_treated: '0',
@@ -110,6 +118,14 @@ export function AdminClinicInfoPage() {
           { title: 'Follow-Up Care', description: 'Ongoing monitoring, medication management, and recovery support.' },
         ],
       });
+      if (data.hero_image_position) setHeroPosition(data.hero_image_position);
+      if (data.about_hero_image_position) setAboutHeroPosition(data.about_hero_image_position);
+      if (data.about_image_position) setAboutPosition(data.about_image_position);
+      if (data.services_heading_image_position) setServicesHeadingPosition(data.services_heading_image_position);
+      if (data.hero_image_zoom) setHeroZoom(data.hero_image_zoom);
+      if (data.about_image_zoom) setAboutZoom(data.about_image_zoom);
+      if (data.about_hero_image_zoom) setAboutHeroZoom(data.about_hero_image_zoom);
+      if (data.services_heading_image_zoom) setServicesHeadingZoom(data.services_heading_image_zoom);
     }
     setLoading(false);
   }
@@ -123,32 +139,36 @@ export function AdminClinicInfoPage() {
       let servicesHeadingImageUrl = form.services_heading_image_url;
 
       if (heroImageFile) {
-        heroImageUrl = await uploadPublicFile(heroImageFile, {
+        if (form.hero_image_url) await deletePublicFile(form.hero_image_url);
+        heroImageUrl = (await uploadPublicFile(heroImageFile, {
           bucket: 'SellHealthStorage',
           path: `clinics/${clinicId}/hero`,
           fileName: 'hero-image',
-        });
+        })) + `?v=${Date.now()}`;
       }
       if (aboutImageFile) {
-        aboutImageUrl = await uploadPublicFile(aboutImageFile, {
+        if (form.about_image_url) await deletePublicFile(form.about_image_url);
+        aboutImageUrl = (await uploadPublicFile(aboutImageFile, {
           bucket: 'SellHealthStorage',
           path: `clinics/${clinicId}/about`,
           fileName: 'about-image',
-        });
+        })) + `?v=${Date.now()}`;
       }
       if (aboutHeroImageFile) {
-        aboutHeroImageUrl = await uploadPublicFile(aboutHeroImageFile, {
+        if (form.about_hero_image_url) await deletePublicFile(form.about_hero_image_url);
+        aboutHeroImageUrl = (await uploadPublicFile(aboutHeroImageFile, {
           bucket: 'SellHealthStorage',
           path: `clinics/${clinicId}/about-hero`,
           fileName: 'about-hero-image',
-        });
+        })) + `?v=${Date.now()}`;
       }
       if (servicesHeadingImageFile) {
-        servicesHeadingImageUrl = await uploadPublicFile(servicesHeadingImageFile, {
+        if (form.services_heading_image_url) await deletePublicFile(form.services_heading_image_url);
+        servicesHeadingImageUrl = (await uploadPublicFile(servicesHeadingImageFile, {
           bucket: 'SellHealthStorage',
           path: `clinics/${clinicId}/services`,
           fileName: 'services-heading-image',
-        });
+        })) + `?v=${Date.now()}`;
       }
 
       const { error } = await supabase.from('clinics').update({
@@ -162,9 +182,17 @@ export function AdminClinicInfoPage() {
         hero_headline: form.hero_headline,
         hero_subtitle: form.hero_subtitle,
         hero_image_url: heroImageUrl,
+        hero_image_position: heroPosition,
+        hero_image_zoom: heroZoom,
         about_image_url: aboutImageUrl,
+        about_image_position: aboutPosition,
+        about_image_zoom: aboutZoom,
         about_hero_image_url: aboutHeroImageUrl,
+        about_hero_image_position: aboutHeroPosition,
+        about_hero_image_zoom: aboutHeroZoom,
         services_heading_image_url: servicesHeadingImageUrl,
+        services_heading_image_position: servicesHeadingPosition,
+        services_heading_image_zoom: servicesHeadingZoom,
         services_content: form.services_content,
         doctors_section_subtitle: form.doctors_section_subtitle,
         testimonials_section_subtitle: form.testimonials_section_subtitle,
@@ -225,18 +253,30 @@ export function AdminClinicInfoPage() {
         <Section title="Hero Section" description="Headline, subtitle, and hero image shown on the homepage hero">
           <Field label="Hero Headline" value={form.hero_headline} onChange={(v) => setForm({ ...form, hero_headline: v })} placeholder="Caring for You & Your Family" />
           <Field label="Hero Subtitle" value={form.hero_subtitle} onChange={(v) => setForm({ ...form, hero_subtitle: v })} textarea placeholder="Multi-specialty healthcare with a personal touch." />
-          <ImageUpload label="Hero Image" currentUrl={form.hero_image_url} file={heroImageFile} onFileChange={setHeroImageFile} />
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Hero Image</label>
+            <ImageUpload currentUrl={form.hero_image_url} file={heroImageFile} onFileChange={setHeroImageFile} onRemove={() => { setHeroImageFile(null); setForm({ ...form, hero_image_url: '' }); }} ratio="8:5" position={heroPosition} onPositionChange={setHeroPosition} zoom={heroZoom} onZoomChange={setHeroZoom} previewAspect="8/5" previewMaxWidth="320px" />
+          </div>
         </Section>
 
         {/* About Section */}
         <Section title="About Us Section" description="Hero image for the About Us page and inline image used in the Our Story section">
-          <ImageUpload label="About Hero Image" currentUrl={form.about_hero_image_url} file={aboutHeroImageFile} onFileChange={setAboutHeroImageFile} />
-          <ImageUpload label="About Us Image" currentUrl={form.about_image_url} file={aboutImageFile} onFileChange={setAboutImageFile} />
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">About Hero Image</label>
+            <ImageUpload currentUrl={form.about_hero_image_url} file={aboutHeroImageFile} onFileChange={setAboutHeroImageFile} onRemove={() => { setAboutHeroImageFile(null); setForm({ ...form, about_hero_image_url: '' }); }} ratio="16:9" position={aboutHeroPosition} onPositionChange={setAboutHeroPosition} zoom={aboutHeroZoom} onZoomChange={setAboutHeroZoom} previewAspect="16/9" previewMaxWidth="400px" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">About Us Image</label>
+            <ImageUpload currentUrl={form.about_image_url} file={aboutImageFile} onFileChange={setAboutImageFile} onRemove={() => { setAboutImageFile(null); setForm({ ...form, about_image_url: '' }); }} ratio="8:5" position={aboutPosition} onPositionChange={setAboutPosition} zoom={aboutZoom} onZoomChange={setAboutZoom} previewAspect="8/5" previewMaxWidth="320px" />
+          </div>
         </Section>
 
         {/* Services Section */}
         <Section title="Dermatology Services" description="Heading image and full content text shown on the About page services section">
-          <ImageUpload label="Services Heading Image" currentUrl={form.services_heading_image_url} file={servicesHeadingImageFile} onFileChange={setServicesHeadingImageFile} />
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Services Heading Image</label>
+            <ImageUpload currentUrl={form.services_heading_image_url} file={servicesHeadingImageFile} onFileChange={setServicesHeadingImageFile} onRemove={() => { setServicesHeadingImageFile(null); setForm({ ...form, services_heading_image_url: '' }); }} ratio="4:1 (wide banner)" position={servicesHeadingPosition} onPositionChange={setServicesHeadingPosition} zoom={servicesHeadingZoom} onZoomChange={setServicesHeadingZoom} previewAspect="4/1" previewMaxWidth="500px" />
+          </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">Services Content</label>
             <textarea
@@ -352,11 +392,19 @@ function Field({ label, value, onChange, type = 'text', placeholder, textarea, s
   );
 }
 
-function ImageUpload({ label, currentUrl, file, onFileChange }: {
+function ImageUpload({ label, currentUrl, file, onFileChange, onRemove, ratio, position, onPositionChange, zoom, onZoomChange, previewAspect, previewMaxWidth }: {
   label: string;
   currentUrl: string;
   file: File | null;
   onFileChange: (file: File | null) => void;
+  onRemove: () => void;
+  ratio?: string;
+  position?: { x: number; y: number };
+  onPositionChange?: (pos: { x: number; y: number }) => void;
+  zoom?: number;
+  onZoomChange?: (zoom: number) => void;
+  previewAspect?: string;
+  previewMaxWidth?: string;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -368,31 +416,56 @@ function ImageUpload({ label, currentUrl, file, onFileChange }: {
   }, [file]);
 
   const displayUrl = preview || currentUrl || null;
+  const style = { aspectRatio: previewAspect, maxWidth: previewMaxWidth };
 
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">{label}</label>
       <div className="flex items-start gap-4">
-        <label className="flex-1 cursor-pointer">
-          <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl p-4 hover:border-primary-400 transition-colors text-center">
-            {displayUrl ? (
-              <img src={displayUrl} alt={label} className="w-full h-40 object-cover rounded-lg mb-2" />
-            ) : (
-              <div className="py-6">
-                <Upload className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
-                <p className="text-sm text-neutral-500">Click to upload image</p>
-                <p className="text-xs text-neutral-400 mt-1">JPG, PNG, WebP</p>
+        <div className="flex-1">
+          {displayUrl && position && onPositionChange ? (
+            <FocalPointPicker
+              imageUrl={displayUrl}
+              position={position}
+              onChange={onPositionChange}
+              zoom={zoom}
+              onZoomChange={onZoomChange}
+              className="w-full rounded-xl overflow-hidden"
+              style={style}
+            />
+          ) : (
+            <label className="cursor-pointer block">
+              <div
+                className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl hover:border-primary-400 transition-colors text-center flex items-center justify-center"
+                style={style}
+              >
+                <div>
+                  <Upload className="w-8 h-8 mx-auto text-neutral-400 mb-2" />
+                  <p className="text-sm text-neutral-500">Click to upload image</p>
+                  <p className="text-xs text-neutral-400 mt-1">JPG, PNG, WebP</p>
+                </div>
               </div>
-            )}
-          </div>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
-        </label>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
+            </label>
+          )}
+        </div>
         {displayUrl && (
-          <button type="button" onClick={() => onFileChange(null)} className="text-sm text-red-500 hover:text-red-700 flex-shrink-0 mt-1">
-            Remove
-          </button>
+          <div className="flex flex-col gap-2 flex-shrink-0">
+            <label className="cursor-pointer text-xs text-primary-600 dark:text-primary-400 hover:underline text-center">
+              Change
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
+            </label>
+            <button type="button" onClick={onRemove} className="text-xs text-red-500 hover:text-red-700">
+              Remove
+            </button>
+          </div>
         )}
       </div>
+      {ratio && <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">Recommended ratio: {ratio}</p>}
+      {displayUrl && position && onPositionChange && (
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5 flex items-center gap-1">
+          <Crosshair className="w-3 h-3" /> Drag on image to choose which part appears on website
+        </p>
+      )}
     </div>
   );
 }

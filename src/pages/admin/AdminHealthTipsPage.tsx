@@ -3,7 +3,7 @@ import { Plus, Pencil, Trash2, X, Info } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { BlogPost } from '../../types';
-import { uploadPublicFile } from '../../lib/storage';
+import { uploadPublicFile, deletePublicFile } from '../../lib/storage';
 import { Modal } from '../../components/ui/Modal';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ImageCrop } from '../../components/ImageCrop';
@@ -134,12 +134,14 @@ export function AdminHealthTipsPage() {
     setSaving(true);
     try {
       const postId = editing?.id ?? crypto.randomUUID();
-      const imageUrl = imageFile
-        ? await uploadPublicFile(imageFile, {
-            path: `clinics/${clinicId}/blog/${postId}`,
-            fileName: 'image',
-          })
-        : form.image_url;
+      let imageUrl = form.image_url;
+      if (imageFile) {
+        if (form.image_url) await deletePublicFile(form.image_url);
+        imageUrl = (await uploadPublicFile(imageFile, {
+          path: `clinics/${clinicId}/blog/${postId}`,
+          fileName: 'image',
+        })) + `?v=${Date.now()}`;
+      }
 
       const payload = {
         clinic_id: clinicId!,
@@ -176,10 +178,10 @@ export function AdminHealthTipsPage() {
     try {
       const postId = crypto.randomUUID();
       const imageUrl = inlineImageFile
-        ? await uploadPublicFile(inlineImageFile, {
+        ? (await uploadPublicFile(inlineImageFile, {
             path: `clinics/${clinicId}/blog/${postId}`,
             fileName: 'image',
-          })
+          })) + `?v=${Date.now()}`
         : '';
 
       const { error } = await supabase.from('blog_posts').insert({
@@ -211,10 +213,12 @@ export function AdminHealthTipsPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this health tip?')) return;
+    const post = posts.find(p => p.id === id);
     const { error } = await supabase.from('blog_posts').delete().eq('id', id);
     if (error) {
       addToast('error', 'Failed to delete');
     } else {
+      if (post?.image_url) await deletePublicFile(post.image_url);
       setPosts(prev => prev.filter(p => p.id !== id));
       addToast('success', 'Health tip deleted');
     }
@@ -453,7 +457,7 @@ export function AdminHealthTipsPage() {
           if (cropTarget === 'inline') setInlineImageFile(cropped);
           else setImageFile(cropped);
         }}
-        aspect={16 / 9}
+        aspect={2 / 1}
         label="Crop Cover Image"
       />
     </>
