@@ -44,16 +44,12 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
         <img
           src={clinic?.about_hero_image_url || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=1920'}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
           style={{ objectPosition: clinic?.about_hero_image_position ? `${clinic.about_hero_image_position.x}% ${clinic.about_hero_image_position.y}%` : undefined, transform: clinic?.about_hero_image_zoom && clinic.about_hero_image_zoom > 1 ? `scale(${clinic.about_hero_image_zoom})` : undefined, transformOrigin: clinic?.about_hero_image_position ? `${clinic.about_hero_image_position.x}% ${clinic.about_hero_image_position.y}%` : undefined }}
         />
         {/* Theme color overlay - makes image faintly visible */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-800 via-primary-700 to-teal-800" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-800 via-primary-700 to-teal-800" style={{ opacity: 0.75 }} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-
-        {/* Glassy decorative element */}
-        <div className="absolute top-20 right-20 w-72 h-72 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 hidden lg:block" />
-        <div className="absolute bottom-20 left-10 w-40 h-40 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 hidden lg:block" />
 
         <div className="relative container-max px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-2xl">
@@ -62,7 +58,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
             </span>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading text-white mb-6 leading-tight">
               Trusted Healthcare<br />
-              <span className="text-primary-300">{clinic?.founded_year ? `Since ${clinic.founded_year}` : 'Since 2015'}</span>
+              <span className="text-white">{clinic?.founded_year ? `Since ${clinic.founded_year}` : 'Since 2015'}</span>
             </h1>
             <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-lg">
               {clinic?.tagline || 'Quality healthcare with a personal touch — where every patient matters.'}
@@ -160,7 +156,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <FadeIn delay={100}>
-              <div className="relative bg-gradient-to-br from-primary-50 to-teal-50 dark:from-primary-950/40 dark:to-teal-950/40 rounded-2xl p-8 border border-primary-100 dark:border-primary-800/30 overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+              <div className="relative bg-gradient-to-br from-primary-50 to-teal-50 dark:from-primary-950 dark:to-teal-950 rounded-2xl p-8 border border-primary-100 dark:border-primary-800/30 overflow-hidden group hover:shadow-xl transition-shadow duration-300">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/30 dark:bg-primary-700/20 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-500" />
                 <div className="relative">
                   <div className="w-14 h-14 bg-primary-600 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-primary-600/30">
@@ -204,7 +200,7 @@ export function AboutUsPage({ clinic, doctorsPath, doctorsCount }: AboutUsPagePr
                   className="w-full h-64 sm:h-80 object-cover"
                   style={{ objectPosition: clinic.services_heading_image_position ? `${clinic.services_heading_image_position.x}% ${clinic.services_heading_image_position.y}%` : undefined, transform: clinic.services_heading_image_zoom && clinic.services_heading_image_zoom > 1 ? `scale(${clinic.services_heading_image_zoom})` : undefined, transformOrigin: clinic.services_heading_image_position ? `${clinic.services_heading_image_position.x}% ${clinic.services_heading_image_position.y}%` : undefined }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 via-primary-800/60 to-teal-800/40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-900 via-primary-800 to-teal-800 flex items-center justify-center" style={{ opacity: 0.8 }}>
                   <h2 className="text-3xl sm:text-5xl font-bold font-heading text-white text-center px-4">
                     {clinic.name || 'Jaahnavi Clinic'} — Our Services
                   </h2>

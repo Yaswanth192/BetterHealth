@@ -34,9 +34,9 @@ export function AdminLoginPage() {
     <div className="min-h-screen bg-primary-950 bg-gradient-to-br from-primary-900 via-primary-800 to-teal-900 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 flex items-center justify-center p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-600/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-400/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary-600 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.2 }} />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-600 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" style={{ opacity: 0.2 }} />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-400 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.1 }} />
       </div>
 
       <div className="relative w-full max-w-md">

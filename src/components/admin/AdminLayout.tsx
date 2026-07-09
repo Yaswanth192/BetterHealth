@@ -3,7 +3,7 @@ import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Calendar, MessageSquare, Users, Settings,
   LogOut, Menu, X, Activity, ChevronRight, Bell, Sun, Moon,
-  Image, Lightbulb, Package, HelpCircle, ChevronDown, Building2
+  Image, Lightbulb, Package, HelpCircle, ChevronDown, Building2, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -24,6 +24,7 @@ const contentItems = [
   { to: '/admin/hospital-images', icon: Image, label: 'Hospital Images' },
   { to: '/admin/health-tips', icon: Lightbulb, label: 'Health Tips' },
   { to: '/admin/health-packages', icon: Package, label: 'Health Packages' },
+  { to: '/admin/insurance', icon: ShieldCheck, label: 'Insurance' },
   { to: '/admin/faq', icon: HelpCircle, label: 'FAQ' },
 ];
 

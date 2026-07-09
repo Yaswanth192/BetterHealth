@@ -138,8 +138,8 @@ export function HeroSection({ clinic, appointmentPath }: HeroProps) {
       </div>
 
       {/* Decorative orbs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl animate-pulse-slow animate-delay-300" />
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary-500 rounded-full blur-3xl animate-pulse-slow" style={{ opacity: 0.1 }} />
+      <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-teal-500 rounded-full blur-3xl animate-pulse-slow animate-delay-300" style={{ opacity: 0.1 }} />
 
       <div className="relative container-max px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

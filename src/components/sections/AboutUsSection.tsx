@@ -15,17 +15,25 @@ export function AboutUsSection({ clinic, doctorsPath, doctorsCount }: AboutUsSec
     <section className="section-padding bg-neutral-50 dark:bg-neutral-900">
       <div className="container-max" ref={ref as React.RefObject<HTMLDivElement>}>
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          {/* Image */}
+          {/* Image — Window-like decorative frame */}
           <div className="relative">
-            <div className="rounded-2xl overflow-hidden shadow-lg">
-              <img
-                src={clinic?.about_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
-                alt="Clinic"
-                className="w-full h-[400px] object-cover"
-                style={{ objectPosition: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined, transform: clinic?.about_image_zoom && clinic.about_image_zoom > 1 ? `scale(${clinic.about_image_zoom})` : undefined, transformOrigin: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined }}
-              />
+            {/* Background decorative shape */}
+            <div className="absolute -top-4 -left-4 w-full h-full bg-primary-200 dark:bg-primary-800 rounded-[2rem] rotate-3" style={{ opacity: 0.4 }} />
+            {/* Main image frame with arched top */}
+            <div className="relative bg-white dark:bg-neutral-800 rounded-[2rem] p-3 shadow-xl">
+              <div className="relative overflow-hidden rounded-[1.5rem]">
+                {/* Arch decoration at top */}
+                <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-primary-500 to-transparent z-10 pointer-events-none" style={{ opacity: 0.1 }} />
+                <img
+                  src={clinic?.about_image_url || "https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800"}
+                  alt="Clinic"
+                  className="w-full h-[400px] object-cover"
+                  style={{ objectPosition: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined, transform: clinic?.about_image_zoom && clinic.about_image_zoom > 1 ? `scale(${clinic.about_image_zoom})` : undefined, transformOrigin: clinic?.about_image_position ? `${clinic.about_image_position.x}% ${clinic.about_image_position.y}%` : undefined }}
+                />
+              </div>
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-primary-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">
+            {/* Floating badge */}
+            <div className="absolute -bottom-5 -right-5 bg-gradient-to-br from-primary-500 to-teal-500 text-white px-6 py-3 rounded-2xl font-bold text-lg shadow-xl z-20">
               {clinic?.founded_year ? `Since ${clinic.founded_year}` : 'Since 2015'}
             </div>
           </div>

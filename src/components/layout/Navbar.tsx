@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Activity, MessageCircle, Sun, Moon } from 'lucide-react';
 import { Clinic } from '../../types';
@@ -11,6 +11,8 @@ interface NavbarProps {
 export function Navbar({ clinic }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const publicBasePath = clinic?.slug ? `/${clinic.slug}` : '/';
@@ -27,7 +29,21 @@ export function Navbar({ clinic }: NavbarProps) {
   ];
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setScrolled(currentY > 20);
+
+      if (currentY > 80) {
+        if (currentY > lastScrollY.current) {
+          setHidden(true);
+        } else {
+          setHidden(false);
+        }
+      } else {
+        setHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -41,7 +57,7 @@ export function Navbar({ clinic }: NavbarProps) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40">
+    <header className={`fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       {/* Top bar */}
       <div className={`transition-all duration-300 ${solidHeader ? 'bg-[#1a1a2e] text-white dark:bg-[#1a1a2e] dark:text-neutral-100' : 'bg-[#1a1a2e] text-white/90 dark:bg-[#1a1a2e] dark:text-neutral-100/90'}`}>
         <div className="container-max flex items-center justify-between px-4 sm:px-6 lg:px-8 py-1 text-xs">

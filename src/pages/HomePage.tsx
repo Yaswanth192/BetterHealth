@@ -53,11 +53,12 @@ export function HomePage() {
   const healthTipsSettings = sectionSettings.healthTips ?? { show: true, useDummies: true };
   const healthPackagesSettings = sectionSettings.healthPackages ?? { show: true, useDummies: true };
   const architectureSettings = sectionSettings.architecture ?? { show: true, useDummies: true };
+  const insuranceSettings = sectionSettings.insurance ?? { show: true, useDummies: true };
 
   const pages: Record<string, ReactNode> = {
     services: (
       <>
-        <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} clinicSlug={clinic?.slug || slug} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} clinicSlug={clinic?.slug || slug} />
         {architectureSettings.show && (
           <HospitalImagesParallaxCSS images={architectureImages} />
         )}
@@ -92,13 +93,15 @@ export function HomePage() {
       />
       <ServicesMarquee services={services} />
       <AboutUsSection clinic={clinic} doctorsPath={`${clinicBasePath}/doctors`} doctorsCount={doctors.length} />
-      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} clinic={clinic} clinicSlug={clinic?.slug || slug} />
+      <ServicesSection services={services} appointmentPath={appointmentPath} healthPackages={healthPackages} showHealthPackages={healthPackagesSettings.show} showFees={false} clinic={clinic} clinicSlug={clinic?.slug || slug} />
       <DoctorsSection doctors={doctors} appointmentPath={appointmentPath} clinic={clinic} showDirector={false} showViewAll={true} />
       {architectureSettings.show && (
         <HospitalImagesParallax images={architectureImages} />
       )}
       <TestimonialsSection testimonials={testimonials} clinic={clinic} />
-      <InsuranceSection insuranceProviders={insuranceProviders} certifications={certifications} clinic={clinic} />
+      {insuranceSettings.show && (
+        <InsuranceSection insuranceProviders={insuranceProviders} certifications={certifications} clinic={clinic} />
+      )}
       {healthTipsSettings.show && (
         <BlogSection posts={healthTipsSettings.useDummies ? [] : blogPosts} />
       )}

@@ -9,6 +9,7 @@ interface ServicesSectionProps {
   appointmentPath: string;
   healthPackages?: HealthPackage[];
   showHealthPackages?: boolean;
+  showFees?: boolean;
   clinic?: import('../../types').Clinic | null;
   clinicSlug?: string;
 }
@@ -61,7 +62,7 @@ const healthPackages = [
   },
 ];
 
-export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true, clinic, clinicSlug }: ServicesSectionProps) {
+export function ServicesSection({ services, appointmentPath, healthPackages: dbPackages = [], showHealthPackages = true, showFees = true, clinic, clinicSlug }: ServicesSectionProps) {
   const { ref, isIntersecting } = useIntersectionObserver();
   const [activeFilter, setActiveFilter] = useState('All');
   const displayServices = services.length > 0
@@ -168,6 +169,7 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
         </div>
 
         {/* Consultation Fees Table */}
+        {showFees && (
         <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '200ms' }}>
           <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 text-center mb-8">Consultation Fees</h3>
           <div className="max-w-3xl mx-auto overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
@@ -198,6 +200,7 @@ export function ServicesSection({ services, appointmentPath, healthPackages: dbP
             </table>
           </div>
         </div>
+        )}
 
         {/* How It Works */}
         <div className={`mb-16 transition-all duration-700 ${isIntersecting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: '300ms' }}>
